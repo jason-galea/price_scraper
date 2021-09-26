@@ -21,8 +21,8 @@ driver = webdriver.Chrome(options=options)
 driver.get(url)
 
 # Sort price low to high
-# driver.find_element_by_css_selector("div[role='combobox']").click()
-# driver.find_element_by_id("downshift-1-item-1").click() # "No element found"
+driver.find_element_by_css_selector("div[aria-labelledby='downshift-4-label']").click()
+driver.find_element_by_id("downshift-4-item-1").click()
 
 # Hand content to BS
 soup = bs(driver.page_source, "html.parser")
