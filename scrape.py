@@ -47,11 +47,12 @@ for product in soup.find_all('div', class_="product-container"):
         p_brand = "Western Digital"
         p_series = p_title_array[3] # "Blue"
         if p_series == "Red":
-            p_series = p_series + " " + p_title_array[4] # "Red Plus"
+            p_series += " " + p_title_array[4] # "Red Plus"
             p_model_number = p_title_array[6] # "WD8001FZBX"
         else:
             # p_series is already correct
             p_model_number = p_title_array[5]
+    
     elif p_title_array[0] == "Seagate":
         p_brand = "Seagate"
         p_series = p_title_array[1] # "Ironwolf"
