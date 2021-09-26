@@ -1,3 +1,4 @@
+from typing import Dict
 from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup as bs
@@ -20,36 +21,42 @@ driver = webdriver.Chrome(options=options)
 driver.get(url)
 
 # Sort price low to high
-# try:
-#     dropdown_menu = driver.find_element_by_css_selector("div[aria-labelledby='downshift-1-label']")
-# except:
-#     dropdown_menu = driver.find_element_by_css_selector("div[aria-labelledby='downshift-4-label']")
+driver.find_element_by_xpath("//div[@class = 'cat-filter']//div[@role = 'combobox']").click()
+driver.find_element_by_xpath("//li[text()[contains(., 'Price (low to high)')]]").click()
 
-# dropdown_menu = driver.find_element("div", value="SORT BY")
-# dropdown_menu.click()
-# dropdown_price_low_high = driver.find_element_by_id("downshift-4-item-1")
-# dropdown_price_low_high.click()
-
-# driver.find_element_by_css_selector("div[aria-labelledby='downshift-4-label']").click()
-# driver.implicitly_wait(1)
-# driver.find_element_by_id("downshift-4-item-1").click()
 
 # Hand content to BS
 soup = bs(driver.page_source, "html.parser")
 
 
 ### EXTRACT DATA
-result = []
-for a in soup.find_all('div', class_="product-container"):
-    title = a.find_next()
-    url = a.find_next()
-    description = a.find_next()
+product_data = []
+for product in soup.find_all('div', class_="product-container"):
+    p_title = product.find_next("a", class_="product-title").string
+    p_url = product.find_next("a", class_="product-title").attrs["href"]
+    p_desc = product.find_next("p").string
+    p_price_aud = int(product.find_next("div", class_="price").string.strip("$")) # "$123" --> 123
+
+    p_title_array = p_title.split()
+    p_desc_array = p_desc.split()
+
+    p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
+
+    p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2)
 
 
+    product_data.append({
+        "title": p_title
+        , "url": p_url
+        , "description": p_desc
+        , "price": p_price_aud
+        , "hdd_capacity": p_hdd_capacity
+        , "hdd_price_per_tb": p_hdd_price_per_tb
+    })
 
-    pass
 
-
-
-
+for product in product_data:
+    for key, value in product.items():
+        print("{0} : {1}".format(key, value))
+    print()
 
