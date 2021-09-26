@@ -14,13 +14,17 @@ result = []
 options = webdriver.ChromeOptions()
 options.add_argument('--ignore-certificate-errors')
 options.add_argument('--incognito')
-options.add_argument('--headless')
+# options.add_argument('--headless')
 driver = webdriver.Chrome(options=options)
 # driver.implicitly_wait(3)
 
 driver.get(url)
 
 # Sort price low to high
+# sort_by_dropdown = driver.find_element_by_css_selector("div[aria-labelledby='downshift-4-label']")
+# sort_by_dropdown.click()
+# dropdown_price_low_high = driver.find_element_by_id("downshift-4-item-1")
+# dropdown_price_low_high.click()
 driver.find_element_by_css_selector("div[aria-labelledby='downshift-4-label']").click()
 driver.find_element_by_id("downshift-4-item-1").click()
 
