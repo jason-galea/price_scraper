@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup as bs
@@ -14,7 +12,7 @@ result = []
 options = webdriver.ChromeOptions()
 options.add_argument('--ignore-certificate-errors')
 options.add_argument('--incognito')
-# options.add_argument('--headless')
+options.add_argument('--headless')
 driver = webdriver.Chrome(options=options)
 # driver.implicitly_wait(3)
 
