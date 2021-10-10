@@ -1,4 +1,6 @@
 # Install dependencies
+python3
+python
 apache2
 
 

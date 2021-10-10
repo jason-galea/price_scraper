@@ -44,7 +44,8 @@ def extract_pccg(soup, category):
             p_model_number = p_title_array[3] # "ST8000VN004"
         
         result.append({
-            "title": p_title
+            "retailer": "PCCG"
+            , "title": p_title
             , "url": p_url
             # , "incomplete_description": p_incomplete_desc
             , "price_aud": p_price_aud
