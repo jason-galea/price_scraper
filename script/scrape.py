@@ -6,10 +6,60 @@ from selenium import webdriver
 from bs4 import BeautifulSoup as bs
 
 
+def extract_pccg(soup, category):
+    # TODO:
+    # Separate common & unique attribute extraction logic.
+    # Eg Title/price/URL are common attributes
+    # HDD Capacity is unique
+
+    result = []
+    for product in soup.find_all('div', class_="product-container"):
+        
+        # Data extracted from DOM
+        p_title = product.find_next("a", class_="product-title").string
+        p_url = product.find_next("a", class_="product-title").attrs["href"]
+        # p_incomplete_desc = product.find_next("p").string
+        p_price_aud = int(product.find_next("div", class_="price").string.strip("$")) # "$123" --> 123
+
+        # Data extrapolated from previous extraction
+        p_title_array = p_title.split()
+        # p_incomplete_desc_array = p_incomplete_desc.split()
+        p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
+        p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2)
+
+        # Brand/Series/Model fuckery, extrapolated from Title
+        if p_title_array[0] == "Western":
+            p_brand = "Western Digital"
+            p_series = p_title_array[3] # "Blue"
+            if p_series == "Red": # Logic to handle multi-word series names
+                p_series += " " + p_title_array[4] # "Red Plus"
+                p_model_number = p_title_array[6] # "WD8001FZBX"
+            else:
+                # p_series is already correct
+                p_model_number = p_title_array[5]
+        
+        elif p_title_array[0] == "Seagate":
+            p_brand = "Seagate"
+            p_series = p_title_array[1] # "Ironwolf"
+            p_model_number = p_title_array[3] # "ST8000VN004"
+        
+        result.append({
+            "title": p_title
+            , "url": p_url
+            # , "incomplete_description": p_incomplete_desc
+            , "price_aud": p_price_aud
+            , "hdd_capacity": p_hdd_capacity
+            , "hdd_price_per_tb": p_hdd_price_per_tb
+            , "brand": p_brand
+            , "series": p_series
+            , "model_number": p_model_number
+        })
+
+    return result
+
 ### VARIABLES
 # header = {'User-Agent' : 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36'}
 url = "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives"
-product_data = []
 
 
 ### PREP DRIVER & SORT
@@ -31,53 +81,19 @@ soup = bs(driver.page_source, "html.parser")
 
 
 ### EXTRACT DATA
-for product in soup.find_all('div', class_="product-container"):
-    # Data extracted from DOM
-    p_title = product.find_next("a", class_="product-title").string
-    p_url = product.find_next("a", class_="product-title").attrs["href"]
-    # p_incomplete_desc = product.find_next("p").string
-    p_price_aud = int(product.find_next("div", class_="price").string.strip("$")) # "$123" --> 123
-
-    # Data extrapolated from previous extraction
-    p_title_array = p_title.split()
-    # p_incomplete_desc_array = p_incomplete_desc.split()
-    p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
-    p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2)
-
-    # Brand/Series/Model fuckery, extrapolated from Title
-    if p_title_array[0] == "Western":
-        p_brand = "Western Digital"
-        p_series = p_title_array[3] # "Blue"
-        if p_series == "Red":
-            p_series += " " + p_title_array[4] # "Red Plus"
-            p_model_number = p_title_array[6] # "WD8001FZBX"
-        else:
-            # p_series is already correct
-            p_model_number = p_title_array[5]
-    
-    elif p_title_array[0] == "Seagate":
-        p_brand = "Seagate"
-        p_series = p_title_array[1] # "Ironwolf"
-        p_model_number = p_title_array[3] # "ST8000VN004"
-    
+pccg_hdd_data = extract_pccg(soup, "HDD")
 
 
-    # Append data
-    product_data.append({
-        "title": p_title
-        , "url": p_url
-        # , "incomplete_description": p_incomplete_desc
-        , "price_aud": p_price_aud
-        , "hdd_capacity": p_hdd_capacity
-        , "hdd_price_per_tb": p_hdd_price_per_tb
-        , "brand": p_brand
-        , "series": p_series
-        , "model_number": p_model_number
-    })
+# TODO:
+# Decide whether or not to combine data extraction & database insertion
+
+
+### Insert data into database
+
 
 
 ### PRINT DATA
-for product in product_data:
+for product in pccg_hdd_data:
     for key, value in product.items():
         print("{0} : {1}".format(key, value))
     print()
