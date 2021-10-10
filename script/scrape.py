@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from typing import Dict
 from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
@@ -33,7 +35,7 @@ for product in soup.find_all('div', class_="product-container"):
     # Data extracted from DOM
     p_title = product.find_next("a", class_="product-title").string
     p_url = product.find_next("a", class_="product-title").attrs["href"]
-    p_incomplete_desc = product.find_next("p").string
+    # p_incomplete_desc = product.find_next("p").string
     p_price_aud = int(product.find_next("div", class_="price").string.strip("$")) # "$123" --> 123
 
     # Data extrapolated from previous extraction
@@ -64,7 +66,7 @@ for product in soup.find_all('div', class_="product-container"):
     product_data.append({
         "title": p_title
         , "url": p_url
-        , "incomplete_description": p_incomplete_desc
+        # , "incomplete_description": p_incomplete_desc
         , "price_aud": p_price_aud
         , "hdd_capacity": p_hdd_capacity
         , "hdd_price_per_tb": p_hdd_price_per_tb

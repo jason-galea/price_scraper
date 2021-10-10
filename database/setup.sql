@@ -13,7 +13,7 @@ CREATE TABLE HDDs (
     Retailer varchar(255),
     Title varchar(255),
     URL varchar(255),
-    IncompleteDescription varchar(255),
+    -- IncompleteDescription varchar(255),
     PriceAUD int,
     HDDCapacity int,
     HDDPricePerTB int,
