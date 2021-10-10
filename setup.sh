@@ -2,7 +2,7 @@
 # It's basically pseudo-code, just documenting what the docker image will require.
 # Final note for the docker image will be to record package/module versions
 
-install_python_requirements() {
+script_prereqs() {
     # https://tecadmin.net/setup-selenium-chromedriver-on-ubuntu/
 
     # Packages
@@ -10,6 +10,11 @@ install_python_requirements() {
     sudo apt -y install unzip xvfb libxi6 libgconf-2-4 default-jdk curl gnupg python3-pip
     # Python modules
     sudo python3 -m pip install selenium beautifulsoup4 mysql-connector-python
+    # MySQL connector
+    wget https://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python-py3_8.0.26-1ubuntu21.04_amd64.deb
+    dpkg -i mysql-connector-python-py3_8.0.26-1ubuntu21.04_amd64.deb
+    # sudo apt --fix-broken install
+    # dpkg -i mysql-connector-python-py3_8.0.26-1ubuntu21.04_amd64.deb
 
     # Chrome
     sudo curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add 
@@ -18,7 +23,7 @@ install_python_requirements() {
     sudo apt -y install google-chrome-stable 
 
     # Chromedriver (ASSUMING CHROME == 94.x)
-    sudo wget https://chromedriver.storage.googleapis.com/94.0.4606.41/chromedriver_linux64.zip
+    wget https://chromedriver.storage.googleapis.com/94.0.4606.41/chromedriver_linux64.zip
     # WAIT FOR DOWNLOAD
     sudo unzip chromedriver_linux64.zip
     sudo chown root:root chromedriver 
@@ -27,7 +32,7 @@ install_python_requirements() {
     sudo rm chromedriver_linux64.zip
 }
 
-install_mysql() {
+database_prereqs() {
     # https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04
     # https://docs.rackspace.com/support/how-to/install-mysql-server-on-the-ubuntu-operating-system/
 
@@ -44,17 +49,22 @@ install_mysql() {
 
     # Configure MYSQL User
     sudo mysql
-    # CREATE USER 'scraper'@'localhost' IDENTIFIED BY 'password';
-    # GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'scraper'@'localhost'
+    # CREATE USER 'scraper'@'localhost' IDENTIFIED BY 'Password##123';
+    # GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'scraper'@'localhost';
     # FLUSH PRIVILEGES;
     # exit
 
 }
 
-configure_mysql_tables() {
+database_config() {
     # TODO:
     # Execute the contents of ./database/setup.sql
     pass
+}
+
+website_prereqs() {
+    sudo apt update 
+    sudo apt -y install apache2
 }
 
 get_latest_config() {
@@ -62,6 +72,6 @@ get_latest_config() {
     cd
     git clone https://github.com/jason-galea/price_scraper
 
-    # Move folders
+    # Move PHP files to website root
     sudo mv ~/price_scraper/website/* /var/www/html/
 }

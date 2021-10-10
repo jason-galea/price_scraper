@@ -1,11 +1,14 @@
 #!/usr/bin/python3
 
+### Imports
 from typing import Dict
 from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup as bs
+from mysql import connector
 
 
+### Functions
 def extract_pccg(soup, category):
     # TODO:
     # Separate common & unique attribute extraction logic.
@@ -58,12 +61,13 @@ def extract_pccg(soup, category):
 
     return result
 
+
 ### VARIABLES
 # header = {'User-Agent' : 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36'}
 url = "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives"
 
 
-### PREP DRIVER & SORT
+### PREP DRIVER
 # Start driver
 options = webdriver.ChromeOptions()
 options.add_argument('--ignore-certificate-errors')
@@ -74,8 +78,8 @@ driver = webdriver.Chrome(options=options)
 driver.get(url)
 
 # Sort price low to high
-driver.find_element_by_xpath("//div[@class = 'cat-filter']//div[@role = 'combobox']").click()
-driver.find_element_by_xpath("//li[text()[contains(., 'Price (low to high)')]]").click()
+# driver.find_element_by_xpath("//div[@class = 'cat-filter']//div[@role = 'combobox']").click()
+# driver.find_element_by_xpath("//li[text()[contains(., 'Price (low to high)')]]").click()
 
 # Hand content to BS
 soup = bs(driver.page_source, "html.parser")
@@ -85,12 +89,19 @@ soup = bs(driver.page_source, "html.parser")
 pccg_hdd_data = extract_pccg(soup, "HDD")
 
 
+### Insert data into database
 # TODO:
 # Decide whether or not to combine data extraction & database insertion
+sql_db = connector.connect(
+        host="localhost"
+        , user="scraper"
+        , password="Password##123"
+        , database="PriceScraper"
+    )
 
 
-### Insert data into database
 
+sql_db.close()
 
 
 ### PRINT DATA
