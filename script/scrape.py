@@ -6,6 +6,8 @@ from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup as bs
 from mysql import connector
+from mysql.connector import errorcode
+
 
 
 ### Functions
@@ -85,23 +87,32 @@ driver.get(url)
 soup = bs(driver.page_source, "html.parser")
 
 
-### EXTRACT DATA
+### Extract data
 pccg_hdd_data = extract_pccg(soup, "HDD")
 
 
 ### Insert data into database
+# https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html
 # TODO:
 # Decide whether or not to combine data extraction & database insertion
-sql_db = connector.connect(
-        host="localhost"
-        , user="scraper"
-        , password="Password##123"
-        , database="PriceScraper"
-    )
+try:
+    cnx = connector.connect(
+            host="localhost"
+            , user="scraper"
+            , password="Password##123"
+            , database="PriceScraper"
+        )
 
+except connector.Error as err:
+    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        print("Something is wrong with your user name or password")
+    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+        print("Database does not exist")
+    else:
+        print(err)
+else:
+    cnx.close()
 
-
-sql_db.close()
 
 
 ### PRINT DATA

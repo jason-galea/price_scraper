@@ -22,3 +22,9 @@ CREATE TABLE HDDs (
     ModelNumber varchar(255)
 );
 
+
+-- Display
+USE PriceScraper;
+SHOW TABLES;
+SHOW COLUMNS in HDDs;
+
