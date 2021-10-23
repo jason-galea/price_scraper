@@ -6,8 +6,41 @@ from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup as bs
 from mysql import connector
-from mysql.connector import errorcode
+from mysql.connector import errorcode as err
 
+
+### Constants
+SQL_USER = "scraper"
+SQL_PASS = "Password##123"
+SQL_DB = "PriceScraper"
+# SQL_TABLE_NAMES = ["HDDs", "CPUs", "GPUs"]
+# SQL_TABLE_HDD = "CREATE TABLE HDDs ( \
+#     Retailer varchar(255), \
+#     Title varchar(255), \
+#     URL varchar(255), \
+#     PriceAUD int, \
+#     HDDCapacity int, \
+#     HDDPricePerTB int, \
+#     Brand varchar(255), \
+#     Series varchar(255), \
+#     ModelNumber varchar(255) \
+# )"
+
+SQL_TABLES = {
+    "HDDs": "CREATE TABLE HDDs ( \
+    Retailer varchar(255), \
+    Title varchar(255), \
+    URL varchar(255), \
+    PriceAUD int, \
+    HDDCapacity int, \
+    HDDPricePerTB int, \
+    Brand varchar(255), \
+    Series varchar(255), \
+    ModelNumber varchar(255) \
+    )"
+    , "CPUs": "TODO"
+    , "GPUs": "TODO"
+}
 
 
 ### Functions
@@ -20,6 +53,7 @@ def extract_pccg(soup, category):
     result = []
     for product in soup.find_all('div', class_="product-container"):
         
+        ### Common attributes
         # Data extracted from DOM
         p_title = product.find_next("a", class_="product-title").string
         p_url = product.find_next("a", class_="product-title").attrs["href"]
@@ -31,6 +65,7 @@ def extract_pccg(soup, category):
         # p_incomplete_desc_array = p_incomplete_desc.split()
         p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
         p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2)
+
 
         # Brand/Series/Model fuckery, extrapolated from Title
         if p_title_array[0] == "Western":
@@ -48,6 +83,14 @@ def extract_pccg(soup, category):
             p_series = p_title_array[1] # "Ironwolf"
             p_model_number = p_title_array[3] # "ST8000VN004"
         
+        ### Unique attributes
+        # match category:
+        #     case "HDD":
+        #         p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
+        #         p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2)
+        #     case _:
+        #         pass
+
         result.append({
             "retailer": "PCCG"
             , "title": p_title
@@ -62,6 +105,31 @@ def extract_pccg(soup, category):
         })
 
     return result
+
+def sql_create_database(cnx):
+    try:
+        cnx.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
+        cnx.execute("USE {}".format(SQL_DB))
+    except err:
+        print("Failed creating database: {}".format(err))
+        exit(1)
+
+def sql_drop_tables(cnx):
+    try:
+        cnx.execute("SET FOREIGN_KEY_CHECKS = 0")
+        for i in len(SQL_TABLES):
+            cnx.execute("DROP TABLE IF EXISTS {}".format(list(SQL_TABLES)[i - 1])) # Get dict keys
+        cnx.execute("SET FOREIGN_KEY_CHECKS = 1")
+    except err:
+        print("Failed dropping tables: {}".format(err))
+        exit(1)
+
+def sql_create_table(cnx, name):
+    try:
+        cnx.execute("{}".format(SQL_TABLES[name])) # Get table schema from dict
+    except err:
+        print("Failed to create table \"{}\": {}".format(name, err))
+        exit(1)
 
 
 ### VARIABLES
@@ -79,10 +147,6 @@ driver = webdriver.Chrome(options=options)
 # driver.implicitly_wait(1)
 driver.get(url)
 
-# Sort price low to high
-# driver.find_element_by_xpath("//div[@class = 'cat-filter']//div[@role = 'combobox']").click()
-# driver.find_element_by_xpath("//li[text()[contains(., 'Price (low to high)')]]").click()
-
 # Hand content to BS
 soup = bs(driver.page_source, "html.parser")
 
@@ -95,23 +159,36 @@ pccg_hdd_data = extract_pccg(soup, "HDD")
 # https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html
 # TODO:
 # Decide whether or not to combine data extraction & database insertion
+
+### Create connection
 try:
     cnx = connector.connect(
-            host="localhost"
-            , user="scraper"
-            , password="Password##123"
-            , database="PriceScraper"
-        )
-
-except connector.Error as err:
-    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        host="localhost"
+        , user=SQL_USER
+        , password=SQL_PASS
+        , database=SQL_DB
+    )
+except err:
+    if err.errno == err.ER_ACCESS_DENIED_ERROR:
         print("Something is wrong with your user name or password")
-    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+    elif err.errno == err.ER_BAD_DB_ERROR:
         print("Database does not exist")
     else:
         print(err)
 else:
     cnx.close()
+
+### Create database
+sql_create_database(cnx)
+
+### Drop all tables
+sql_drop_tables(cnx)
+
+### Create HDD table
+sql_create_table(cnx, "HDDs")
+
+### Insert into table
+
 
 
 
