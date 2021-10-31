@@ -8,9 +8,9 @@ from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup as bs
 
-import mysql.connector
+# import mysql.connector
 # import mysql.connector.errors as err
-from mysql.connector import errorcode
+# from mysql.connector import errorcode
 
 
 ### File Imports
@@ -48,44 +48,21 @@ driver.get(url)
 soup = bs(driver.page_source, "html.parser")
 
 
-### Create connection
-cnx = SQL.connect()
-cursor = cnx.cursor()
+### Create SQL object (which opens the connection)
+MySQL = SQL()
 print("Success: Connected to MySQL on {}".format(SQL.HOST))
 
+SQL.use_database()
 
-### Use/create database
-try:
-    cursor.execute("USE {}".format(SQL.DB))
-    # cnx.database = SQL.DB
-except mysql.connector.Error as err:
-    print("Failure: Database {} does not exist".format(SQL.DB))
-    if err.errno == errorcode.ER_BAD_DB_ERROR:
-        SQL.create_database(cursor)
-        print("Success: Database {} created".format(SQL.DB))
-        # cursor.execute("USE {}".format(SQL.DB))
-        cnx.database = SQL.DB
-    else:
-        print(err.msg) # This error would be non-specific, so I can't describe it beforehand
-        exit(1)
-print("Success: Now using database {}".format(SQL.DB))
-
-### Drop all tables
 # TODO: Make this conditional
-SQL.drop_tables(cursor)
+SQL.drop_tables()
 
-### Create tables
-SQL.create_tables(cursor)
+SQL.create_tables()
 
-# Extract & insert data into table
-test_data = Extract.pccg(soup, 0)
-SQL.insert_into_hdd(cursor, test_data)
+test_data = Extract.pccg(soup, "HDD")
+SQL.insert_into_hdd(test_data)
 
+SQL.select_all_from_table("HDD")
 
-### PRINT DATA
-SQL.select_all_from_table(0)
-
-
-### Close SQL connection
-cnx.close()
+SQL.close()
 

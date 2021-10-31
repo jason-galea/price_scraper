@@ -10,27 +10,45 @@ from Table import Table
 
 
 class SQL:
-    ### Static variables
-    HOST = "localhost"
-    # HOST = "10.1.1.160"
-    USER = "scraper"
-    PASS = "Password##123"
-    DB = "PriceScraper"
+    ### Init
+    def __init__(self) -> None:
+        self.HOST = "localhost"
+        # self.HOST = "10.1.1.160"
+        self.USER = "scraper"
+        self.PASS = "Password##123"
+        self.DB = "PriceScraper"
+
+        self.cnx = mysql.connector.connect(
+            host=self.HOST
+            , user=self.USER
+            , password=self.PASS
+            , database=self.DB
+        )
+        self.cursor = self.cnx.cursor()
 
     ### Functions
-    def connect(self):
-        return mysql.connector.connect(
-            host=SQL.HOST
-            , user=SQL.USER
-            , password=SQL.PASS
-            , database=SQL.DB
-        )
+    def use_database(self):
+        try:
+            self.cursor.execute("USE {}".format(SQL.DB))
+            # cnx.database = SQL.DB
+        except mysql.connector.Error as err:
+            print("Failure: Database {} does not exist".format(SQL.DB))
+            if err.errno == errorcode.ER_BAD_DB_ERROR:
+                SQL.create_database()
+                print("Success: Database {} created".format(SQL.DB))
+                # cursor.execute("USE {}".format(SQL.DB))
+                self.cnx.database = SQL.DB
+            else:
+                print(err.msg) # This error would be non-specific, so I can't describe it beforehand
+                exit(1)
+        print("Success: Now using database {}".format(SQL.DB))
+        # return cnx
 
-    def create_database(self, cursor):
+    def create_database(self):
         try:
             # No need for "IF NOT EXISTS", because this function is only called to OVERWRITE a corrupt DB? I think?
             # cursor.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(DB))
-            cursor.execute("CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(SQL.DB))
+            self.cursor.execute("CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(SQL.DB))
             print("Success: Created database {}".format(SQL.DB))
         except mysql.connector.Error as err:
             print("Failure: Could not create database: \n{}".format(err.msg))
@@ -91,6 +109,8 @@ class SQL:
             print("Failure: Could not insert data into table {}: \n{}".format(data_type, err.msg))
             exit(1)
 
-    def select_all_from_table(self, table_index):
-        name = Table.NAMES[table_index]
+    def select_all_from_table(self, name):
         pass
+
+    def close(self):
+        self.cnx.close()

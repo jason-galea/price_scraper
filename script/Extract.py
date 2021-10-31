@@ -9,9 +9,8 @@ from Table import Table
 
 class Extract:
     ### Functions
-    def pccg(self, soup, table_index):
+    def pccg(self, soup, data_type):
         data = []
-        data_type = Table.NAMES[table_index]
 
         for product in soup.find_all('div', class_="product-container"):
             
