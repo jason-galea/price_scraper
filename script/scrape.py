@@ -215,7 +215,7 @@ chrome_options.add_argument('--incognito')
 chrome_options.add_argument('--headless')
 # https://stackoverflow.com/questions/53902507/unknown-error-session-deleted-because-of-page-crash-from-unknown-error-cannot
 chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
+# chrome_options.add_argument("--disable-dev-shm-usage")
 driver = webdriver.Chrome(options=chrome_options)
 # driver.implicitly_wait(1)
 driver.get(url)
