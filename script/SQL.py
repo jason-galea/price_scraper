@@ -55,23 +55,23 @@ class SQL:
             print("Failure: Could not create database: \n{}".format(err.msg))
             exit(1)
 
-    def drop_tables(self, cursor):
+    def drop_tables(self):
         try:
-            cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
 
             for name in Table.NAMES:
-                cursor.execute("DROP TABLE IF EXISTS {}".format(name))
+                self.cursor.execute("DROP TABLE IF EXISTS {}".format(name))
                 print("Success: Dropped table {}".format(name)) # Will "succeed" even if table was already dropped.
 
-            cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
         except mysql.connector.Error as err:
             print("Failure: Could not drop tables: \n{}".format(err.msg))
             exit(1)
 
-    def create_tables(self, cursor):
+    def create_tables(self):
         for name in Table.NAMES:
             try:
-                cursor.execute("CREATE TABLE IF NOT EXISTS {} ({})".format(name, Table.SCHEMAS[name]))
+                self.cursor.execute("CREATE TABLE IF NOT EXISTS {} ({})".format(name, Table.SCHEMAS[name]))
                 print("Success: Created table {}".format(name))
             except mysql.connector.Error as err:
                 if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
@@ -80,7 +80,17 @@ class SQL:
                     print("Failure: Could not create table {}: \n{}".format(name, err.msg))
                     # exit(1)
 
-    def insert_into_hdd(self, cursor, data):
+    def select_all_from_table(self, name):
+        pass
+
+    def close(self):
+        self.cnx.close()
+
+
+### Child class
+class Insert(SQL):
+    
+    def insert_into_hdd(self, data):
         # Accepts an array of dicts
         # Each dict is one row
         data_type = "HDD" # AKA. table name
@@ -103,15 +113,9 @@ class SQL:
                 )
                 print("\nINSERT STRING:\n{}\n".format(insert_string))
 
-                cursor.execute(insert_string)
+                self.cursor.execute(insert_string)
                 print("Success: Inserted data into table {}".format(data_type))
 
         except mysql.connector.Error as err:
             print("Failure: Could not insert data into table {}: \n{}".format(data_type, err.msg))
             exit(1)
-
-    def select_all_from_table(self, name):
-        pass
-
-    def close(self):
-        self.cnx.close()

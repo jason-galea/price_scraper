@@ -8,7 +8,7 @@ from Table import Table
 
 
 class Extract:
-    ### Functions
+    @staticmethod
     def pccg(self, soup, data_type):
         data = []
 

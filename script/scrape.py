@@ -14,7 +14,6 @@ from bs4 import BeautifulSoup as bs
 
 
 ### File Imports
-# from funcs_general import ???
 from Extract import Extract
 from SQL import SQL
 
@@ -32,7 +31,7 @@ url = "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-dri
 # ./scrape.py PCCG HDD
 
 ### PREP DRIVER
-# TODO: Separate into function
+# TODO: Separate into class with error handling
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--ignore-certificate-errors')
 chrome_options.add_argument('--incognito')
@@ -65,4 +64,5 @@ MySQL.insert_into_hdd(test_data)
 MySQL.select_all_from_table("HDD")
 
 MySQL.close()
+exit(0)
 
