@@ -200,7 +200,7 @@ def sql_select_all_from_table(table_index):
 ### VARIABLES
 # "header" is not needed, and this one should be Chrome 95 anyway
 # header = {'User-Agent' : 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36'}
-url = "https://www.pccasegear.com/data_type/210_344/hard-drives-ssds/3-5-hard-drives"
+url = "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives"
 
 
 ### Check arguments
