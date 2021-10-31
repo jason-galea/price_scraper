@@ -88,7 +88,7 @@ def extract_pccg(soup, table_index):
         #         pass
 
         data.append({
-            "Time": time.strftime("%Y-%m-%d_%H:%M:%S")
+            "Time": time.strftime("%Y-%m-%d %H:%M:%S")
             , "Retailer": "PCCG"
             , "Title": p_title
             , "URL": p_url
@@ -147,9 +147,9 @@ def sql_insert_into_hdd(data):
 
     try:
         for x in data:
-            cursor.execute("INSERT INTO {} VALUES(\
-                {}, {}, {}, {}, {}, {}, {}, {}, {}, {}\
-            ))".format(data_type 
+            cursor.execute("INSERT INTO '{}' VALUES(\
+                '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}'\
+            )".format(data_type 
                 , x["Time"]
                 , x["Retailer"]
                 , x["Title"]
