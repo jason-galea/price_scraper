@@ -34,9 +34,11 @@ class Web:
         # chrome_options.add_argument("--disable-dev-shm-usage")
         driver = webdriver.Chrome(options=chrome_options)
         # driver.implicitly_wait(1)
+        print("Success: Launched webdriver for Chrome")
 
         # TODO: Use a match/case statement here to compare user inputs & handle unknown input
         driver.get(Web.URLs[str(site).lower()][str(category).lower()])
+        print("Success: Fetched HTML content of {}".format(driver.current_url))
 
         # Parse HTML content and return BS object
         return bs(driver.page_source, "html.parser")

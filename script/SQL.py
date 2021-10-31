@@ -26,19 +26,20 @@ class SQL:
             , database=self.DB
         )
         self.cursor = self.cnx.cursor()
+        print("Success: Connected to MySQL on {}".format(self.HOST))
 
     ### Functions
     def use_database(self):
         try:
             self.cursor.execute("USE {}".format(SQL.DB))
-            # cnx.database = SQL.DB
+            # self.cnx.database = SQL.DB
         except mysql.connector.Error as err:
             print("Failure: Database {} does not exist".format(SQL.DB))
             if err.errno == errorcode.ER_BAD_DB_ERROR:
                 SQL.create_database()
                 print("Success: Database {} created".format(SQL.DB))
-                # cursor.execute("USE {}".format(SQL.DB))
-                self.cnx.database = SQL.DB
+                self.cursor.execute("USE {}".format(SQL.DB))
+                # self.cnx.database = SQL.DB
             else:
                 print(err.msg) # This error would be non-specific, so I can't describe it beforehand
                 exit(1)

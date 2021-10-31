@@ -27,7 +27,6 @@ soup = Web.GetPage("PCCG", "HDD")
 
 ### Create SQL object (which opens the connection)
 MySQL = SQL()
-print("Success: Connected to MySQL on {}".format(MySQL.HOST))
 
 MySQL.use_database()
 
