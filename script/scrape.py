@@ -6,8 +6,9 @@ from typing import Dict
 from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup as bs
+
 import mysql.connector
-from mysql.connector import Error as err
+import mysql.connector.errors as err
 from mysql.connector import errorcode
 
 
@@ -116,7 +117,7 @@ def sql_create_database(cursor):
         cursor.execute("CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
         print("Success: Created database {}".format(SQL_DB))
     except err:
-        print("Failure: Could not create database: \n{}".format(err))
+        print("Failure: Could not create database: \n{}".format(err.msg))
         exit(1)
 
 def sql_drop_tables(cursor):
@@ -129,7 +130,7 @@ def sql_drop_tables(cursor):
 
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
     except err:
-        print("Failure: Could not drop tables: \n{}".format(err))
+        print("Failure: Could not drop tables: \n{}".format(err.msg))
         exit(1)
 
 def sql_create_table(cursor, table_index):
@@ -137,7 +138,7 @@ def sql_create_table(cursor, table_index):
         cursor.execute("CREATE TABLE {} ({})".format(SQL_TABLE_NAMES[table_index], SQL_TABLE_SCHEMAS[table_index]))
         print("Success: Created table {}".format(SQL_TABLE_NAMES[table_index]))
     except err:
-        print("Failure: Could not create table {}: \n{}".format(SQL_TABLE_NAMES[table_index], err))
+        print("Failure: Could not create table {}: \n{}".format(SQL_TABLE_NAMES[table_index], err.msg))
         exit(1)
 
 def sql_insert_into_hdd(data):
@@ -227,7 +228,7 @@ except mysql.connector.Error as err:
         # cursor.execute("USE {}".format(SQL_DB))
         cnx.database = SQL_DB
     else:
-        print(err) # This error would be non-specific, so I can't describe it beforehand
+        print(err.msg) # This error would be non-specific, so I can't describe it beforehand
         exit(1)
 print("Success: Now using database {}".format(SQL_DB))
 
