@@ -88,7 +88,7 @@ def extract_pccg(soup, table_index):
         #         pass
 
         data.append({
-            "Time": str(time.strftime("%Y-%m-%d %H:%M:%S"))
+            "Time": time.strftime("%Y-%m-%d_%H:%M:%S")
             , "Retailer": "PCCG"
             , "Title": p_title
             , "URL": p_url
@@ -103,9 +103,9 @@ def extract_pccg(soup, table_index):
 
     # Just sign-posting a lil' bit
     print("Success: Extracted data from PCCG {} webpage".format(data_type))
-    print()
-    print(data)
-    print()
+    # print()
+    # print(data)
+    # print()
 
     return data
 
@@ -144,31 +144,6 @@ def sql_insert_into_hdd(data):
     # Accepts an array of dicts
     # Each dict is one row
     data_type = "HDD" # AKA. table name
-
-    ### Table Schema
-    # "Time DATETIME, \
-    # Retailer varchar(255), \
-    # Title varchar(255), \
-    # URL varchar(255), \
-    # PriceAUD int, \
-    # Brand varchar(255), \
-    # Series varchar(255), \
-    # ModelNumber varchar(255) \
-    # HDDCapacity int, \
-    # HDDPricePerTB int"
-
-    ### Results Array
-    # "Time": time.strftime("%Y-%m-%d %H:%M:%S")
-    # , "Retailer": "PCCG"
-    # , "Title": p_title
-    # , "URL": p_url
-    # # , "IncompleteDescription": p_incomplete_desc
-    # , "PriceAUD": p_price_aud
-    # , "Brand": p_brand
-    # , "Series": p_series
-    # , "ModelNumber": p_model_number
-    # , "HDDCapacity": p_hdd_capacity
-    # , "HDDPricePerTB": p_hdd_price_per_tb
 
     try:
         for x in data:
@@ -258,7 +233,7 @@ print("Success: Now using database {}".format(SQL_DB))
 
 # Drop all tables
 # TODO: Make this conditional
-sql_drop_tables(cursor)
+# sql_drop_tables(cursor)
 
 # Create tables
 # TODO: Make this a loop, when the schemas for other tables are complete
