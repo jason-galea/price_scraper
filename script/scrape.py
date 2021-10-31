@@ -50,19 +50,19 @@ soup = bs(driver.page_source, "html.parser")
 
 ### Create SQL object (which opens the connection)
 MySQL = SQL()
-print("Success: Connected to MySQL on {}".format(SQL.HOST))
+print("Success: Connected to MySQL on {}".format(MySQL.HOST))
 
-SQL.use_database()
+MySQL.use_database()
 
 # TODO: Make this conditional
-SQL.drop_tables()
+MySQL.drop_tables()
 
-SQL.create_tables()
+MySQL.create_tables()
 
 test_data = Extract.pccg(soup, "HDD")
-SQL.insert_into_hdd(test_data)
+MySQL.insert_into_hdd(test_data)
 
-SQL.select_all_from_table("HDD")
+MySQL.select_all_from_table("HDD")
 
-SQL.close()
+MySQL.close()
 
