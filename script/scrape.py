@@ -17,7 +17,7 @@ SQL_HOST = "localhost"
 SQL_USER = "scraper"
 SQL_PASS = "Password##123"
 SQL_DB = "PriceScraper"
-SQL_TABLE_NAMES = ["HDD", "CPU", "GPU"]
+SQL_TABLE_NAMES = ["HDD", "CPU", "GPU"] # AKA. data types/categories
 SQL_TABLE_SCHEMAS = [
     "Time DATETIME\
     , Retailer varchar(255)\
@@ -40,8 +40,10 @@ SQL_TABLE_SCHEMAS = [
 # extract_functions.py
 # sql_functions.py
 
-def extract_pccg(soup, data_type):
+def extract_pccg(soup, table_index):
     data = []
+    data_type = SQL_TABLE_NAMES[table_index]
+
     for product in soup.find_all('div', class_="product-container"):
         
         ### Common attributes
@@ -56,7 +58,6 @@ def extract_pccg(soup, data_type):
         # p_incomplete_desc_array = p_incomplete_desc.split()
         p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
         p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2) # Round to two decimal places
-
 
         # Brand/Series/Model fuckery, extrapolated from Title
         if p_title_array[0] == "Western":
@@ -79,10 +80,10 @@ def extract_pccg(soup, data_type):
         # HDD Capacity is unique
 
         # match data_type:
-        #     case "HDD" or "hdd":
+        #     case "HDD":
         #         p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
         #         p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2)
-        #     case _:
+        #     case _: # Default case
         #         pass
 
         data.append({
@@ -101,6 +102,7 @@ def extract_pccg(soup, data_type):
 
     # Just sign-posting a lil' bit
     print("Success: Extracted data from PCCG {} webpage".format(data_type))
+    print("\n" + data + "\n")
 
     return data
 
@@ -215,7 +217,7 @@ driver = webdriver.Chrome(options=options)
 # driver.implicitly_wait(1)
 driver.get(url)
 
-# Hand content to BS
+# Hand page content to BS
 soup = bs(driver.page_source, "html.parser")
 
 
@@ -254,15 +256,15 @@ sql_drop_tables(cursor)
 
 # Create tables
 # TODO: Make this a loop, when the schemas for other tables are complete
-sql_create_table(cursor, 0) # 0 = "HDD"
+sql_create_table(cursor, 0)
 
 # Extract & insert data into table
 test_data = extract_pccg(soup, 0)
-sql_insert_into_hdd(test_data) # 0 = "HDD"
+sql_insert_into_hdd(test_data)
 
 
 ### PRINT DATA
-sql_select_all_from_table(0) # 0 = "HDD"
+sql_select_all_from_table(0)
 
 
 ### Close SQL connection
