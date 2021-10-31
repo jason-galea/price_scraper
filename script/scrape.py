@@ -109,10 +109,9 @@ def sql_create_database(cursor):
         # No need for "IF NOT EXISTS", because this function is only called to OVERWRITE a corrupt DB? I think?
         # cursor.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
         cursor.execute("CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
-        cursor.execute("USE {}".format(SQL_DB))
-        print("Successfully created & entered database {}".format(SQL_DB))
+        print("Successfully created database {}".format(SQL_DB))
     except err:
-        print("Failed creating database: \n{}".format(err))
+        print("Failed to create database: \n{}".format(err.msg))
         exit(1)
 
 def sql_drop_tables(cursor):
@@ -125,14 +124,14 @@ def sql_drop_tables(cursor):
 
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
     except err:
-        print("Failed dropping tables: \n{}".format(err))
+        print("Failed dropping tables: \n{}".format(err.msg))
         exit(1)
 
 def sql_create_table(cursor, table_index):
     try:
         cursor.execute("CREATE TABLE {} ({})".format(SQL_TABLE_NAMES[table_index], SQL_TABLE_SCHEMAS[table_index]))
     except err:
-        print("Failed to create table \"{}\": \n{}".format(SQL_TABLE_NAMES[table_index], err))
+        print("Failed to create table {}: \n{}".format(SQL_TABLE_NAMES[table_index], err.msg))
         exit(1)
 
 def sql_insert_into_hdd(data):
@@ -185,7 +184,7 @@ def sql_insert_into_hdd(data):
             print("Successfully inserted data into table {}".format(data_type))
 
     except err:
-        print("Failed to insert data into HDD table: \n{}".format(err))
+        print("Failed to insert data into HDD table: \n{}".format(err.msg))
         exit(1)
 
 def sql_select_all_from_table(table_index):
@@ -247,6 +246,7 @@ except mysql.connector.Error as err:
     else:
         print(err) # This error would be non-specific, so I can't describe it beforehand
         exit(1)
+print("Now using database {}".format(SQL_DB))
 
 # Drop all tables
 # TODO: Make this conditional
