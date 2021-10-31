@@ -213,6 +213,12 @@ options = webdriver.ChromeOptions()
 options.add_argument('--ignore-certificate-errors')
 options.add_argument('--incognito')
 options.add_argument('--headless')
+# Trying to fix the following errors:
+# selenium.common.exceptions.WebDriverException: Message: unknown error: session deleted because of page crash
+# from unknown error: cannot determine loading status
+# from tab crashed
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
 driver = webdriver.Chrome(options=options)
 # driver.implicitly_wait(1)
 driver.get(url)
