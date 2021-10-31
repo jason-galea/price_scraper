@@ -151,10 +151,6 @@ driver.get(url)
 soup = bs(driver.page_source, "html.parser")
 
 
-### Extract data
-pccg_hdd_data = extract_pccg(soup, "HDD")
-
-
 ### Insert data into database
 # https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html
 # TODO:
@@ -187,7 +183,12 @@ sql_drop_tables(cnx)
 ### Create HDD table
 sql_create_table(cnx, "HDDs")
 
+
+### Extract data
+pccg_hdd_data = extract_pccg(soup, "HDD")
+
 ### Insert into table
+# sql_insert()
 
 
 
