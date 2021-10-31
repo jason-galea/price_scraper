@@ -102,7 +102,9 @@ def extract_pccg(soup, table_index):
 
     # Just sign-posting a lil' bit
     print("Success: Extracted data from PCCG {} webpage".format(data_type))
-    print("\n" + data + "\n")
+    print()
+    print(data)
+    print()
 
     return data
 
