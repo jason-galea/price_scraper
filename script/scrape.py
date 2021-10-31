@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 ### Imports
+from logging import error
 import time
 from typing import Dict
 from selenium import webdriver
@@ -19,8 +20,8 @@ SQL_USER = "scraper"
 SQL_PASS = "Password##123"
 SQL_DB = "PriceScraper"
 SQL_TABLE_NAMES = ["HDD", "SSD", "CPU", "GPU"] # AKA. data types/categories
-SQL_TABLE_SCHEMAS = [
-    "Time DATETIME\
+SQL_TABLE_SCHEMAS = {
+    "HDD": "Time DATETIME\
     , Retailer varchar(255)\
     , Title varchar(255)\
     , URL varchar(255)\
@@ -30,10 +31,10 @@ SQL_TABLE_SCHEMAS = [
     , ModelNumber varchar(255)\
     , HDDCapacity int\
     , HDDPricePerTB int"
-    , "" # TODO: Create SSD schema
-    , "" # TODO: Create CPU schema
-    , "" # TODO: Create GPU schema
-]
+    , "SSD": "" # TODO: Create SSD schema
+    , "CPU": "" # TODO: Create CPU schema
+    , "GPU": "" # TODO: Create GPU schema
+}
 
 
 ### Functions
@@ -133,13 +134,17 @@ def sql_drop_tables(cursor):
         print("Failure: Could not drop tables: \n{}".format(err.msg))
         exit(1)
 
-def sql_create_table(cursor, table_index):
-    try:
-        cursor.execute("CREATE TABLE {} ({})".format(SQL_TABLE_NAMES[table_index], SQL_TABLE_SCHEMAS[table_index]))
-        print("Success: Created table {}".format(SQL_TABLE_NAMES[table_index]))
-    except err:
-        print("Failure: Could not create table {}: \n{}".format(SQL_TABLE_NAMES[table_index], err.msg))
-        exit(1)
+def sql_create_tables(cursor):
+    for name in SQL_TABLE_NAMES:
+        try:
+            cursor.execute("CREATE TABLE {} ({})".format(name, SQL_TABLE_SCHEMAS[name]))
+            print("Success: Created table {}".format(name))
+        except err:
+            if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+                print("Warning: Table {} already exists".format(name))
+            else:
+                print("Failure: Could not create table {}: \n{}".format(name, err.msg))
+                # exit(1)
 
 def sql_insert_into_hdd(data):
     # Accepts an array of dicts
@@ -238,7 +243,7 @@ print("Success: Now using database {}".format(SQL_DB))
 
 # Create tables
 # TODO: Make this a loop, when the schemas for other tables are complete
-sql_create_table(cursor, 0)
+sql_create_tables(cursor)
 
 # Extract & insert data into table
 test_data = extract_pccg(soup, 0)
