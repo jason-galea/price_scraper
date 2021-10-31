@@ -19,16 +19,16 @@ SQL_PASS = "Password##123"
 SQL_DB = "PriceScraper"
 SQL_TABLE_NAMES = ["HDD", "CPU", "GPU"]
 SQL_TABLE_SCHEMAS = [
-    "Time DATETIME, \
-    Retailer varchar(255), \
-    Title varchar(255), \
-    URL varchar(255), \
-    PriceAUD int, \
-    Brand varchar(255), \
-    Series varchar(255), \
-    ModelNumber varchar(255) \
-    HDDCapacity int, \
-    HDDPricePerTB int"
+    "Time DATETIME\
+    , Retailer varchar(255)\
+    , Title varchar(255)\
+    , URL varchar(255)\
+    , PriceAUD int\
+    , Brand varchar(255)\
+    , Series varchar(255)\
+    , ModelNumber varchar(255)\
+    , HDDCapacity int\
+    , HDDPricePerTB int"
     , "" # TODO: Create CPU schema
     , "" # TODO: Create GPU schema
 ]
@@ -120,7 +120,7 @@ def sql_drop_tables(cursor):
 
         for name in SQL_TABLE_NAMES:
             cursor.execute("DROP TABLE IF EXISTS {}".format(name))
-            print("Successfully dropped table {}".format(name))
+            print("Successfully dropped table {}".format(name)) # Will "succeed" even if table was already dropped.
 
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
     except err:
@@ -217,10 +217,8 @@ driver.get(url)
 soup = bs(driver.page_source, "html.parser")
 
 
-### Insert data into database
-# https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html
-# TODO: Decide whether or not to combine data extraction & database insertion
 
+### https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html
 # Create connection
 cnx = mysql.connector.connect(
     host=SQL_HOST
