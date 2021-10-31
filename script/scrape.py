@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 ### Imports
+import time
 from typing import Dict
 from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
@@ -14,15 +15,16 @@ SQL_USER = "scraper"
 SQL_PASS = "Password##123"
 SQL_DB = "PriceScraper"
 SQL_TABLES = {
-    "HDD": "Retailer varchar(255), \
+    "HDD": "Time DATETIME, \
+    Retailer varchar(255), \
     Title varchar(255), \
     URL varchar(255), \
     PriceAUD int, \
-    HDDCapacity int, \
-    HDDPricePerTB int, \
     Brand varchar(255), \
     Series varchar(255), \
-    ModelNumber varchar(255)"
+    ModelNumber varchar(255) \
+    HDDCapacity int, \
+    HDDPricePerTB int"
     , "CPU": "" # TODO: Create CPU schema
     , "GPU": "" # TODO: Create GPU schema
 }
@@ -82,18 +84,17 @@ def extract_pccg(soup, data_type):
         #         pass
 
         data.append({
-            # "DataType": data_type # Yes, this is duplicated accross all dicts. 
-            # , "Retailer": "PCCG"
-            "Retailer": "PCCG"
+            "Time": time.strftime("%Y-%m-%d %H:%M:%S")
+            , "Retailer": "PCCG"
             , "Title": p_title
             , "URL": p_url
             # , "IncompleteDescription": p_incomplete_desc
             , "PriceAUD": p_price_aud
-            , "HDDCapacity": p_hdd_capacity
-            , "HDDPricePerTB": p_hdd_price_per_tb
             , "Brand": p_brand
             , "Series": p_series
             , "ModelNumber": p_model_number
+            , "HDDCapacity": p_hdd_capacity
+            , "HDDPricePerTB": p_hdd_price_per_tb
         })
 
     # Just sign-posting a lil' bit
@@ -129,51 +130,54 @@ def sql_create_table(cnx, name):
         print("Failed to create table \"{}\": {}".format(name, err))
         exit(1)
 
-def sql_insert_into_hdd(data): # Accepts an array of dicts
-    # TODO:
-    # Make this function generic
-    # 1. Insert common attributes first
-    # 2. Case/match statement on "data_type"
-    # 3. Each match will insert the unique attributes for that data type
-    data_type = data[0]["DataType"] # Could grab "DataType" from any dict
+def sql_insert_into_hdd(data):
+    # Accepts an array of dicts
+    # Each dict is one row
+    data_type = "HDD" # AKA. table name
 
-    # "DataType": data_type # Yes, this is duplicated accross dicts. 
+    ### Table Schema
+    # "Time DATETIME, \
+    # Retailer varchar(255), \
+    # Title varchar(255), \
+    # URL varchar(255), \
+    # PriceAUD int, \
+    # Brand varchar(255), \
+    # Series varchar(255), \
+    # ModelNumber varchar(255) \
+    # HDDCapacity int, \
+    # HDDPricePerTB int"
+
+    ### Results Array
+    # "Time": time.strftime("%Y-%m-%d %H:%M:%S")
     # , "Retailer": "PCCG"
     # , "Title": p_title
     # , "URL": p_url
     # # , "IncompleteDescription": p_incomplete_desc
     # , "PriceAUD": p_price_aud
-    # , "HDDCapacity": p_hdd_capacity
-    # , "HDDPricePerTB": p_hdd_price_per_tb
     # , "Brand": p_brand
     # , "Series": p_series
     # , "ModelNumber": p_model_number
+    # , "HDDCapacity": p_hdd_capacity
+    # , "HDDPricePerTB": p_hdd_price_per_tb
 
     try:
         for x in data:
-            ### Insert common attributes
-            # For now just inserting them all at once
-            # No loop = Easier to split common & unique data later
+            cnx.execute("INSERT INTO {} VALUES(\
+                {}, {}, {}, {}, {}, {}, {}, {}, {}, {}\
+            ))".format(data_type 
+                , x["Time"]
+                , x["Retailer"]
+                , x["Title"]
+                , x["URL"]
+                , x["PriceAUD"]
+                , x["Brand"]
+                , x["Series"]
+                , x["ModelNumber"]
+                , x["HDDCapacity"]
+                , x["HDDPricePerTB"]
+            ))
 
-            # I COULD loop and check "if (data_type not in dict_key)"
-            # Then for unique attributes "if (data_type in dict_key)"
-
-            cnx.execute("INSERT INTO {} ({}) VALUES ({}))".format(data_type, "Retailer", x["Retailer"]))
-
-            print("Successfully inserted common data into table {}".format(data_type))
-
-            #
-            # match data_type:
-            #     case "HDD":
-            #         sql_insert_unique_hdd()
-            # OR:
-            #     case "HDD":
-            #         cnx.execute("INSERT INTO {} ({}) VALUES ())".format(data_type))
-            #         cnx.execute("INSERT INTO {} ({}) VALUES ())".format(data_type))
-            # etc...
-            # print("Successfully inserted unique data into table {}".format(data_type))
-
-
+            print("Successfully inserted data into table {}".format(data_type))
 
     except err:
         print("Failed to insert data into HDD table: {}".format(err))
