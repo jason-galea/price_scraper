@@ -75,3 +75,5 @@ get_latest_config() {
     # Move PHP files to website root
     sudo mv ~/price_scraper/website/* /var/www/html/
 }
+
+# I'm starting to look forward to docker now :)
