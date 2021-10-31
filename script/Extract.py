@@ -9,7 +9,7 @@ from Table import Table
 
 class Extract:
     @staticmethod
-    def pccg(self, soup, data_type):
+    def pccg(soup, data_type):
         data = []
 
         for product in soup.find_all('div', class_="product-container"):
