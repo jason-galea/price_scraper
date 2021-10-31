@@ -17,8 +17,9 @@ SQL_HOST = "localhost"
 SQL_USER = "scraper"
 SQL_PASS = "Password##123"
 SQL_DB = "PriceScraper"
-SQL_TABLES = {
-    "HDD": "Time DATETIME, \
+SQL_TABLE_NAMES = ["HDD", "CPU", "GPU"]
+SQL_TABLE_SCHEMAS = [
+    "Time DATETIME, \
     Retailer varchar(255), \
     Title varchar(255), \
     URL varchar(255), \
@@ -28,9 +29,9 @@ SQL_TABLES = {
     ModelNumber varchar(255) \
     HDDCapacity int, \
     HDDPricePerTB int"
-    , "CPU": "" # TODO: Create CPU schema
-    , "GPU": "" # TODO: Create GPU schema
-}
+    , "" # TODO: Create CPU schema
+    , "" # TODO: Create GPU schema
+]
 
 
 ### Functions
@@ -117,20 +118,21 @@ def sql_create_database(cursor):
 def sql_drop_tables(cursor):
     try:
         cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
-        for i in len(SQL_TABLES):
-            table_name = list(SQL_TABLES)[i - 1] # This absolute horror is only to get the dict keys
-            cursor.execute("DROP TABLE IF EXISTS {}".format(table_name))
-            print("Successfully dropped table {}".format(table_name))
+
+        for name in SQL_TABLE_NAMES:
+            cursor.execute("DROP TABLE IF EXISTS {}".format(name))
+            print("Successfully dropped table {}".format(name))
+
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
     except err:
         print("Failed dropping tables: \n{}".format(err))
         exit(1)
 
-def sql_create_table(cursor, name):
+def sql_create_table(cursor, table_index):
     try:
-        cursor.execute("CREATE TABLE {} ({})".format(SQL_TABLES[name])) # Get table schema from dict
+        cursor.execute("CREATE TABLE {} ({})".format(SQL_TABLE_NAMES[table_index], SQL_TABLE_SCHEMAS[table_index]))
     except err:
-        print("Failed to create table \"{}\": \n{}".format(name, err))
+        print("Failed to create table \"{}\": \n{}".format(SQL_TABLE_NAMES[table_index], err))
         exit(1)
 
 def sql_insert_into_hdd(data):
@@ -186,7 +188,8 @@ def sql_insert_into_hdd(data):
         print("Failed to insert data into HDD table: \n{}".format(err))
         exit(1)
 
-def sql_select_all_from_table(name):
+def sql_select_all_from_table(table_index):
+    name = SQL_TABLE_NAMES[table_index]
     pass
 
 
@@ -251,14 +254,14 @@ sql_drop_tables(cursor)
 
 # Create tables
 # TODO: Make this a loop, when the schemas for other tables are complete
-sql_create_table(cursor, "HDD")
+sql_create_table(cursor, 0) # 0 = "HDD"
 
 # Extract & insert data into table
-sql_insert_into_hdd(extract_pccg(soup, "HDD"))
+sql_insert_into_hdd(extract_pccg(soup, 0)) # 0 = "HDD"
 
 
 ### PRINT DATA
-sql_select_all_from_table("HDD")
+sql_select_all_from_table(0) # 0 = "HDD"
 
 
 ### Close SQL connection
