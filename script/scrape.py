@@ -17,7 +17,7 @@ SQL_HOST = "localhost"
 SQL_USER = "scraper"
 SQL_PASS = "Password##123"
 SQL_DB = "PriceScraper"
-SQL_TABLE_NAMES = ["HDD", "CPU", "GPU"] # AKA. data types/categories
+SQL_TABLE_NAMES = ["HDD", "SSD", "CPU", "GPU"] # AKA. data types/categories
 SQL_TABLE_SCHEMAS = [
     "Time DATETIME\
     , Retailer varchar(255)\
@@ -29,6 +29,7 @@ SQL_TABLE_SCHEMAS = [
     , ModelNumber varchar(255)\
     , HDDCapacity int\
     , HDDPricePerTB int"
+    , "" # TODO: Create SSD schema
     , "" # TODO: Create CPU schema
     , "" # TODO: Create GPU schema
 ]
@@ -115,7 +116,7 @@ def sql_create_database(cursor):
         cursor.execute("CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
         print("Success: Created database {}".format(SQL_DB))
     except err:
-        print("Failure: Could not create database: \n{}".format(err.msg))
+        print("Failure: Could not create database: \n{}".format(err))
         exit(1)
 
 def sql_drop_tables(cursor):
@@ -128,7 +129,7 @@ def sql_drop_tables(cursor):
 
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
     except err:
-        print("Failure: Could not drop tables: \n{}".format(err.msg))
+        print("Failure: Could not drop tables: \n{}".format(err))
         exit(1)
 
 def sql_create_table(cursor, table_index):
@@ -136,7 +137,7 @@ def sql_create_table(cursor, table_index):
         cursor.execute("CREATE TABLE {} ({})".format(SQL_TABLE_NAMES[table_index], SQL_TABLE_SCHEMAS[table_index]))
         print("Success: Created table {}".format(SQL_TABLE_NAMES[table_index]))
     except err:
-        print("Failure: Could not create table {}: \n{}".format(SQL_TABLE_NAMES[table_index], err.msg))
+        print("Failure: Could not create table {}: \n{}".format(SQL_TABLE_NAMES[table_index], err))
         exit(1)
 
 def sql_insert_into_hdd(data):
@@ -189,7 +190,7 @@ def sql_insert_into_hdd(data):
             print("Success: Inserted data into table {}".format(data_type))
 
     except err:
-        print("Failure: Could not insert data into table {}: \n{}".format(data_type, err.msg))
+        print("Failure: Could not insert data into table {}: \n{}".format(data_type, err))
         exit(1)
 
 def sql_select_all_from_table(table_index):
@@ -251,7 +252,7 @@ except mysql.connector.Error as err:
         # cursor.execute("USE {}".format(SQL_DB))
         cnx.database = SQL_DB
     else:
-        print(err.msg) # This error would be non-specific, so I can't describe it beforehand
+        print(err) # This error would be non-specific, so I can't describe it beforehand
         exit(1)
 print("Success: Now using database {}".format(SQL_DB))
 
