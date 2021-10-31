@@ -137,7 +137,7 @@ def sql_drop_tables(cursor):
 def sql_create_tables(cursor):
     for name in SQL_TABLE_NAMES:
         try:
-            cursor.execute("CREATE TABLE {} ({})".format(name, SQL_TABLE_SCHEMAS[name]))
+            cursor.execute("CREATE TABLE IF NOT EXISTS {} ({})".format(name, SQL_TABLE_SCHEMAS[name]))
             print("Success: Created table {}".format(name))
         except err:
             if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
