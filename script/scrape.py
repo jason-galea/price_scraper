@@ -9,7 +9,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup as bs
 
 import mysql.connector
-import mysql.connector.errors as err
+# import mysql.connector.errors as err
 from mysql.connector import errorcode
 
 
@@ -117,7 +117,7 @@ def sql_create_database(cursor):
         # cursor.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
         cursor.execute("CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
         print("Success: Created database {}".format(SQL_DB))
-    except err:
+    except mysql.connector.Error as err:
         print("Failure: Could not create database: \n{}".format(err.msg))
         exit(1)
 
@@ -130,7 +130,7 @@ def sql_drop_tables(cursor):
             print("Success: Dropped table {}".format(name)) # Will "succeed" even if table was already dropped.
 
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
-    except err:
+    except mysql.connector.Error as err:
         print("Failure: Could not drop tables: \n{}".format(err.msg))
         exit(1)
 
@@ -139,7 +139,7 @@ def sql_create_tables(cursor):
         try:
             cursor.execute("CREATE TABLE IF NOT EXISTS {} ({})".format(name, SQL_TABLE_SCHEMAS[name]))
             print("Success: Created table {}".format(name))
-        except err:
+        except mysql.connector.Error as err:
             if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
                 print("Warning: Table {} already exists".format(name))
             else:
@@ -170,7 +170,7 @@ def sql_insert_into_hdd(data):
 
             print("Success: Inserted data into table {}".format(data_type))
 
-    except err:
+    except mysql.connector.Error as err:
         print("Failure: Could not insert data into table {}: \n{}".format(data_type, err.msg))
         exit(1)
 
