@@ -13,22 +13,8 @@ from mysql.connector import errorcode as err
 SQL_USER = "scraper"
 SQL_PASS = "Password##123"
 SQL_DB = "PriceScraper"
-# SQL_TABLE_NAMES = ["HDDs", "CPUs", "GPUs"]
-# SQL_TABLE_HDD = "CREATE TABLE HDDs ( \
-#     Retailer varchar(255), \
-#     Title varchar(255), \
-#     URL varchar(255), \
-#     PriceAUD int, \
-#     HDDCapacity int, \
-#     HDDPricePerTB int, \
-#     Brand varchar(255), \
-#     Series varchar(255), \
-#     ModelNumber varchar(255) \
-# )"
-
 SQL_TABLES = {
-    "HDDs": "CREATE TABLE HDDs ( \
-    Retailer varchar(255), \
+    "HDD": "Retailer varchar(255), \
     Title varchar(255), \
     URL varchar(255), \
     PriceAUD int, \
@@ -36,21 +22,21 @@ SQL_TABLES = {
     HDDPricePerTB int, \
     Brand varchar(255), \
     Series varchar(255), \
-    ModelNumber varchar(255) \
-    )"
-    , "CPUs": "TODO"
-    , "GPUs": "TODO"
+    ModelNumber varchar(255)"
+    , "CPU": "" # TODO: Create CPU schema
+    , "GPU": "" # TODO: Create GPU schema
 }
 
 
 ### Functions
-def extract_pccg(soup, category):
-    # TODO:
-    # Separate common & unique attribute extraction logic.
-    # Eg Title/price/URL are common attributes
-    # HDD Capacity is unique
+# TODO:
+# Seperate logic and functions by file:
+# scrape.py
+# extract_functions.py
+# sql_functions.py
 
-    result = []
+def extract_pccg(soup, data_type):
+    data = []
     for product in soup.find_all('div', class_="product-container"):
         
         ### Common attributes
@@ -64,7 +50,7 @@ def extract_pccg(soup, category):
         p_title_array = p_title.split()
         # p_incomplete_desc_array = p_incomplete_desc.split()
         p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
-        p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2)
+        p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2) # Round to two decimal places
 
 
         # Brand/Series/Model fuckery, extrapolated from Title
@@ -83,33 +69,43 @@ def extract_pccg(soup, category):
             p_series = p_title_array[1] # "Ironwolf"
             p_model_number = p_title_array[3] # "ST8000VN004"
         
-        ### Unique attributes
-        # match category:
-        #     case "HDD":
+        # TODO:
+        # Separate common & unique attribute extraction logic.
+        # Eg Title/price/URL are common attributes
+        # HDD Capacity is unique
+
+        # match data_type:
+        #     case "HDD" or "hdd":
         #         p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
         #         p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2)
         #     case _:
         #         pass
 
-        result.append({
-            "retailer": "PCCG"
-            , "title": p_title
-            , "url": p_url
-            # , "incomplete_description": p_incomplete_desc
-            , "price_aud": p_price_aud
-            , "hdd_capacity": p_hdd_capacity
-            , "hdd_price_per_tb": p_hdd_price_per_tb
-            , "brand": p_brand
-            , "series": p_series
-            , "model_number": p_model_number
+        data.append({
+            # "DataType": data_type # Yes, this is duplicated accross all dicts. 
+            # , "Retailer": "PCCG"
+            "Retailer": "PCCG"
+            , "Title": p_title
+            , "URL": p_url
+            # , "IncompleteDescription": p_incomplete_desc
+            , "PriceAUD": p_price_aud
+            , "HDDCapacity": p_hdd_capacity
+            , "HDDPricePerTB": p_hdd_price_per_tb
+            , "Brand": p_brand
+            , "Series": p_series
+            , "ModelNumber": p_model_number
         })
 
-    return result
+    # Just sign-posting a lil' bit
+    print("Successfully extracted data from PCCG {} webpage".format(data_type))
+
+    return data
 
 def sql_create_database(cnx):
     try:
         cnx.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
         cnx.execute("USE {}".format(SQL_DB))
+        print("Successfully created & entered database {}".format(SQL_DB))
     except err:
         print("Failed creating database: {}".format(err))
         exit(1)
@@ -118,7 +114,9 @@ def sql_drop_tables(cnx):
     try:
         cnx.execute("SET FOREIGN_KEY_CHECKS = 0")
         for i in len(SQL_TABLES):
-            cnx.execute("DROP TABLE IF EXISTS {}".format(list(SQL_TABLES)[i - 1])) # Get dict keys
+            table_name = list(SQL_TABLES)[i - 1] # This absolute horror is only to get the dict keys
+            cnx.execute("DROP TABLE IF EXISTS {}".format(table_name))
+            print("Successfully dropped table {}".format(table_name))
         cnx.execute("SET FOREIGN_KEY_CHECKS = 1")
     except err:
         print("Failed dropping tables: {}".format(err))
@@ -126,16 +124,76 @@ def sql_drop_tables(cnx):
 
 def sql_create_table(cnx, name):
     try:
-        cnx.execute("CREATE TABLE {} ({})".format(name, SQL_TABLES[name])) # Get table schema from dict
+        cnx.execute("CREATE TABLE {} ({})".format(SQL_TABLES[name])) # Get table schema from dict
     except err:
         print("Failed to create table \"{}\": {}".format(name, err))
         exit(1)
 
+def sql_insert_into_hdd(data): # Accepts an array of dicts
+    # TODO:
+    # Make this function generic
+    # 1. Insert common attributes first
+    # 2. Case/match statement on "data_type"
+    # 3. Each match will insert the unique attributes for that data type
+    data_type = data[0]["DataType"] # Could grab "DataType" from any dict
+
+    # "DataType": data_type # Yes, this is duplicated accross dicts. 
+    # , "Retailer": "PCCG"
+    # , "Title": p_title
+    # , "URL": p_url
+    # # , "IncompleteDescription": p_incomplete_desc
+    # , "PriceAUD": p_price_aud
+    # , "HDDCapacity": p_hdd_capacity
+    # , "HDDPricePerTB": p_hdd_price_per_tb
+    # , "Brand": p_brand
+    # , "Series": p_series
+    # , "ModelNumber": p_model_number
+
+    try:
+        for x in data:
+            ### Insert common attributes
+            # For now just inserting them all at once
+            # No loop = Easier to split common & unique data later
+
+            # I COULD loop and check "if (data_type not in dict_key)"
+            # Then for unique attributes "if (data_type in dict_key)"
+
+            cnx.execute("INSERT INTO {} ({}) VALUES ({}))".format(data_type, "Retailer", x["Retailer"]))
+
+            print("Successfully inserted common data into table {}".format(data_type))
+
+            #
+            # match data_type:
+            #     case "HDD":
+            #         sql_insert_unique_hdd()
+            # OR:
+            #     case "HDD":
+            #         cnx.execute("INSERT INTO {} ({}) VALUES ())".format(data_type))
+            #         cnx.execute("INSERT INTO {} ({}) VALUES ())".format(data_type))
+            # etc...
+            # print("Successfully inserted unique data into table {}".format(data_type))
+
+
+
+    except err:
+        print("Failed to insert data into HDD table: {}".format(err))
+        exit(1)
+
+def sql_select_all_from_table(name):
+    pass
+
 
 ### VARIABLES
+# "header" is not needed, and this one should be Chrome 95 anyway
 # header = {'User-Agent' : 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36'}
-url = "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives"
+url = "https://www.pccasegear.com/data_type/210_344/hard-drives-ssds/3-5-hard-drives"
 
+
+### Check arguments
+# TODO:
+# Allow arguments, eg:
+# ./scrape.py {website} {data_type}
+# ./scrape.py PCCG HDD
 
 ### PREP DRIVER
 # Start driver
@@ -156,7 +214,9 @@ soup = bs(driver.page_source, "html.parser")
 # TODO:
 # Decide whether or not to combine data extraction & database insertion
 
-### Create connection
+# Create connection
+# TODO:
+# Seperate into sql_connect() function
 try:
     cnx = connector.connect(
         host="localhost"
@@ -174,28 +234,22 @@ except err:
 else:
     cnx.close()
 
-### Create database
+# Create database
+# This function is ok to repeat on each execution, as it contains "IF NOT EXISTS"
 sql_create_database(cnx)
 
-### Drop all tables
+# Drop all tables
+# TODO:
+# Make this conditional
 sql_drop_tables(cnx)
 
-### Create HDD table
-sql_create_table(cnx, "HDDs")
+# Create HDD table
+sql_create_table(cnx, "HDD")
 
-
-### Extract data
-pccg_hdd_data = extract_pccg(soup, "HDD")
-
-### Insert into table
-# sql_insert()
-
-
+# Extract & insert data into table
+sql_insert_into_hdd(extract_pccg(soup, "HDD"))
 
 
 ### PRINT DATA
-for product in pccg_hdd_data:
-    for key, value in product.items():
-        print("{0} : {1}".format(key, value))
-    print()
+sql_select_all_from_table("HDD")
 

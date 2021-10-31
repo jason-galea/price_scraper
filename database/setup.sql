@@ -10,7 +10,7 @@
 -- SET FOREIGN_KEY_CHECKS = 1;
 
 -- Create tables
--- CREATE TABLE HDDs (
+-- CREATE TABLE HDD (
 --     Retailer varchar(255),
 --     Title varchar(255),
 --     URL varchar(255),

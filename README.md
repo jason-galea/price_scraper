@@ -5,4 +5,5 @@ Dependencies:
 - python 3.xx
 - selenium
 - beautifulsoup4
-- chromedriver in path
+- google-chrome-stable 95
+- chromedriver 95
