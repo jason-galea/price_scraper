@@ -51,16 +51,19 @@ database_prereqs() {
     sudo mysql
     # CREATE USER 'scraper'@'localhost' IDENTIFIED BY 'Password##123';
     # GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'scraper'@'localhost';
+    # OR:
+    # CREATE USER 'scraper'@'%' IDENTIFIED BY 'Password##123';
+    # GRANT ALL PRIVILEGES ON *.* TO 'scraper'@'%' WITH GRANT OPTION;
     # FLUSH PRIVILEGES;
     # exit
 
+    ### Allow remote access:
+    # /etc/mysql/mysql.conf.d/mysqld.cnf
+    # #bind-address           = 127.0.0.1
+    # bind-address           = 0.0.0.0
+
 }
 
-database_config() {
-    # TODO:
-    # Execute the contents of ./database/setup.sql
-    pass
-}
 
 website_prereqs() {
     sudo apt update 

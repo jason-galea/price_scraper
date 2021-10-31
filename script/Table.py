@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+### Static Class
 class Table:
     NAMES = ["HDD", "SSD", "CPU", "GPU"] # AKA. data types/categories
     SCHEMAS = {

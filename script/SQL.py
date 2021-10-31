@@ -11,10 +11,10 @@ from Table import Table
 
 class SQL:
     ### Static variables
-    HOST = "localhost"
-    # self.HOST = "10.1.1.160"
+    # HOST = "localhost"
+    HOST = "10.1.1.160"
     USER = "scraper"
-    PASS = "Password##123"
+    PASS = "Password##123" # Oh no!!!
     DB = "PriceScraper"
 
     ### Init

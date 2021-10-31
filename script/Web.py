@@ -6,7 +6,11 @@ from selenium import webdriver
 from bs4 import BeautifulSoup as bs
 
 
+### Static Class
 class Web:
+    # This is only meant to fetch a single page at a time, for now.
+    # If I need to fetch multiple pages, or navigate between pages, I'll split this up a lot more.
+
     URLs = {
         "pccg": {
             "hdd": "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives"
