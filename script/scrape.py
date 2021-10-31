@@ -126,7 +126,7 @@ def sql_drop_tables(cnx):
 
 def sql_create_table(cnx, name):
     try:
-        cnx.execute("{}".format(SQL_TABLES[name])) # Get table schema from dict
+        cnx.execute("CREATE TABLE {} ({})".format(name, SQL_TABLES[name])) # Get table schema from dict
     except err:
         print("Failed to create table \"{}\": {}".format(name, err))
         exit(1)
