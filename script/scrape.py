@@ -13,7 +13,16 @@ import mysql.connector
 from mysql.connector import errorcode
 
 
-### Constants
+### File Imports
+import funcs_general
+import funcs_extract
+import funcs_sql
+from script.funcs_extract import extract_pccg
+from script.funcs_sql import sql_create_database, sql_create_tables, sql_insert_into_hdd, sql_select_all_from_table
+
+
+### Globals
+global SQL_HOST, SQL_USER, SQL_PASS, SQL_DB, SQL_TABLE_NAMES, SQL_TABLE_SCHEMAS
 SQL_HOST = "localhost"
 # SQL_HOST = "10.1.1.160"
 SQL_USER = "scraper"
@@ -62,150 +71,6 @@ SQL_TABLE_SCHEMAS = {
         , Series varchar(255)\
         , ModelNumber varchar(255)"
 }
-
-
-### Functions
-# TODO: Seperate logic and functions by file:
-# scrape.py
-# extract_functions.py
-# sql_functions.py
-
-def extract_pccg(soup, table_index):
-    data = []
-    data_type = SQL_TABLE_NAMES[table_index]
-
-    for product in soup.find_all('div', class_="product-container"):
-        
-        ### Common attributes
-        # Data extracted from DOM
-        p_title = product.find_next("a", class_="product-title").string
-        p_url = product.find_next("a", class_="product-title").attrs["href"]
-        # p_incomplete_desc = product.find_next("p").string
-        p_price_aud = int(product.find_next("div", class_="price").string.strip("$")) # "$123" --> 123
-
-        # Data extrapolated from previous extraction
-        p_title_array = p_title.split()
-        # p_incomplete_desc_array = p_incomplete_desc.split()
-        p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
-        p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2) # Round to two decimal places
-
-        # Brand/Series/Model fuckery, extrapolated from Title
-        if p_title_array[0] == "Western":
-            p_brand = "Western Digital"
-            p_series = p_title_array[3] # "Blue"
-            if p_series == "Red": # Logic to handle multi-word series names
-                p_series += " " + p_title_array[4] # "Red Plus"
-                p_model_number = p_title_array[6] # "WD8001FZBX"
-            else:
-                # p_series is already correct
-                p_model_number = p_title_array[5]
-        
-        elif p_title_array[0] == "Seagate":
-            p_brand = "Seagate"
-            p_series = p_title_array[1] # "Ironwolf"
-            p_model_number = p_title_array[3] # "ST8000VN004"
-        
-        # TODO: Separate common & unique attribute extraction logic.
-        # Eg Title/price/URL are common attributes
-        # HDD Capacity is unique
-
-        # match data_type:
-        #     case "HDD":
-        #         p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
-        #         p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2)
-        #     case _: # Default case
-        #         pass
-
-        data.append({
-            "Time": time.strftime("%Y-%m-%d %H:%M:%S")
-            , "Retailer": "PCCG"
-            , "Title": p_title
-            , "URL": p_url
-            # , "IncompleteDescription": p_incomplete_desc
-            , "PriceAUD": p_price_aud
-            , "Brand": p_brand
-            , "Series": p_series
-            , "ModelNumber": p_model_number
-            , "HDDCapacity": p_hdd_capacity
-            , "HDDPricePerTB": p_hdd_price_per_tb
-        })
-
-    # Just sign-posting a lil' bit
-    print("Success: Extracted data from PCCG {} webpage".format(data_type))
-    # print()
-    # print(data)
-    # print()
-
-    return data
-
-def sql_create_database(cursor):
-    try:
-        # No need for "IF NOT EXISTS", because this function is only called to OVERWRITE a corrupt DB? I think?
-        # cursor.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
-        cursor.execute("CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
-        print("Success: Created database {}".format(SQL_DB))
-    except mysql.connector.Error as err:
-        print("Failure: Could not create database: \n{}".format(err.msg))
-        exit(1)
-
-def sql_drop_tables(cursor):
-    try:
-        cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
-
-        for name in SQL_TABLE_NAMES:
-            cursor.execute("DROP TABLE IF EXISTS {}".format(name))
-            print("Success: Dropped table {}".format(name)) # Will "succeed" even if table was already dropped.
-
-        cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
-    except mysql.connector.Error as err:
-        print("Failure: Could not drop tables: \n{}".format(err.msg))
-        exit(1)
-
-def sql_create_tables(cursor):
-    for name in SQL_TABLE_NAMES:
-        try:
-            cursor.execute("CREATE TABLE IF NOT EXISTS {} ({})".format(name, SQL_TABLE_SCHEMAS[name]))
-            print("Success: Created table {}".format(name))
-        except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
-                print("Warning: Table {} already exists".format(name))
-            else:
-                print("Failure: Could not create table {}: \n{}".format(name, err.msg))
-                # exit(1)
-
-def sql_insert_into_hdd(data):
-    # Accepts an array of dicts
-    # Each dict is one row
-    data_type = "HDD" # AKA. table name
-
-    try:
-        for x in data:
-            # I know this is redundant, but it greatly simplifies troubleshooting
-            insert_string = "INSERT INTO {} VALUES('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(
-                data_type 
-                , x["Time"]
-                , x["Retailer"]
-                , x["Title"]
-                , x["URL"]
-                , x["PriceAUD"]
-                , x["Brand"]
-                , x["Series"]
-                , x["ModelNumber"]
-                , x["HDDCapacity"]
-                , x["HDDPricePerTB"]
-            )
-            print("\nINSERT STRING:\n{}\n".format(insert_string))
-            cursor.execute(insert_string)
-
-            print("Success: Inserted data into table {}".format(data_type))
-
-    except mysql.connector.Error as err:
-        print("Failure: Could not insert data into table {}: \n{}".format(data_type, err.msg))
-        exit(1)
-
-def sql_select_all_from_table(table_index):
-    name = SQL_TABLE_NAMES[table_index]
-    pass
 
 
 ### VARIABLES
@@ -276,7 +141,7 @@ sql_create_tables(cursor)
 
 # Extract & insert data into table
 test_data = extract_pccg(soup, 0)
-sql_insert_into_hdd(test_data)
+sql_insert_into_hdd(cursor, test_data)
 
 
 ### PRINT DATA
