@@ -8,43 +8,21 @@ from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup as bs
 
-# import mysql.connector
-# import mysql.connector.errors as err
-# from mysql.connector import errorcode
-
 
 ### File Imports
 from Extract import Extract
 from SQL import SQL
-
-
-
-### Variables
-# "header" is not needed, and this one should be Chrome 95 anyway
-# header = {'User-Agent' : 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36'}
-url = "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives"
+from Web import Web
 
 
 ### Check arguments
 # TODO: Allow arguments, eg:
-# ./scrape.py {website} {data_type}
-# ./scrape.py PCCG HDD
+# $ ./scrape.py {website} {data_type}
+# $ ./scrape.py PCCG HDD
+# Each execution would extract data & insert into the appropriate table, then close
 
-### PREP DRIVER
-# TODO: Separate into class with error handling
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('--ignore-certificate-errors')
-chrome_options.add_argument('--incognito')
-chrome_options.add_argument('--headless')
-# https://stackoverflow.com/questions/53902507/unknown-error-session-deleted-because-of-page-crash-from-unknown-error-cannot
-chrome_options.add_argument("--no-sandbox")
-# chrome_options.add_argument("--disable-dev-shm-usage")
-driver = webdriver.Chrome(options=chrome_options)
-# driver.implicitly_wait(1)
-driver.get(url)
 
-# Hand page content to BS
-soup = bs(driver.page_source, "html.parser")
+soup = Web.GetPage("PCCG", "HDD")
 
 
 ### Create SQL object (which opens the connection)
@@ -59,7 +37,7 @@ MySQL.drop_tables()
 MySQL.create_tables()
 
 test_data = Extract.pccg(soup, "HDD")
-MySQL.insert_into_hdd(test_data)
+MySQL.InsertIntoTable.hdd(test_data, MySQL.cursor)
 
 MySQL.select_all_from_table("HDD")
 

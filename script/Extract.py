@@ -75,3 +75,6 @@ class Extract:
         # print()
 
         return data
+
+    def scorptec():
+        pass

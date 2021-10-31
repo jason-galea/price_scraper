@@ -86,36 +86,38 @@ class SQL:
     def close(self):
         self.cnx.close()
 
-
-### Child class
-class Insert(SQL):
     
-    def insert_into_hdd(self, data):
-        # Accepts an array of dicts
-        # Each dict is one row
-        data_type = "HDD" # AKA. table name
+    ### Child class
+    class InsertIntoTable:
+        @staticmethod
+        def hdd(data, cursor):
+            # Accepts an array of dicts
+            # Each dict is one row
+            data_type = "HDD" # AKA. table name
 
-        try:
-            for x in data:
-                # I know this is redundant, but it greatly simplifies troubleshooting
-                insert_string = "INSERT INTO {} VALUES('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(
-                    data_type 
-                    , x["Time"]
-                    , x["Retailer"]
-                    , x["Title"]
-                    , x["URL"]
-                    , x["PriceAUD"]
-                    , x["Brand"]
-                    , x["Series"]
-                    , x["ModelNumber"]
-                    , x["HDDCapacity"]
-                    , x["HDDPricePerTB"]
-                )
-                print("\nINSERT STRING:\n{}\n".format(insert_string))
+            try:
+                for x in data:
+                    # I know this is redundant, but it greatly simplifies troubleshooting
+                    insert_string = "INSERT INTO {} VALUES('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(
+                        data_type 
+                        , x["Time"]
+                        , x["Retailer"]
+                        , x["Title"]
+                        , x["URL"]
+                        , x["PriceAUD"]
+                        , x["Brand"]
+                        , x["Series"]
+                        , x["ModelNumber"]
+                        , x["HDDCapacity"]
+                        , x["HDDPricePerTB"]
+                    )
+                    print("\nINSERT STRING:\n{}\n".format(insert_string))
 
-                self.cursor.execute(insert_string)
-                print("Success: Inserted data into table {}".format(data_type))
+                    cursor.execute(insert_string)
+                    print("Success: Inserted data into table {}".format(data_type))
 
-        except mysql.connector.Error as err:
-            print("Failure: Could not insert data into table {}: \n{}".format(data_type, err.msg))
-            exit(1)
+            except mysql.connector.Error as err:
+                print("Failure: Could not insert data into table {}: \n{}".format(data_type, err.msg))
+                exit(1)
+
+
