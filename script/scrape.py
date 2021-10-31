@@ -209,17 +209,14 @@ url = "https://www.pccasegear.com/data_type/210_344/hard-drives-ssds/3-5-hard-dr
 ### PREP DRIVER
 # TODO: Separate into function
 # Start driver
-options = webdriver.ChromeOptions()
-options.add_argument('--ignore-certificate-errors')
-options.add_argument('--incognito')
-options.add_argument('--headless')
-# Trying to fix the following errors:
-# selenium.common.exceptions.WebDriverException: Message: unknown error: session deleted because of page crash
-# from unknown error: cannot determine loading status
-# from tab crashed
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-driver = webdriver.Chrome(options=options)
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--ignore-certificate-errors')
+chrome_options.add_argument('--incognito')
+chrome_options.add_argument('--headless')
+# https://stackoverflow.com/questions/53902507/unknown-error-session-deleted-because-of-page-crash-from-unknown-error-cannot
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+driver = webdriver.Chrome(options=chrome_options)
 # driver.implicitly_wait(1)
 driver.get(url)
 
