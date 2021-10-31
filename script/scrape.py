@@ -6,11 +6,14 @@ from typing import Dict
 from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup as bs
-from mysql import connector
-from mysql.connector import errorcode as err
+import mysql.connector
+from mysql.connector import Error as err
+from mysql.connector import errorcode
 
 
 ### Constants
+# SQL_HOST = "localhost"
+SQL_HOST = "10.1.160"
 SQL_USER = "scraper"
 SQL_PASS = "Password##123"
 SQL_DB = "PriceScraper"
@@ -31,8 +34,7 @@ SQL_TABLES = {
 
 
 ### Functions
-# TODO:
-# Seperate logic and functions by file:
+# TODO: Seperate logic and functions by file:
 # scrape.py
 # extract_functions.py
 # sql_functions.py
@@ -71,8 +73,7 @@ def extract_pccg(soup, data_type):
             p_series = p_title_array[1] # "Ironwolf"
             p_model_number = p_title_array[3] # "ST8000VN004"
         
-        # TODO:
-        # Separate common & unique attribute extraction logic.
+        # TODO: Separate common & unique attribute extraction logic.
         # Eg Title/price/URL are common attributes
         # HDD Capacity is unique
 
@@ -102,32 +103,34 @@ def extract_pccg(soup, data_type):
 
     return data
 
-def sql_create_database(cnx):
+def sql_create_database(cursor):
     try:
-        cnx.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
-        cnx.execute("USE {}".format(SQL_DB))
+        # No need for "IF NOT EXISTS", because this function is only called to OVERWRITE a corrupt DB? I think?
+        # cursor.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
+        cursor.execute("CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
+        cursor.execute("USE {}".format(SQL_DB))
         print("Successfully created & entered database {}".format(SQL_DB))
     except err:
-        print("Failed creating database: {}".format(err))
+        print("Failed creating database: \n{}".format(err))
         exit(1)
 
-def sql_drop_tables(cnx):
+def sql_drop_tables(cursor):
     try:
-        cnx.execute("SET FOREIGN_KEY_CHECKS = 0")
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
         for i in len(SQL_TABLES):
             table_name = list(SQL_TABLES)[i - 1] # This absolute horror is only to get the dict keys
-            cnx.execute("DROP TABLE IF EXISTS {}".format(table_name))
+            cursor.execute("DROP TABLE IF EXISTS {}".format(table_name))
             print("Successfully dropped table {}".format(table_name))
-        cnx.execute("SET FOREIGN_KEY_CHECKS = 1")
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
     except err:
-        print("Failed dropping tables: {}".format(err))
+        print("Failed dropping tables: \n{}".format(err))
         exit(1)
 
-def sql_create_table(cnx, name):
+def sql_create_table(cursor, name):
     try:
-        cnx.execute("CREATE TABLE {} ({})".format(SQL_TABLES[name])) # Get table schema from dict
+        cursor.execute("CREATE TABLE {} ({})".format(SQL_TABLES[name])) # Get table schema from dict
     except err:
-        print("Failed to create table \"{}\": {}".format(name, err))
+        print("Failed to create table \"{}\": \n{}".format(name, err))
         exit(1)
 
 def sql_insert_into_hdd(data):
@@ -162,7 +165,7 @@ def sql_insert_into_hdd(data):
 
     try:
         for x in data:
-            cnx.execute("INSERT INTO {} VALUES(\
+            cursor.execute("INSERT INTO {} VALUES(\
                 {}, {}, {}, {}, {}, {}, {}, {}, {}, {}\
             ))".format(data_type 
                 , x["Time"]
@@ -180,7 +183,7 @@ def sql_insert_into_hdd(data):
             print("Successfully inserted data into table {}".format(data_type))
 
     except err:
-        print("Failed to insert data into HDD table: {}".format(err))
+        print("Failed to insert data into HDD table: \n{}".format(err))
         exit(1)
 
 def sql_select_all_from_table(name):
@@ -194,8 +197,7 @@ url = "https://www.pccasegear.com/data_type/210_344/hard-drives-ssds/3-5-hard-dr
 
 
 ### Check arguments
-# TODO:
-# Allow arguments, eg:
+# TODO: Allow arguments, eg:
 # ./scrape.py {website} {data_type}
 # ./scrape.py PCCG HDD
 
@@ -215,40 +217,41 @@ soup = bs(driver.page_source, "html.parser")
 
 ### Insert data into database
 # https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html
-# TODO:
-# Decide whether or not to combine data extraction & database insertion
+# TODO: Decide whether or not to combine data extraction & database insertion
 
 # Create connection
-# TODO:
-# Seperate into sql_connect() function
-try:
-    cnx = connector.connect(
-        host="localhost"
-        , user=SQL_USER
-        , password=SQL_PASS
-        , database=SQL_DB
-    )
-except err:
-    if err.errno == err.ER_ACCESS_DENIED_ERROR:
-        print("Something is wrong with your user name or password")
-    elif err.errno == err.ER_BAD_DB_ERROR:
-        print("Database does not exist")
-    else:
-        print(err)
-else:
-    cnx.close()
+cnx = mysql.connector.connect(
+    host=SQL_DB
+    , user=SQL_USER
+    , password=SQL_PASS
+    , database=SQL_DB
+)
+cursor = cnx.cursor()
+print("Successfully connected to MySQL host \"{}\", on database \"{}\"".format(SQL_HOST, SQL_DB))
 
-# Create database
-# This function is ok to repeat on each execution, as it contains "IF NOT EXISTS"
-sql_create_database(cnx)
+
+# Use/create database
+try:
+    cursor.execute("USE {}".format(SQL_DB))
+    # cnx.database = SQL_DB
+except mysql.connector.Error as err:
+    print("Database {} does not exists.".format(SQL_DB))
+    if err.errno == errorcode.ER_BAD_DB_ERROR:
+        sql_create_database(cursor)
+        print("Database {} created successfully.".format(SQL_DB))
+        # cursor.execute("USE {}".format(SQL_DB))
+        cnx.database = SQL_DB
+    else:
+        print(err) # This error would be non-specific, so I can't describe it beforehand
+        exit(1)
 
 # Drop all tables
-# TODO:
-# Make this conditional
-sql_drop_tables(cnx)
+# TODO: Make this conditional
+sql_drop_tables(cursor)
 
-# Create HDD table
-sql_create_table(cnx, "HDD")
+# Create tables
+# TODO: Make this a loop, when the schemas for other tables are complete
+sql_create_table(cursor, "HDD")
 
 # Extract & insert data into table
 sql_insert_into_hdd(extract_pccg(soup, "HDD"))
@@ -256,4 +259,8 @@ sql_insert_into_hdd(extract_pccg(soup, "HDD"))
 
 ### PRINT DATA
 sql_select_all_from_table("HDD")
+
+
+### Close SQL connection
+cnx.close()
 
