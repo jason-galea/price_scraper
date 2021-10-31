@@ -12,8 +12,8 @@ from mysql.connector import errorcode
 
 
 ### Constants
-# SQL_HOST = "localhost"
-SQL_HOST = "10.1.160"
+SQL_HOST = "localhost"
+# SQL_HOST = "10.1.1.160"
 SQL_USER = "scraper"
 SQL_PASS = "Password##123"
 SQL_DB = "PriceScraper"
@@ -221,7 +221,7 @@ soup = bs(driver.page_source, "html.parser")
 
 # Create connection
 cnx = mysql.connector.connect(
-    host=SQL_DB
+    host=SQL_HOST
     , user=SQL_USER
     , password=SQL_PASS
     , database=SQL_DB
