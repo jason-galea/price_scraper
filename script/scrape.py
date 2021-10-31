@@ -88,7 +88,7 @@ def extract_pccg(soup, table_index):
         #         pass
 
         data.append({
-            "Time": time.strftime("%Y-%m-%d %H:%M:%S")
+            "Time": str(time.strftime("%Y-%m-%d %H:%M:%S"))
             , "Retailer": "PCCG"
             , "Title": p_title
             , "URL": p_url
@@ -190,7 +190,7 @@ def sql_insert_into_hdd(data):
             print("Success: Inserted data into table {}".format(data_type))
 
     except err:
-        print("Failure: Could not insert data into table {}: \n{}".format(data_type, err))
+        print("Failure: Could not insert data into table {}: \n{}".format(data_type, err.msg))
         exit(1)
 
 def sql_select_all_from_table(table_index):
