@@ -10,14 +10,15 @@ from Table import Table
 
 
 class SQL:
+    ### Static variables
+    HOST = "localhost"
+    # self.HOST = "10.1.1.160"
+    USER = "scraper"
+    PASS = "Password##123"
+    DB = "PriceScraper"
+
     ### Init
     def __init__(self) -> None:
-        self.HOST = "localhost"
-        # self.HOST = "10.1.1.160"
-        self.USER = "scraper"
-        self.PASS = "Password##123"
-        self.DB = "PriceScraper"
-
         self.cnx = mysql.connector.connect(
             host=self.HOST
             , user=self.USER
