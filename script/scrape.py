@@ -100,7 +100,7 @@ def extract_pccg(soup, data_type):
         })
 
     # Just sign-posting a lil' bit
-    print("Successfully extracted data from PCCG {} webpage".format(data_type))
+    print("Success: Extracted data from PCCG {} webpage".format(data_type))
 
     return data
 
@@ -109,9 +109,9 @@ def sql_create_database(cursor):
         # No need for "IF NOT EXISTS", because this function is only called to OVERWRITE a corrupt DB? I think?
         # cursor.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
         cursor.execute("CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(SQL_DB))
-        print("Successfully created database {}".format(SQL_DB))
+        print("Success: Created database {}".format(SQL_DB))
     except err:
-        print("Failed to create database: \n{}".format(err.msg))
+        print("Failure: Could not create database: \n{}".format(err.msg))
         exit(1)
 
 def sql_drop_tables(cursor):
@@ -120,18 +120,19 @@ def sql_drop_tables(cursor):
 
         for name in SQL_TABLE_NAMES:
             cursor.execute("DROP TABLE IF EXISTS {}".format(name))
-            print("Successfully dropped table {}".format(name)) # Will "succeed" even if table was already dropped.
+            print("Success: Dropped table {}".format(name)) # Will "succeed" even if table was already dropped.
 
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
     except err:
-        print("Failed dropping tables: \n{}".format(err.msg))
+        print("Failure: Could not drop tables: \n{}".format(err.msg))
         exit(1)
 
 def sql_create_table(cursor, table_index):
     try:
         cursor.execute("CREATE TABLE {} ({})".format(SQL_TABLE_NAMES[table_index], SQL_TABLE_SCHEMAS[table_index]))
+        print("Success: Created table {}".format(SQL_TABLE_NAMES[table_index]))
     except err:
-        print("Failed to create table {}: \n{}".format(SQL_TABLE_NAMES[table_index], err.msg))
+        print("Failure: Could not create table {}: \n{}".format(SQL_TABLE_NAMES[table_index], err.msg))
         exit(1)
 
 def sql_insert_into_hdd(data):
@@ -181,10 +182,10 @@ def sql_insert_into_hdd(data):
                 , x["HDDPricePerTB"]
             ))
 
-            print("Successfully inserted data into table {}".format(data_type))
+            print("Success: Inserted data into table {}".format(data_type))
 
     except err:
-        print("Failed to insert data into HDD table: \n{}".format(err.msg))
+        print("Failure: Could not insert data into table {}: \n{}".format(data_type, err.msg))
         exit(1)
 
 def sql_select_all_from_table(table_index):
@@ -204,6 +205,7 @@ url = "https://www.pccasegear.com/data_type/210_344/hard-drives-ssds/3-5-hard-dr
 # ./scrape.py PCCG HDD
 
 ### PREP DRIVER
+# TODO: Separate into function
 # Start driver
 options = webdriver.ChromeOptions()
 options.add_argument('--ignore-certificate-errors')
@@ -227,7 +229,7 @@ cnx = mysql.connector.connect(
     , database=SQL_DB
 )
 cursor = cnx.cursor()
-print("Successfully connected to MySQL host \"{}\", on database \"{}\"".format(SQL_HOST, SQL_DB))
+print("Success: Connected to MySQL on {}".format(SQL_HOST))
 
 
 # Use/create database
@@ -235,16 +237,16 @@ try:
     cursor.execute("USE {}".format(SQL_DB))
     # cnx.database = SQL_DB
 except mysql.connector.Error as err:
-    print("Database {} does not exists.".format(SQL_DB))
+    print("Failure: Database {} does not exist".format(SQL_DB))
     if err.errno == errorcode.ER_BAD_DB_ERROR:
         sql_create_database(cursor)
-        print("Database {} created successfully.".format(SQL_DB))
+        print("Success: Database {} created".format(SQL_DB))
         # cursor.execute("USE {}".format(SQL_DB))
         cnx.database = SQL_DB
     else:
-        print(err) # This error would be non-specific, so I can't describe it beforehand
+        print(err.msg) # This error would be non-specific, so I can't describe it beforehand
         exit(1)
-print("Now using database {}".format(SQL_DB))
+print("Success: Now using database {}".format(SQL_DB))
 
 # Drop all tables
 # TODO: Make this conditional
@@ -255,7 +257,8 @@ sql_drop_tables(cursor)
 sql_create_table(cursor, 0) # 0 = "HDD"
 
 # Extract & insert data into table
-sql_insert_into_hdd(extract_pccg(soup, 0)) # 0 = "HDD"
+test_data = extract_pccg(soup, 0)
+sql_insert_into_hdd(test_data) # 0 = "HDD"
 
 
 ### PRINT DATA
