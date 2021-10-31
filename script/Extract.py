@@ -1,23 +1,15 @@
 #!/usr/bin/python3
 
 ### Imports
-# from logging import error
 import time
-# from typing import Dict
-# from selenium import webdriver
-# from bs4 import BeautifulSoup as bs
 
-# import mysql.connector
-# from mysql.connector import errorcode
+# File Imports
+from Table import Table
 
 
-### File Imports
-from scrape import Table
-
-
-### Functions
 class Extract:
-    def pccg(soup, table_index):
+    ### Functions
+    def pccg(self, soup, table_index):
         data = []
         data_type = Table.NAMES[table_index]
 

@@ -2,28 +2,23 @@
 
 ### Imports
 from logging import error
-# import time
-# from typing import Dict
-# from selenium import webdriver
-# from bs4 import BeautifulSoup as bs
-
 import mysql.connector
 from mysql.connector import errorcode
 
-
-### File Imports
-from scrape import Table
+# File Imports
+from Table import Table
 
 
 class SQL:
-    # Static variables
+    ### Static variables
     HOST = "localhost"
     # HOST = "10.1.1.160"
     USER = "scraper"
     PASS = "Password##123"
     DB = "PriceScraper"
 
-    def connect():
+    ### Functions
+    def connect(self):
         return mysql.connector.connect(
             host=SQL.HOST
             , user=SQL.USER
@@ -31,7 +26,7 @@ class SQL:
             , database=SQL.DB
         )
 
-    def create_database(cursor):
+    def create_database(self, cursor):
         try:
             # No need for "IF NOT EXISTS", because this function is only called to OVERWRITE a corrupt DB? I think?
             # cursor.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(DB))
@@ -41,7 +36,7 @@ class SQL:
             print("Failure: Could not create database: \n{}".format(err.msg))
             exit(1)
 
-    def drop_tables(cursor):
+    def drop_tables(self, cursor):
         try:
             cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
 
@@ -54,7 +49,7 @@ class SQL:
             print("Failure: Could not drop tables: \n{}".format(err.msg))
             exit(1)
 
-    def create_tables(cursor):
+    def create_tables(self, cursor):
         for name in Table.NAMES:
             try:
                 cursor.execute("CREATE TABLE IF NOT EXISTS {} ({})".format(name, Table.SCHEMAS[name]))
@@ -66,7 +61,7 @@ class SQL:
                     print("Failure: Could not create table {}: \n{}".format(name, err.msg))
                     # exit(1)
 
-    def insert_into_hdd(cursor, data):
+    def insert_into_hdd(self, cursor, data):
         # Accepts an array of dicts
         # Each dict is one row
         data_type = "HDD" # AKA. table name
@@ -96,6 +91,6 @@ class SQL:
             print("Failure: Could not insert data into table {}: \n{}".format(data_type, err.msg))
             exit(1)
 
-    def select_all_from_table(table_index):
+    def select_all_from_table(self, table_index):
         name = Table.NAMES[table_index]
         pass

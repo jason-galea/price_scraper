@@ -19,52 +19,6 @@ from Extract import Extract
 from SQL import SQL
 
 
-### Static Classes
-class Table:
-    NAMES = ["HDD", "SSD", "CPU", "GPU"] # AKA. data types/categories
-    SCHEMAS = {
-        "HDD":
-            "Time DATETIME\
-            , Retailer varchar(255)\
-            , Title varchar(255)\
-            , URL varchar(255)\
-            , PriceAUD int\
-            , Brand varchar(255)\
-            , Series varchar(255)\
-            , ModelNumber varchar(255)\
-            , HDDCapacity int\
-            , HDDPricePerTB int"
-        , "SSD":
-            "Time DATETIME\
-            , Retailer varchar(255)\
-            , Title varchar(255)\
-            , URL varchar(255)\
-            , PriceAUD int\
-            , Brand varchar(255)\
-            , Series varchar(255)\
-            , ModelNumber varchar(255)\
-            , SSDCapacity int\
-            , SSDPricePerTB int"
-        , "CPU": # TODO: Add unique CPU attributes
-            "Time DATETIME\
-            , Retailer varchar(255)\
-            , Title varchar(255)\
-            , URL varchar(255)\
-            , PriceAUD int\
-            , Brand varchar(255)\
-            , Series varchar(255)\
-            , ModelNumber varchar(255)"
-        , "GPU": # TODO: Add unique GPU attributes
-            "Time DATETIME\
-            , Retailer varchar(255)\
-            , Title varchar(255)\
-            , URL varchar(255)\
-            , PriceAUD int\
-            , Brand varchar(255)\
-            , Series varchar(255)\
-            , ModelNumber varchar(255)"
-    }
-
 
 ### Variables
 # "header" is not needed, and this one should be Chrome 95 anyway
@@ -79,7 +33,6 @@ url = "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-dri
 
 ### PREP DRIVER
 # TODO: Separate into function
-# Start driver
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--ignore-certificate-errors')
 chrome_options.add_argument('--incognito')
@@ -95,17 +48,13 @@ driver.get(url)
 soup = bs(driver.page_source, "html.parser")
 
 
-
-### https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html
-# Create connection
-
+### Create connection
 cnx = SQL.connect()
-
 cursor = cnx.cursor()
 print("Success: Connected to MySQL on {}".format(SQL.HOST))
 
 
-# Use/create database
+### Use/create database
 try:
     cursor.execute("USE {}".format(SQL.DB))
     # cnx.database = SQL.DB
@@ -121,12 +70,11 @@ except mysql.connector.Error as err:
         exit(1)
 print("Success: Now using database {}".format(SQL.DB))
 
-# Drop all tables
+### Drop all tables
 # TODO: Make this conditional
-# sql_drop_tables(cursor)
+SQL.drop_tables(cursor)
 
-# Create tables
-# TODO: Make this a loop, when the schemas for other tables are complete
+### Create tables
 SQL.create_tables(cursor)
 
 # Extract & insert data into table
