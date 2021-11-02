@@ -114,7 +114,7 @@ class SQL:
                     )
                     print("\nINSERT STRING:\n{}\n".format(insert_string))
 
-                    cnx.cursor.execute(insert_string)
+                    cnx.cursor().execute(insert_string)
                     cnx.commit()
                     print("Success: Inserted data into table {}".format(data_type))
 
