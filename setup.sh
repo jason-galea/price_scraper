@@ -49,13 +49,15 @@ database_prereqs() {
 
     # Configure MYSQL User
     sudo mysql
-    # CREATE USER 'scraper'@'localhost' IDENTIFIED BY 'Password##123';
-    # GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'scraper'@'localhost';
-    # OR:
     # CREATE USER 'scraper'@'%' IDENTIFIED BY 'Password##123';
-    # GRANT ALL PRIVILEGES ON *.* TO 'scraper'@'%' WITH GRANT OPTION;
+    # GRANT ALL PRIVILEGES ON PriceScraper.* TO 'scraper'@'%';
     # FLUSH PRIVILEGES;
-    # exit
+
+    # OR:
+    # CREATE USER 'scraper'@'10.1.1.160' IDENTIFIED BY 'Password##123';
+    # GRANT ALL ON PriceScraper.* TO 'scraper'@'10.1.1.160';
+    # FLUSH PRIVILEGES;
+    
 
     ### Allow remote access:
     # /etc/mysql/mysql.conf.d/mysqld.cnf

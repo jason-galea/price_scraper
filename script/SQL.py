@@ -91,7 +91,7 @@ class SQL:
     ### Child class
     class InsertIntoTable:
         @staticmethod
-        def hdd(data, cursor):
+        def hdd(data, cnx):
             # Accepts an array of dicts
             # Each dict is one row
             data_type = "HDD" # AKA. table name
@@ -114,7 +114,8 @@ class SQL:
                     )
                     print("\nINSERT STRING:\n{}\n".format(insert_string))
 
-                    cursor.execute(insert_string)
+                    cnx.cursor.execute(insert_string)
+                    cnx.commit()
                     print("Success: Inserted data into table {}".format(data_type))
 
             except mysql.connector.Error as err:

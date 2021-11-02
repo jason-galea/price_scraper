@@ -36,7 +36,7 @@ MySQL.drop_tables()
 MySQL.create_tables()
 
 test_data = Extract.pccg(soup, "HDD")
-MySQL.InsertIntoTable.hdd(test_data, MySQL.cursor)
+MySQL.InsertIntoTable.hdd(test_data, MySQL.cnx)
 
 MySQL.select_all_from_table("HDD")
 
