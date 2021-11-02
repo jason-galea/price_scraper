@@ -25,13 +25,13 @@ from Web import Web
 soup = Web.GetPage("PCCG", "HDD")
 
 
-### Create SQL object (which opens the connection)
+### Open connection
 MySQL = SQL()
 
 MySQL.use_database()
 
 # TODO: Make this conditional
-MySQL.drop_tables()
+#MySQL.drop_tables()
 
 MySQL.create_tables()
 
