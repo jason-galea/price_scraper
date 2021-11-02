@@ -56,18 +56,18 @@ class SQL:
             print("Failure: Could not create database: \n{}".format(err.msg))
             exit(1)
 
-    def drop_tables(self):
-        try:
-            self.cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+    # def drop_tables(self):
+    #     try:
+    #         self.cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
 
-            for name in Table.NAMES:
-                self.cursor.execute("DROP TABLE IF EXISTS {}".format(name))
-                print("Success: Dropped table {}".format(name)) # Will "succeed" even if table was already dropped.
+    #         for name in Table.NAMES:
+    #             self.cursor.execute("DROP TABLE IF EXISTS {}".format(name))
+    #             print("Success: Dropped table {}".format(name)) # Will "succeed" even if table was already dropped.
 
-            self.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
-        except mysql.connector.Error as err:
-            print("Failure: Could not drop tables: \n{}".format(err.msg))
-            exit(1)
+    #         self.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+    #     except mysql.connector.Error as err:
+    #         print("Failure: Could not drop tables: \n{}".format(err.msg))
+    #         exit(1)
 
     def create_tables(self):
         for name in Table.NAMES:
@@ -89,7 +89,7 @@ class SQL:
 
     
     ### Child class
-    class InsertIntoTable:
+    class Insert:
         @staticmethod
         def hdd(data, cnx):
             # Accepts an array of dicts
@@ -112,7 +112,7 @@ class SQL:
                         , x["HDDCapacity"]
                         , x["HDDPricePerTB"]
                     )
-                    print("\nINSERT STRING:\n{}\n".format(insert_string))
+                    # print("\nINSERT STRING:\n{}\n".format(insert_string))
 
                     cnx.cursor().execute(insert_string)
                     cnx.commit()
