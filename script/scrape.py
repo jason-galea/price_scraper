@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
 ### Imports
-from logging import error
+# from logging import error
 # import time
-from typing import Dict
-from selenium import webdriver
+# from typing import Dict
+# from selenium import webdriver
 # from selenium.webdriver.common.keys import Keys
-from bs4 import BeautifulSoup as bs
+# from bs4 import BeautifulSoup as bs
 
 
 ### File Imports
