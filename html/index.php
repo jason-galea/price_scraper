@@ -8,6 +8,7 @@
             Home Page
         </h2>
     </header>
+    <p>
     <?php
         // Constants
         $SQL_IP = "127.0.0.1";
@@ -57,5 +58,6 @@
         }
 
         echo "</table>";
-    ?> 
+    ?>
+    </p>
 </body>
