@@ -33,7 +33,18 @@
                         // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
 
 
-            // asd
+
+            // Functions
+            // function scrape() {
+
+            // }
+            
+
+
+            // EXECUTE
+            // 1. Get use arguments (site & category)
+
+            // 2. Invoke the script
         ?>
     </main>
 </body>

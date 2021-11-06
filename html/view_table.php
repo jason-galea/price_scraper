@@ -33,7 +33,52 @@
                         // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
 
 
-            // asd
+            // Import classes
+            include_once("SQL.php");
+
+            // Variables
+            $sqlTable = "HDD"; // TODO: Turn this into a button
+            $orderColumn = "HDDPricePerTB"; // TODO: Turn this into a button
+            $orderDirection = "ASC"; // TODO: Turn this into a button
+
+
+            // CONNECT TO MYSQL
+            $con = mysqli_connect($SQL, $SQL_USER, $SQL_PASS);
+            mysqli_select_db($con, $SQL_DB);
+
+
+            // CREATE TABLE
+            echo "<table>";
+            // Fetch table headers
+            $result = mysqli_query($con,
+                "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
+            );
+            // Insert table headers
+            echo "<tr>";
+            $header_row = mysqli_fetch_row($result);
+            while ($header_row) {
+                echo "<th>" + $header_row[0] + "</th>";
+                $headers_row = mysqli_fetch_row($result);
+            }
+            echo "</tr>";
+            
+            // Fetch table contents
+            $result = mysqli_query($con,
+                "SELECT * FROM $sqlTable ORDER BY $orderColumn $orderDirection;"
+            );
+            $row = mysqli_fetch_row($result);
+
+            // Insert rows
+            while ($row) { // Loop until $row is NULL
+                echo "<tr>";
+                foreach ($row as $value) {
+                    echo "<td>$value</td>";
+                } 
+                echo "</tr>";
+                $row = mysqli_fetch_row($result); // Fetch new row
+            }
+
+            echo "</table>";
         ?>
     </main>
 </body>
