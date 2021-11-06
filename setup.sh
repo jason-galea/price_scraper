@@ -1,6 +1,6 @@
 # This is clearly a huge mess.
-# It's basically pseudo-code, just documenting what the docker image will require.
-# Final note for the docker image will be to record package/module versions
+# It's basically just documenting what the docker image will require.
+# Still need to specify package & module versions
 
 script_prereqs() {
     # https://tecadmin.net/setup-selenium-chromedriver-on-ubuntu/
@@ -69,7 +69,7 @@ database_prereqs() {
 
 website_prereqs() {
     sudo apt update 
-    sudo apt -y install apache2
+    sudo apt -y install apache2 php7.4 php7.4-mysql
 }
 
 get_latest_config() {

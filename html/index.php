@@ -1,6 +1,10 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>PHP Test</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css"/>
+    
+    <title>Price Scraper</title>
 </head>
 <body>
     <header>
@@ -9,55 +13,55 @@
         </h2>
     </header>
     <p>
-    <?php
-        // Constants
-        $SQL_IP = "127.0.0.1";
-        // $SQL_IP = "10.1.1.60";
-        $SQL_USER = "scraper";
-        $SQL_PASS = "Password##123";
-        $SQL_DB = "PriceScraper";
+        <?php
+            // Constants
+            $SQL_IP = "127.0.0.1";
+            // $SQL_IP = "10.1.1.60";
+            $SQL_USER = "scraper";
+            $SQL_PASS = "Password##123";
+            $SQL_DB = "PriceScraper";
 
-        // Variables
-        $sqlTable = "HDD"; // TODO: Turn this into a button
-        $orderColumn = "HDDPricePerTB"; // TODO: Turn this into a button
-        $orderDirection = "ASC"; // TODO: Turn this into a button
-
-
-        // CONNECT TO MYSQL
-        $con = mysqli_connect($SQL_IP, $SQL_USER, $SQL_PASS);
-        mysqli_select_db($con, $SQL_DB);
+            // Variables
+            $sqlTable = "HDD"; // TODO: Turn this into a button
+            $orderColumn = "HDDPricePerTB"; // TODO: Turn this into a button
+            $orderDirection = "ASC"; // TODO: Turn this into a button
 
 
-        // CREATE TABLE
-        echo "<table>";
-        // Fetch column names
-        $result = mysqli_query($con,
-            "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
-        );
-        // Insert one row of column names
-        echo "<tr>";
-            foreach ($row as $value) {
-                echo "<td><b>$value</b></td>";
-            } 
-            echo "</tr>";
-        
-        // Fetch contents
-        $result = mysqli_query($con,
-            "SELECT * FROM $sqlTable ORDER BY $orderColumn $orderDirection;"
-        );
-        $row = mysqli_fetch_row($result);
+            // CONNECT TO MYSQL
+            $con = mysqli_connect($SQL_IP, $SQL_USER, $SQL_PASS);
+            mysqli_select_db($con, $SQL_DB);
 
-        // Insert all rows of contents
-        while ($row) { // Loop until $row is NULL
-            echo "<tr>";
-            foreach ($row as $value) {
-                echo "<td>$value</td>";
-            } 
-            echo "</tr>";
-            $row = mysqli_fetch_row($result); // Fetch new row
-        }
 
-        echo "</table>";
-    ?>
+            // CREATE TABLE
+            echo "<table>";
+            // Fetch table headings
+            $result = mysqli_query($con,
+                "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
+            );
+            // Insert table headings
+            echo "<th>";
+                foreach ($row as $value) {
+                    echo "<td><b>$value</b></td>";
+                } 
+                echo "</th>";
+            
+            // Fetch taable contents
+            $result = mysqli_query($con,
+                "SELECT * FROM $sqlTable ORDER BY $orderColumn $orderDirection;"
+            );
+            $row = mysqli_fetch_row($result);
+
+            // Insert rows
+            while ($row) { // Loop until $row is NULL
+                echo "<tr>";
+                foreach ($row as $value) {
+                    echo "<td>$value</td>";
+                } 
+                echo "</tr>";
+                $row = mysqli_fetch_row($result); // Fetch new row
+            }
+
+            echo "</table>";
+        ?>
     </p>
 </body>
