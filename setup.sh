@@ -67,18 +67,19 @@ database_prereqs() {
 }
 
 
-website_prereqs() {
+website_setup() {
     sudo apt update 
     sudo apt -y install apache2 php7.4 php7.4-mysql
+
+    cd /var/www
+    git clone https://github.com/jason-galea/price_scraper.git
+    chown -R $USER:www-data price_scraper
+
+    # Change website root
+    cd /etc/apache2/sites-enabled/
+    sudo sed -i=bak 's@#DocumentRoot /var/www/html@DocumentRoot /var/www/price_scraper/html@' 000-default.conf
+    sudo systemctl restart apache2
 }
 
-get_latest_config() {
-    # Clone repo
-    cd
-    git clone https://github.com/jason-galea/price_scraper
-
-    # Move PHP files to website root
-    sudo mv ~/price_scraper/website/* /var/www/html/
-}
 
 # I'm starting to look forward to docker now :)
