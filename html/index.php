@@ -17,10 +17,9 @@
         $SQL_DB = "PriceScraper";
 
         // Variables
-        $sqlTable = "HDD";
-
-        $orderColumn = "HDDPricePerTB";
-        $orderDirection = "ASC";
+        $sqlTable = "HDD"; // TODO: Turn this into a button
+        $orderColumn = "HDDPricePerTB"; // TODO: Turn this into a button
+        $orderDirection = "ASC"; // TODO: Turn this into a button
 
 
         // CONNECT TO MYSQL
