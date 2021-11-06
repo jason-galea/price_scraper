@@ -14,6 +14,9 @@
     </header>
     <p>
         <?php
+            // TODO: Refactor, make it somewhat object-oriented
+            // 
+
             // Constants
             $SQL_IP = "127.0.0.1";
             // $SQL_IP = "10.1.1.60";
@@ -34,16 +37,17 @@
 
             // CREATE TABLE
             echo "<table>";
-            // Fetch table headings
+            // Fetch table headers
             $result = mysqli_query($con,
                 "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
             );
-            // Insert table headings
-            echo "<th>";
-                foreach ($row as $value) {
-                    echo "<td><b>$value</b></td>";
-                } 
-                echo "</th>";
+            // Insert table headers
+            echo "<tr>";
+            foreach ($row as $value) {
+                // echo "<th><b>$value</b></th>";
+                echo "<th>$value</th>";
+            } 
+            echo "</tr>";
             
             // Fetch taable contents
             $result = mysqli_query($con,
