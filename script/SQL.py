@@ -11,6 +11,7 @@ from Table import Table
 
 class SQL:
     ### Static variables
+    # TODO: Move these details to a .txt file in ~/
     # HOST = "localhost"
     HOST = "127.0.0.1"
     # HOST = "10.1.1.160"

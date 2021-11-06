@@ -9,12 +9,24 @@
 <body>
     <header>
         <h2>
-            Home Page
+            Welcome to the (Australian PC hardware website) Price Scraper!
         </h2>
     </header>
-    <p>
+
+    <?php include_once("nav.php");?>
+
+    <main>
         <?php
             // TODO: Refactor, make it somewhat object-oriented
+
+            // TODO: Refactor "fetch & display" logic
+                // 1. SELECT * FROM some_table;
+                // 2. Store EVERYTHING in an array of dicts, one dict = one row
+                // 3. Have a static whitelist of column names, per category
+                    // (The whitelist controls what is actually displayed in the HTML table)
+                // 4. Display data in a table, but some some subtlety
+                    // Titles are hrefs to their stored URL
+                    // Add "$" to each price, etc.
 
             // TODO: Make a "home" menu
                 // 1. Scrape website
@@ -31,18 +43,10 @@
                     // c. "Clear table?"
                         // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
 
-            // TODO: Refactor "fetch & display" logic
-                // 1. SELECT * FROM some_table;
-                // 2. Store EVERYTHING in an array of dicts, one dict = one row
-                // 3. Have a static whitelist of column names, per category
-                    // (The whitelist controls what is actually displayed in the HTML table)
-                // 4. Display data in a table
-                    // Titles are hrefs to their stored URL
-                    // Add "$" to each price, etc.
-
             // Constants
+            // TODO: Move these details to a .txt file in ~/
             $SQL_IP = "127.0.0.1";
-            // $SQL_IP = "10.1.1.60";
+            // $SQL_IP = "10.1.1.160";
             $SQL_USER = "scraper";
             $SQL_PASS = "Password##123";
             $SQL_DB = "PriceScraper";
@@ -90,5 +94,5 @@
 
             echo "</table>";
         ?>
-    </p>
+    </main>
 </body>
