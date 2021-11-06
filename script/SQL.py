@@ -12,7 +12,8 @@ from Table import Table
 class SQL:
     ### Static variables
     # HOST = "localhost"
-    HOST = "10.1.1.160"
+    HOST = "127.0.0.1"
+    # HOST = "10.1.1.160"
     USER = "scraper"
     PASS = "Password##123" # Oh no!!!
     DB = "PriceScraper"

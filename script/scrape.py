@@ -28,11 +28,7 @@ soup = Web.GetPage("PCCG", "HDD")
 ### Open connection
 MySQL = SQL()
 MySQL.use_database()
-
-# TODO: Make this conditional
-# JK fuck that, never drop tables
-#MySQL.drop_tables()
-MySQL.create_tables()
+MySQL.create_tables() # Don't overwrite existing tables
 
 # Extract & Insert
 test_data = Extract.pccg(soup, "HDD")

@@ -15,7 +15,30 @@
     <p>
         <?php
             // TODO: Refactor, make it somewhat object-oriented
-            // 
+
+            // TODO: Make a "home" menu
+                // 1. Scrape website
+                    // a. "Which site?"
+                    // b. "Which hardware category?"
+                    // c. --> Pass arguments to script                        
+                        // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
+                // 2. View historic data
+                    // a. "Graph?"
+                        // "Select metric"
+                            // Eg. Price, Capacity, Price per TB
+                    // b. "Table?"
+                        // "Select ???"
+                    // c. "Clear table?"
+                        // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
+
+            // TODO: Refactor "fetch & display" logic
+                // 1. SELECT * FROM some_table;
+                // 2. Store EVERYTHING in an array of dicts, one dict = one row
+                // 3. Have a static whitelist of column names, per category
+                    // (The whitelist controls what is actually displayed in the HTML table)
+                // 4. Display data in a table
+                    // Titles are hrefs to their stored URL
+                    // Add "$" to each price, etc.
 
             // Constants
             $SQL_IP = "127.0.0.1";
@@ -49,7 +72,7 @@
             } 
             echo "</tr>";
             
-            // Fetch taable contents
+            // Fetch table contents
             $result = mysqli_query($con,
                 "SELECT * FROM $sqlTable ORDER BY $orderColumn $orderDirection;"
             );
