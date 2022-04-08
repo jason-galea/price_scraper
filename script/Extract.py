@@ -55,21 +55,21 @@ class Extract:
             #         pass
 
             data.append({
-                "Time": time.strftime("%Y-%m-%d %H:%M:%S")
-                , "Retailer": "PCCG"
-                , "Title": p_title
-                , "URL": p_url
-                # , "IncompleteDescription": p_incomplete_desc
-                , "PriceAUD": p_price_aud
-                , "Brand": p_brand
-                , "Series": p_series
-                , "ModelNumber": p_model_number
-                , "HDDCapacity": p_hdd_capacity
-                , "HDDPricePerTB": p_hdd_price_per_tb
+                "Time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "Retailer": "PCCG",
+                "Title": p_title,
+                "URL": p_url,
+                # "IncompleteDescription": p_incomplete_desc,
+                "PriceAUD": p_price_aud,
+                "Brand": p_brand,
+                "Series": p_series,
+                "ModelNumber": p_model_number,
+                "HDDCapacity": p_hdd_capacity,
+                "HDDPricePerTB": p_hdd_price_per_tb,
             })
 
         # Just sign-posting a lil' bit
-        print("Success: Extracted data from PCCG {} webpage".format(data_type))
+        # print(f"Success: Extracted data from PCCG {data_type} webpage")
         # print()
         # print(data)
         # print()

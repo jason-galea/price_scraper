@@ -1,0 +1,25 @@
+1649156681967	geckodriver	INFO	Listening on 127.0.0.1:42897
+1649156681971	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "52839" "-no-remote" "-profile" "/tmp/rust_mozprofileV16Awy"
+[GFX1-]: glxtest: libEGL missing
+1649156683744	Marionette	INFO	Marionette enabled
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileV16Awy/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:52839/devtools/browser/4906fa53-03ab-413d-98eb-3f6f8e3a8363
+1649156685168	Marionette	INFO	Listening on port 38191
+1649156685192	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1649156695654	Marionette	INFO	Stopped listening on port 38191
+console.warn: TopSitesFeed: Failed to fetch data from Contile server: NetworkError when attempting to fetch resource.
+JavaScript error: chrome://remote/content/marionette/cert.js, line 55: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsICertOverrideService.setDisableAllSecurityChecksAndLetAttackersInterceptMyData]
+
+###!!! [Parent][PImageBridgeParent] Error: RunMessage(msgname=PImageBridge::Msg_WillClose) Channel closing: too late to send/recv, messages will be lost
+
+1649157392798	geckodriver	INFO	Listening on 127.0.0.1:36167
+1649157392802	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "41079" "-no-remote" "-profile" "/tmp/rust_mozprofilesENmPJ"
+1649157519627	geckodriver	INFO	Listening on 127.0.0.1:47727
+1649157519631	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "37429" "-no-remote" "-profile" "/tmp/rust_mozprofileEkfgcM"
+1649158019434	geckodriver	INFO	Listening on 127.0.0.1:59001
+1649158019438	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "59249" "-no-remote" "-profile" "/tmp/rust_mozprofilej1YLtP"
+1649158047371	geckodriver	INFO	Listening on 127.0.0.1:37977
+1649158047375	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "39203" "-no-remote" "-profile" "/tmp/rust_mozprofileDt8twA"
+1649158514916	geckodriver	INFO	Listening on 127.0.0.1:34265
+1649158514921	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "56333" "-no-remote" "-profile" "/tmp/rust_mozprofile433Nqn"
+*** You are running in headless mode.

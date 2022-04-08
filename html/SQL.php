@@ -12,8 +12,8 @@
     class SQL {
         // Static Vars
         // TODO: Move these details to a .txt file in ~/
-        private $IP = "127.0.0.1";
-        // private $IP = "10.1.1.160";
+        // private $IP = "127.0.0.1";
+        private $IP = "10.1.1.160";
         private $USER = "scraper";
         private $PASS = "Password##123";
         private $DB = "PriceScraper";
@@ -23,32 +23,22 @@
         function __construct() {
             // Connect to SQL server
             $this->con = mysqli_connect($this->IP, $this->USER, $this->PASS);
+            if ($this->con->connect_error) {
+                die("Connection failed: " . $this->con->connect_error);
+            }
             mysqli_select_db($this->con, $this->DB);
         }
 
         function getColumns($table) {
-
-            // Fetch result
-            $result = mysqli_query($this->con,
+            return mysqli_query($this->con,
                 "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
             );
-
-            // Define output structure
-
-            // return
-
         }
 
         function getData($table) {
-
-            // Fetch result
-            $result = mysqli_query($this->con,
-                "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
+            return mysqli_query($this->con,
+                "SELECT * FROM $table;"
             );
-
-            // Define output structure
-
-            // return
 
         }
     }

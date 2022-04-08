@@ -38,26 +38,30 @@
 
             // Variables
             $sqlTable = "HDD"; // TODO: Turn this into a button
-            $orderColumn = "HDDPricePerTB"; // TODO: Turn this into a button
-            $orderDirection = "ASC"; // TODO: Turn this into a button
+            $sqlColumnToOrderBy = "HDDPricePerTB"; // TODO: Turn this into a button
+            $sqlOrderDirection = "ASC"; // TODO: Turn this into a button
 
 
             // CONNECT TO MYSQL
-            $con = mysqli_connect($SQL, $SQL_USER, $SQL_PASS);
-            mysqli_select_db($con, $SQL_DB);
+            // $con = mysqli_connect($SQL, $SQL_USER, $SQL_PASS);
+            // mysqli_select_db($con, $SQL_DB);
+            $mySQL = new SQL();
 
 
             // CREATE TABLE
             echo "<table>";
             // Fetch table headers
-            $result = mysqli_query($con,
-                "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
-            );
+            // $result = mysqli_query($con,
+            //     "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
+            // );
+            $result = $mySQL->getColumns($sqlTable);
             // Insert table headers
             echo "<tr>";
-            $header_row = mysqli_fetch_row($result);
+            // $header_row = mysqli_fetch_row($result);
+            $header_row = $mySQL->getColumns($orderColumn);
             while ($header_row) {
                 echo "<th>" + $header_row[0] + "</th>";
+                // $headers_row = mysqli_fetch_row($result);
                 $headers_row = mysqli_fetch_row($result);
             }
             echo "</tr>";
