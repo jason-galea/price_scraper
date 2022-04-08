@@ -11,25 +11,28 @@ script_prereqs() {
     # Python modules
     sudo python3 -m pip install selenium beautifulsoup4 mysql-connector-python
     # MySQL connector
-    wget https://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python-py3_8.0.26-1ubuntu21.04_amd64.deb
-    dpkg -i mysql-connector-python-py3_8.0.26-1ubuntu21.04_amd64.deb
+    # wget https://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python-py3_8.0.26-1ubuntu21.04_amd64.deb
+    # dpkg -i mysql-connector-python-py3_8.0.26-1ubuntu21.04_amd64.deb
     # sudo apt --fix-broken install
     # dpkg -i mysql-connector-python-py3_8.0.26-1ubuntu21.04_amd64.deb
 
-    # Chrome
-    sudo curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add 
-    sudo bash -c "echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list.d/google-chrome.list" 
-    sudo apt -y update 
-    sudo apt -y install google-chrome-stable 
+    # ### Chrome
+    # sudo curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add 
+    # sudo bash -c "echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list.d/google-chrome.list" 
+    # sudo apt -y update 
+    # sudo apt -y install google-chrome-stable 
 
-    # Chromedriver (ASSUMING CHROME == 94.x)
-    wget https://chromedriver.storage.googleapis.com/94.0.4606.41/chromedriver_linux64.zip
-    # WAIT FOR DOWNLOAD
-    sudo unzip chromedriver_linux64.zip
-    sudo chown root:root chromedriver 
-    sudo chmod +x chromedriver
-    sudo mv chromedriver /usr/bin/chromedriver
-    sudo rm chromedriver_linux64.zip
+    # # Chromedriver (ASSUMING CHROME == 94.x)
+    # wget https://chromedriver.storage.googleapis.com/94.0.4606.41/chromedriver_linux64.zip
+    # # WAIT FOR DOWNLOAD
+    # sudo unzip chromedriver_linux64.zip
+    # sudo chown root:root chromedriver 
+    # sudo chmod +x chromedriver
+    # sudo mv chromedriver /usr/bin/chromedriver
+    # sudo rm chromedriver_linux64.zip
+
+    ### Firefox & geckodriver
+    sudo apt install firefox firefox-geckodriver
 }
 
 database_prereqs() {
