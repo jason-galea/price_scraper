@@ -93,7 +93,7 @@ class Web:
         ff_opts.add_argument('-headless')
         ff_cap = DesiredCapabilities.FIREFOX
         ff_cap["marionette"] = True
-        ff_bin = "/usr/bin/firefox"
+        # ff_bin = "/usr/bin/firefox"
 
         ### Launch
         # driver = execute_with_retry(
@@ -106,7 +106,7 @@ class Web:
         # )
         driver = webdriver.Firefox(
             options=ff_opts,
-            firefox_binary=ff_bin,
+            # firefox_binary=ff_bin,
             capabilities=ff_cap,
         )
         # time.sleep(10)
