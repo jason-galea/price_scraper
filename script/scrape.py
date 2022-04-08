@@ -2,6 +2,7 @@
 
 ### Imports
 # from logging import error
+import os
 import time
 import json
 # from typing import Dict
@@ -22,26 +23,22 @@ from Web import Web
 # $ ./scrape.py PCCG HDD
 # Each execution would extract data & insert into the appropriate table, then close
 
+
+### Globals
+OUT_JSON_DIR = os.path.abspath(os.path.dirname(__file__))
+# OUT_JSON_FILE = f"{}/"
+print(OUT_JSON_DIR)
+exit()
+
 def main():
     # soup = Web.GetPageChrome("PCCG", "HDD")
-    soup = Web.GetPageFirefox("PCCG", "HDD")
+    soup = Web.GetPage("PCCG", "HDD")
 
     # Extract & Insert
     test_data = Extract.pccg(soup, "HDD")
     # print(test_data)
-    print(json.dumps(test_data, indent=4))
+    # print(json.dumps(test_data, indent=4))
 
-    ### Open SQL
-    # MySQL = SQL()
-    # MySQL.use_database()
-    # MySQL.create_tables() # Don't overwrite existing tables
-
-    ### Insert
-    # MySQL.Insert.hdd(test_data, MySQL.cnx)
-
-    ### Close SQL
-    # MySQL.select_all_from_table("HDD")
-    # MySQL.close()
 
 
     return
