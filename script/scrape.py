@@ -1,17 +1,10 @@
 #!/usr/bin/python3
 
 ### Imports
-# from logging import error
 import os
 import time
 import json
-# from typing import Dict
-# from selenium import webdriver
-# from selenium.webdriver.common.keys import Keys
-# from bs4 import BeautifulSoup as bs
 
-
-### File Imports
 from Extract import Extract
 from Web import Web
 
@@ -20,8 +13,8 @@ from Web import Web
 NOW = time.strftime("%Y-%m-%d_%H-%M-%S")
 WEBSITE = "PCCG"
 CATEGORY = "HDD"
-OUT_JSON_DIR = f"{os.path.abspath(os.path.dirname(__file__))}/../out"
-OUT_JSON_FILE = f"{OUT_JSON_DIR}/{WEBSITE}_{CATEGORY}_{NOW}.json"
+OUT_JSON_DIR = f"{os.path.abspath(os.path.dirname(__file__))}/../scrape_result"
+OUT_JSON_FILE = f"{OUT_JSON_DIR}/scrape_result_{WEBSITE}_{CATEGORY}_{NOW}.json"
 # print(OUT_JSON_DIR)
 # print(OUT_JSON_FILE)
 # print(NOW)
@@ -42,12 +35,13 @@ def main():
 
     ### Extract
     test_data = Extract.pccg(soup, CATEGORY) # TODO: Modify class to accept "WEBSITE" programmatically
-    print(test_data)
-    print(json.dumps(test_data, indent=4))
-    exit()
+    # print(test_data)
+    # print(json.dumps(test_data, indent=4))
+    # exit()
 
 
     ### Export
+    print(f"Exporting data to {OUT_JSON_FILE}")
     if not os.path.exists(OUT_JSON_DIR):
         os.makedirs(OUT_JSON_DIR)
     f = open(OUT_JSON_FILE, "w")
