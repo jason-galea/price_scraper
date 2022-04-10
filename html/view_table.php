@@ -13,7 +13,7 @@
         </h2>
     </header>
     
-    <?php include_once("nav.php");?>
+    <?php include_once("nav.php"); ?>
 
     <main>
         <?php
@@ -32,57 +32,60 @@
                     // c. "Clear table?"
                         // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
 
+            // List JSON files in dir
 
-            // Import classes
-            include_once("SQL.php");
-
-            // Variables
-            $sqlTable = "HDD"; // TODO: Turn this into a button
-            $sqlColumnToOrderBy = "HDDPricePerTB"; // TODO: Turn this into a button
-            $sqlOrderDirection = "ASC"; // TODO: Turn this into a button
-
-
-            // CONNECT TO MYSQL
-            // $con = mysqli_connect($SQL, $SQL_USER, $SQL_PASS);
-            // mysqli_select_db($con, $SQL_DB);
-            $mySQL = new SQL();
-
-
-            // CREATE TABLE
-            echo "<table>";
-            // Fetch table headers
-            // $result = mysqli_query($con,
-            //     "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
-            // );
-            $result = $mySQL->getColumns($sqlTable);
-            // Insert table headers
-            echo "<tr>";
-            // $header_row = mysqli_fetch_row($result);
-            $header_row = $mySQL->getColumns($orderColumn);
-            while ($header_row) {
-                echo "<th>" + $header_row[0] + "</th>";
-                // $headers_row = mysqli_fetch_row($result);
-                $headers_row = mysqli_fetch_row($result);
-            }
-            echo "</tr>";
+            // For each filename, convert into time and check when is most recent (highest)
             
-            // Fetch table contents
-            $result = mysqli_query($con,
-                "SELECT * FROM $sqlTable ORDER BY $orderColumn $orderDirection;"
-            );
-            $row = mysqli_fetch_row($result);
+            $most_recent_file = "scrape_result_PCCG_HDD_2022-04-10_18-01-56.json";
 
-            // Insert rows
-            while ($row) { // Loop until $row is NULL
-                echo "<tr>";
-                foreach ($row as $value) {
-                    echo "<td>$value</td>";
-                } 
-                echo "</tr>";
-                $row = mysqli_fetch_row($result); // Fetch new row
-            }
+            // Open most recent file
+            $json_string = file_get_contents("./out/$most_recent_file");
 
-            echo "</table>";
+            // Convert string to JSON object
+
+            $json_object = json_decode($json_string);
+            echo $json_object
+
+
+
+
+            // // CREATE TABLE
+            // echo "<table>";
+
+            // // Fetch table headers
+            // // $result = mysqli_query($con,
+            // //     "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
+            // // );
+            // $result = $mySQL->getColumns($sqlTable);
+
+            // // Insert table headers
+            // echo "<tr>";
+            // // $header_row = mysqli_fetch_row($result);
+            // $header_row = $mySQL->getColumns($orderColumn);
+            // while ($header_row) {
+            //     echo "<th>" + $header_row[0] + "</th>";
+            //     // $headers_row = mysqli_fetch_row($result);
+            //     $headers_row = mysqli_fetch_row($result);
+            // }
+            // echo "</tr>";
+            
+            // // Fetch table contents
+            // $result = mysqli_query($con,
+            //     "SELECT * FROM $sqlTable ORDER BY $orderColumn $orderDirection;"
+            // );
+            // $row = mysqli_fetch_row($result);
+
+            // // Insert rows
+            // while ($row) { // Loop until $row is NULL
+            //     echo "<tr>";
+            //     foreach ($row as $value) {
+            //         echo "<td>$value</td>";
+            //     } 
+            //     echo "</tr>";
+            //     $row = mysqli_fetch_row($result); // Fetch new row
+            // }
+
+            // echo "</table>";
         ?>
     </main>
 </body>
