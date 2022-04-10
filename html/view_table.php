@@ -32,25 +32,37 @@
                     // c. "Clear table?"
                         // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
 
+            // TODO: Read JSON
             // List JSON files in dir
 
             // For each filename, convert into time and check when is most recent (highest)
             
-            $most_recent_file = "scrape_result_PCCG_HDD_2022-04-10_18-01-56.json";
+            $most_recent_file = "/var/www/out/scrape_result_PCCG_HDD_2022-04-11_00-12-52.json";
 
             // Open most recent file
-            $json_string = file_get_contents("./out/$most_recent_file");
+            $json_string = file_get_contents($most_recent_file, True);
+            // echo "<p>";
+            // echo $json_string;
+            // echo "</p>";
 
             // Convert string to JSON object
 
             $json_object = json_decode($json_string);
-            echo $json_object
+            var_dump(json_decode($json_object));
+            // echo "<p>";
+            // echo $json_object;
+            // echo "</p>";
+            var_dump(json_decode($json_object, true));
+
+            // echo "<p>";
+            // echo $json_object;
+            // echo "</p>";
 
 
 
 
             // // CREATE TABLE
-            // echo "<table>";
+            echo "<table>";
 
             // // Fetch table headers
             // // $result = mysqli_query($con,
@@ -85,7 +97,7 @@
             //     $row = mysqli_fetch_row($result); // Fetch new row
             // }
 
-            // echo "</table>";
+            echo "</table>";
         ?>
     </main>
 </body>
