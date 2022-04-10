@@ -67,3 +67,87 @@ Read port: 35177
 JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=306922414, line 1: unreachable code after return statement
 JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=306922414, line 1: unreachable code after return statement
 JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=306922414 line 1 > eval, line 1: unreachable code after return statement
+1649574458221	geckodriver	INFO	Listening on 127.0.0.1:48441
+1649574458712	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "52045" "-no-remote" "-profile" "/tmp/rust_mozprofilei4gmsU"
+*** You are running in headless mode.
+1649575033326	geckodriver	INFO	Listening on 127.0.0.1:37173
+1649575033329	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "52349" "-no-remote" "-profile" "/tmp/rust_mozprofileBnLBJY"
+*** You are running in headless mode.
+1649575124681	geckodriver	INFO	Listening on 127.0.0.1:47415
+1649575124683	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "47543" "-no-remote" "-profile" "/tmp/rust_mozprofileYt0wUe"
+*** You are running in headless mode.
+1649576244326	geckodriver	INFO	Listening on 127.0.0.1:38945
+1649576244328	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "36091" "-no-remote" "-profile" "/tmp/rust_mozprofileDYEnDW"
+*** You are running in headless mode.
+1649576495015	geckodriver	INFO	Listening on 127.0.0.1:36187
+1649576495026	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "48697" "-no-remote" "-profile" "/tmp/rust_mozprofile6996l4"
+*** You are running in headless mode.
+1649576677206	geckodriver	INFO	Listening on 127.0.0.1:42071
+1649576677209	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "51459" "-no-remote" "-profile" "/tmp/rust_mozprofilefCnT1P"
+*** You are running in headless mode.
+1649576785271	geckodriver	INFO	Listening on 127.0.0.1:56433
+1649576785274	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "55727" "-no-remote" "-profile" "/tmp/rust_mozprofileTAemNw"
+*** You are running in headless mode.
+1649576830476	geckodriver	INFO	Listening on 127.0.0.1:60857
+1649576830479	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "42189" "-no-remote" "-profile" "/tmp/rust_mozprofileEuMuvY"
+Authorization required, but no authorization protocol specified
+Unable to init server: Broadway display type not supported: 172.30.128.1:0
+Error: cannot open display: 172.30.128.1:0
+1649576836301	geckodriver	INFO	Listening on 127.0.0.1:37427
+1649576836303	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "34355" "-no-remote" "-profile" "/tmp/rust_mozprofileZXR563"
+Authorization required, but no authorization protocol specified
+Unable to init server: Broadway display type not supported: 172.30.128.1:0
+Error: cannot open display: 172.30.128.1:0
+1649576839879	geckodriver	INFO	Listening on 127.0.0.1:55121
+1649576839882	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "52919" "-no-remote" "-profile" "/tmp/rust_mozprofileUDvaG6"
+*** You are running in headless mode.
+[GFX1-]: glxtest: Unable to open a connection to the X server
+[GFX1-]: glxtest: libEGL missing
+1649576840143	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileUDvaG6/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:52919/devtools/browser/c43aad20-d9a6-4d13-aaa7-362309f2dc9c
+1649576841952	Marionette	INFO	Listening on port 46715
+Read port: 46715
+1649576842038	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=938041708, line 1: unreachable code after return statement
+JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=938041708, line 1: unreachable code after return statement
+JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=938041708 line 1 > eval, line 1: unreachable code after return statement
+1649576853268	geckodriver	INFO	Listening on 127.0.0.1:40311
+1649576853271	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "48475" "-no-remote" "-profile" "/tmp/rust_mozprofile8gsDDn"
+*** You are running in headless mode.
+1649576898334	geckodriver	INFO	Listening on 127.0.0.1:52697
+1649576898337	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "33577" "-no-remote" "-profile" "/tmp/rust_mozprofile2XVXq7"
+*** You are running in headless mode.
+[GFX1-]: glxtest: Unable to open a connection to the X server
+[GFX1-]: glxtest: libEGL missing
+1649576898520	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofile2XVXq7/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:33577/devtools/browser/33f4c146-82db-42bf-b46c-89807da56f26
+1649576899726	Marionette	INFO	Listening on port 32917
+Read port: 32917
+1649576899758	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=156882810, line 1: unreachable code after return statement
+JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=156882810, line 1: unreachable code after return statement
+JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=156882810 line 1 > eval, line 1: unreachable code after return statement
+1649576907902	geckodriver	INFO	Listening on 127.0.0.1:32779
+1649576907905	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "42701" "-no-remote" "-profile" "/tmp/rust_mozprofileZp13gz"
+Authorization required, but no authorization protocol specified
+Unable to init server: Broadway display type not supported: 172.30.128.1:0
+Error: cannot open display: 172.30.128.1:0
+1649576911649	geckodriver	INFO	Listening on 127.0.0.1:48323
+1649576911652	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "34423" "-no-remote" "-profile" "/tmp/rust_mozprofileE9rGNH"
+*** You are running in headless mode.
+[GFX1-]: glxtest: Unable to open a connection to the X server
+[GFX1-]: glxtest: libEGL missing
+1649576911837	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileE9rGNH/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:34423/devtools/browser/5c6bf710-4f96-4ac9-870f-9c7f52802897
+1649576913070	Marionette	INFO	Listening on port 42623
+Read port: 42623
+1649576913228	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=617342404, line 1: unreachable code after return statement
+JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=617342404, line 1: unreachable code after return statement
+JavaScript warning: https://www.pccasegear.com/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=617342404 line 1 > eval, line 1: unreachable code after return statement

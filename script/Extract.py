@@ -3,11 +3,8 @@
 ### Imports
 import time
 
-# File Imports
-from Table import Table
 
-
-class Extract:
+class Extract: # TODO: Modify class to accept "WEBSITE" programmatically
     @staticmethod
     def pccg(soup, data_type):
         data = []
