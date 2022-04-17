@@ -47,7 +47,8 @@ def main():
     if not os.path.exists(OUT_JSON_DIR):
         os.makedirs(OUT_JSON_DIR)
     f = open(OUT_JSON_FILE, "w")
-    f.write(json.dumps(test_data, indent=4))
+    # f.write(json.dumps(test_data, indent=4)) # The indents definitely don't need to be here
+    f.write(json.dumps(test_data))
 
 
 

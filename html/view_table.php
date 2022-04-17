@@ -17,52 +17,84 @@
 
     <main>
         <?php
-            // TODO: Make a "home" menu
-                // 1. Scrape website data
-                    // a. "Which site?"
-                    // b. "Which hardware category?"
-                    // c. --> Pass arguments to script                        
-                        // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
-                // 2. View website data
-                    // a. "Graph?"
-                        // "Select metric"
-                            // Eg. Price, Capacity, Price per TB
-                    // b. "Table?"
-                        // "Select ???"
-                    // c. "Clear table?"
-                        // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
+            // Vars
+            $website = "PCCG";
+            // $website = "SCORPTEC";
+            $category = "HDD";
+            $result_dir = "/var/www/out";
 
-            // TODO: Read JSON
-            // List JSON files in dir
-
-            // For each filename, convert into time and check when is most recent (highest)
-            
-            $most_recent_file = "/var/www/out/scrape_result_PCCG_HDD_2022-04-11_00-12-52.json";
-
-            // Open most recent file
-            $json_string = file_get_contents($most_recent_file, True);
+            // Filter filenames to $website & $category
+            $filenames = scandir($result_dir, SCANDIR_SORT_DESCENDING);
+            $filenames = preg_grep("~^scrape_result_$website\_$category\_.*.json$~", $filenames); 
+            $file = "$result_dir/$filenames[0]";
+            // DEBUG
             // echo "<p>";
-            // echo $json_string;
+            // echo "$result_dir <br>";
+            // echo "$filenames[0] <br>";
+            // echo "$file <br>";
+            // echo "</p>";
+
+            // Open file
+            $json_s = file_get_contents($file, True);
+            if ($json_s === false) {
+                echo "ERROR: Unable to open file \"$file\"";
+                exit();
+            }
+            // DEBUG
+            // echo "<p>";
+            // echo $json_s;
             // echo "</p>";
 
             // Convert string to JSON object
+            $json_a = json_decode($json_s, true);
+            if ($json_a === null) {
+                echo "ERROR: Unable to convert JSON string to object";
+                exit();
+            }
+            // DEBUG
+            echo "<p>";
+            // OPTION 1:
+            // echo $json_a[0];
+            // OPTION 2:
+            // foreach ($json_a as $key => $val) {
+            //     echo "Item $key:<br>";
+            //     echo "Time: " + $val["Time"] + "<br>";
+            //     echo "Retailer: " + $val["Retailer"] + "<br>";
+            //     echo "Title: " + $val["Title"] + "<br>";
+            //     echo "URL: " + $val["URL"] + "<br>";
+            //     echo "PriceAUD: " + $val["PriceAUD"] + "<br>";
+            //     echo "Brand: " + $val["Brand"] + "<br>";
+            //     echo "Series: " + $val["Series"] + "<br>";
+            //     echo "HDDCapacity: " + $val["HDDCapacity"] + "<br>";
+            //     echo "HDDPricePerTB: " + $val["HDDPricePerTB"] + "<br>";
+            //     echo "<br>";
+            // }
+            // OPTION 3:
+            // print_r($json_a);
+            // OPTION 5:
+            // foreach ($json_a as $key => $val) {
+            //     echo "$key : $val <br>";
+            // }
+            // OPTION 6:
+            // foreach ($json_a as $key => $val) {
+            //     echo $val["Time"];
+            // }
+            // OPTION 7:
+            foreach ($json_a as $array_i => $array) {
+                echo "Iterating over array #$array_i <br>";
+                foreach ($array as $key => $val) {
+                    echo "$key : $val <br>";
 
-            $json_object = json_decode($json_string);
-            var_dump(json_decode($json_object));
-            // echo "<p>";
-            // echo $json_object;
-            // echo "</p>";
-            var_dump(json_decode($json_object, true));
-
-            // echo "<p>";
-            // echo $json_object;
-            // echo "</p>";
+                }
+                echo "<br>";
+            }
+            echo "</p>";
 
 
 
 
             // // CREATE TABLE
-            echo "<table>";
+            // echo "<table>";
 
             // // Fetch table headers
             // // $result = mysqli_query($con,
@@ -97,7 +129,7 @@
             //     $row = mysqli_fetch_row($result); // Fetch new row
             // }
 
-            echo "</table>";
+            // echo "</table>";
         ?>
     </main>
 </body>

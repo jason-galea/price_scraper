@@ -22,20 +22,6 @@
         </p>
 
         <?php
-            // TODO: Make a "home" menu
-                // 1. Scrape website data
-                    // a. "Which site?"
-                    // b. "Which hardware category?"
-                    // c. --> Pass arguments to script                        
-                        // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
-                // 2. View website data
-                    // a. "Graph?"
-                        // "Select metric"
-                            // Eg. Price, Capacity, Price per TB
-                    // b. "Table?"
-                        // "Select ???"
-                    // c. "Clear table?"
-                        // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
 
 
             // asd
