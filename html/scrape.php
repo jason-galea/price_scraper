@@ -19,28 +19,27 @@
 
         <?php
 
-            // GET ARGS (Site & Category)
+            // TODO: GET ARGS (Site & Category)
+            // echo "<form>";
+            // $website = "???";
+            // $category = "???";
+            // echo "</form>";
 
 
 
             // EXECUTE SCRIPT
-            // $cmd = "/var/www/script/scrape.py"; # Absolute
-            // $cmd = "../script/scrape.py"; # Relative
-            // $cmd = "/usr/bin/tree"; # TESTING
-            $cmd = "/var/www/script/TEST.py"; # TESTING
+            // $cmd = "/var/www/script/scrape.py";
+            // $cmd = "/var/www/script/scrape.py $website $category"; # Example with args
+            // $cmd = "/usr/bin/tree"; # TESTING BUILTIN
+            $cmd = "/var/www/script/TEST.py"; # TESTING PYTHON
 
-            echo "<p>";
-            echo "Running script \"$cmd\"<br>";
-            $cmd_escaped = escapeshellcmd($cmd);
-            $output = shell_exec($cmd_escaped);
-            // echo (shell_exec($cmd_escaped)); # Still no linebreaks
-            echo "</p>";
+            echo "<p>Running script \"$cmd\"...</p>";
+            $output = shell_exec($cmd); # This might help force the command to continue?
+            $output_clean = nl2br($output);
+            echo "<p>Printing command output:<br><br>$output_clean</p>";
+            
 
-            echo "<p>";
-            echo "Printing command output:<br>";
-            echo $output;
-            echo "</p>";
-
+            
         ?>
 
     </main>
