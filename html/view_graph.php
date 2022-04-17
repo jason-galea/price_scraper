@@ -13,13 +13,18 @@
         </h2>
     </header>
     
-    <?php include_once("nav.php");?>
+    <?php
+        include_once("nav.php");
+        include_once("nav_view.php");
+    ?>
 
-    <main>
+    <main>  
+
         <?php
 
 
             // Haha fuck, this is going to be a pain
         ?>
+        
     </main>
 </body>

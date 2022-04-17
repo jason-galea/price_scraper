@@ -13,123 +13,112 @@
         </h2>
     </header>
     
-    <?php include_once("nav.php"); ?>
+    <?php
+        include_once("nav.php");
+        include_once("nav_view.php");
+    ?>
 
     <main>
+
         <?php
-            // Vars
-            $website = "PCCG";
-            // $website = "SCORPTEC";
-            $category = "HDD";
-            $result_dir = "/var/www/out";
 
-            // Filter filenames to $website & $category
-            $filenames = scandir($result_dir, SCANDIR_SORT_DESCENDING);
-            $filenames = preg_grep("~^scrape_result_$website\_$category\_.*.json$~", $filenames); 
-            $file = "$result_dir/$filenames[0]";
-            // DEBUG
-            // echo "<p>";
-            // echo "$result_dir <br>";
-            // echo "$filenames[0] <br>";
-            // echo "$file <br>";
-            // echo "</p>";
+        // Vars
+        // TODO: Add form to choose $retailer & $category
+        $retailer = "PCCG";
+        // $retailer = "SCORPTEC";
+        $category = "HDD";
+        $result_dir = "/var/www/out";
 
-            // Open file
-            $json_s = file_get_contents($file, True);
-            if ($json_s === false) {
-                echo "ERROR: Unable to open file \"$file\"";
-                exit();
+        // Signposting
+        echo "<p>";
+        echo "Showing \"$category\" data from retailer \"$retailer\"";
+        echo "</p>";
+
+        // Fetch & filter filenames
+        $filenames = scandir($result_dir, SCANDIR_SORT_DESCENDING);
+        $filenames = preg_grep("~^scrape_result_$retailer\_$category\_.*.json$~", $filenames); 
+        $file = "$result_dir/$filenames[0]";
+        // DEBUG
+        // echo "<p>";
+        // echo "$result_dir <br>";
+        // echo "$filenames[0] <br>";
+        // echo "$file <br>";
+        // echo "</p>";
+
+        // Open file
+        $json_s = file_get_contents($file, True);
+        if ($json_s === false) {
+            echo "ERROR: Unable to open file \"$file\"";
+            exit();
+        }
+        // DEBUG
+        // echo "<p>";
+        // echo $json_s;
+        // echo "</p>";
+
+        // Convert string to JSON object
+        $json_a = json_decode($json_s, true);
+        if ($json_a === null) {
+            echo "ERROR: Unable to convert JSON string to object";
+            exit();
+        }
+        // // DEBUG
+        // foreach ($json_a as $array_i => $array) {
+        //     echo "<p>";
+        //     echo "Iterating over array #$array_i <br>";
+        //     foreach ($array as $key => $val) {
+        //         echo "$key : $val <br>";
+        //     }
+        //     echo "</p>";
+        // }
+
+        // CREATE TABLE
+        echo "<table>";
+
+        // Table headings
+        echo "<tr>";
+        foreach ($json_a[0] as $key => $val) {
+            switch ($key) {
+                // Fail conditions
+                case "Retailer":
+                case "URL":
+                case "Brand":
+                case "Series":
+                    break;
+                default:
+                    echo "<th>$key</th>";
+                    
             }
-            // DEBUG
-            // echo "<p>";
-            // echo $json_s;
-            // echo "</p>";
+        }
+        echo "</tr>";
 
-            // Convert string to JSON object
-            $json_a = json_decode($json_s, true);
-            if ($json_a === null) {
-                echo "ERROR: Unable to convert JSON string to object";
-                exit();
-            }
-            // DEBUG
-            echo "<p>";
-            // OPTION 1:
-            // echo $json_a[0];
-            // OPTION 2:
-            // foreach ($json_a as $key => $val) {
-            //     echo "Item $key:<br>";
-            //     echo "Time: " + $val["Time"] + "<br>";
-            //     echo "Retailer: " + $val["Retailer"] + "<br>";
-            //     echo "Title: " + $val["Title"] + "<br>";
-            //     echo "URL: " + $val["URL"] + "<br>";
-            //     echo "PriceAUD: " + $val["PriceAUD"] + "<br>";
-            //     echo "Brand: " + $val["Brand"] + "<br>";
-            //     echo "Series: " + $val["Series"] + "<br>";
-            //     echo "HDDCapacity: " + $val["HDDCapacity"] + "<br>";
-            //     echo "HDDPricePerTB: " + $val["HDDPricePerTB"] + "<br>";
-            //     echo "<br>";
-            // }
-            // OPTION 3:
-            // print_r($json_a);
-            // OPTION 5:
-            // foreach ($json_a as $key => $val) {
-            //     echo "$key : $val <br>";
-            // }
-            // OPTION 6:
-            // foreach ($json_a as $key => $val) {
-            //     echo $val["Time"];
-            // }
-            // OPTION 7:
-            foreach ($json_a as $array_i => $array) {
-                echo "Iterating over array #$array_i <br>";
-                foreach ($array as $key => $val) {
-                    echo "$key : $val <br>";
 
+        // Table rows
+        foreach ($json_a as $array_i => $array) {
+            echo "<tr>";
+            foreach ($array as $key => $val) {
+                switch ($key) {
+                    // Fail conditions
+                    case "Retailer":
+                    case "URL":
+                    case "Brand":
+                    case "Series":
+                        break;
+                    // Special cases
+                    case "Title":
+                        $URL = $array["URL"];
+                        echo "<td><a href=\"$URL\">$val</a></td>";
+                        break;
+                    default:
+                        echo "<td>$val</td>";
+                        
                 }
-                echo "<br>";
             }
-            echo "</p>";
+            echo "</tr>";
+        }
+        echo "</table>";
 
-
-
-
-            // // CREATE TABLE
-            // echo "<table>";
-
-            // // Fetch table headers
-            // // $result = mysqli_query($con,
-            // //     "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
-            // // );
-            // $result = $mySQL->getColumns($sqlTable);
-
-            // // Insert table headers
-            // echo "<tr>";
-            // // $header_row = mysqli_fetch_row($result);
-            // $header_row = $mySQL->getColumns($orderColumn);
-            // while ($header_row) {
-            //     echo "<th>" + $header_row[0] + "</th>";
-            //     // $headers_row = mysqli_fetch_row($result);
-            //     $headers_row = mysqli_fetch_row($result);
-            // }
-            // echo "</tr>";
-            
-            // // Fetch table contents
-            // $result = mysqli_query($con,
-            //     "SELECT * FROM $sqlTable ORDER BY $orderColumn $orderDirection;"
-            // );
-            // $row = mysqli_fetch_row($result);
-
-            // // Insert rows
-            // while ($row) { // Loop until $row is NULL
-            //     echo "<tr>";
-            //     foreach ($row as $value) {
-            //         echo "<td>$value</td>";
-            //     } 
-            //     echo "</tr>";
-            //     $row = mysqli_fetch_row($result); // Fetch new row
-            // }
-
-            // echo "</table>";
         ?>
+
     </main>
 </body>

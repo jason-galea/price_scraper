@@ -13,18 +13,18 @@
         </h2>
     </header>
     
-    <?php include_once("nav.php");?>
+    <?php
+        include_once("nav.php");
+        include_once("nav_view.php");
+    ?>
 
     <main>
-        <p>
-            <a href="view_graph.php">View data in a graph</a>
-            <a href="view_table.php">View data in a table</a>
-        </p>
 
         <?php
 
 
             // asd
         ?>
+        
     </main>
 </body>
