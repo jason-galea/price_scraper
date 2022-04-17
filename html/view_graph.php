@@ -9,7 +9,7 @@
 <body>
     <header>
         <h2>
-            View Website Data - Graph
+            View Data - Graph
         </h2>
     </header>
     

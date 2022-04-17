@@ -9,7 +9,7 @@
 <body>
     <header>
         <h2>
-            View Website Data - Table
+            View Data - Table
         </h2>
     </header>
     

@@ -9,7 +9,7 @@
 <body>
     <header>
         <h2>
-            Scrape Website Data
+            Scrape Data
         </h2>
     </header>
 
