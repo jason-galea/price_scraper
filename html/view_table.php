@@ -39,11 +39,11 @@
         $filenames = preg_grep("~^scrape_result_$retailer\_$category\_.*.json$~", $filenames); 
         $file = "$result_dir/$filenames[0]";
         // DEBUG
-        // echo "<p>";
+        echo "<p>";
         // echo "$result_dir <br>";
         // echo "$filenames[0] <br>";
-        // echo "$file <br>";
-        // echo "</p>";
+        echo "$file <br>";
+        echo "</p>";
 
         // Open file
         $json_s = file_get_contents($file, True);

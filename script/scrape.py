@@ -2,7 +2,7 @@
 
 ### Imports
 import os
-import time
+import datetime
 import json
 
 from Extract import Extract
@@ -10,8 +10,9 @@ from Web import Web
 
 
 def main():
-    ### Vars        
-    NOW = time.strftime("%Y-%m-%d_%H-%M-%S")
+    ### Vars
+    # NOW = time.strftime("%Y-%m-%d_%H-%M-%S")
+    NOW = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S") # UTC is much easier
     WEBSITE = "PCCG"
     CATEGORY = "HDD"
     # OUT_JSON_DIR = f"{os.path.abspath(os.path.dirname(__file__))}/../scrape_result"
@@ -43,7 +44,7 @@ def main():
 
 
     ### Export
-    print(f"\nExporting data to {OUT_JSON_FILE}")
+    print(f"\nExporting data to {OUT_JSON_FILE}\n")
     if not os.path.exists(OUT_JSON_DIR):
         os.makedirs(OUT_JSON_DIR)
     f = open(OUT_JSON_FILE, "w")
@@ -51,7 +52,8 @@ def main():
     f.write(json.dumps(test_data))
 
 
-
+    ### Cleanup
+    os.system("pkill firefox")
     return
 
 if __name__ == "__main__":
