@@ -1,49 +1,59 @@
 #!/usr/bin/python3
 
 ### Imports
-# from logging import error
-import time
+import os
+import datetime
 import json
-# from typing import Dict
-# from selenium import webdriver
-# from selenium.webdriver.common.keys import Keys
-# from bs4 import BeautifulSoup as bs
 
-
-### File Imports
 from Extract import Extract
-from SQL import SQL
 from Web import Web
 
 
-### Check arguments
-# TODO: Allow arguments, eg:
-# $ ./scrape.py {website} {data_type}
-# $ ./scrape.py PCCG HDD
-# Each execution would extract data & insert into the appropriate table, then close
-
 def main():
-    # soup = Web.GetPageChrome("PCCG", "HDD")
-    soup = Web.GetPageFirefox("PCCG", "HDD")
+    ### Vars
+    # NOW = time.strftime("%Y-%m-%d_%H-%M-%S")
+    NOW = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S") # UTC is much easier
+    WEBSITE = "PCCG"
+    CATEGORY = "HDD"
+    # OUT_JSON_DIR = f"{os.path.abspath(os.path.dirname(__file__))}/../scrape_result"
+    OUT_JSON_DIR = f"{os.path.abspath(os.path.dirname(__file__))}/../out"
+    OUT_JSON_FILE = f"{OUT_JSON_DIR}/scrape_result_{WEBSITE}_{CATEGORY}_{NOW}.json"
+    # OUT_JSON_FILE = f"{OUT_JSON_DIR}/out_{WEBSITE}_{CATEGORY}_{NOW}.json"
+    # print(OUT_JSON_DIR)
+    # print(OUT_JSON_FILE)
+    # print(NOW)
+    # exit()
 
-    # Extract & Insert
-    test_data = Extract.pccg(soup, "HDD")
+    ### Check arguments
+    # TODO: Allow arguments, eg:
+    # $ ./scrape.py {website} {data_type}
+    # $ ./scrape.py PCCG HDD
+    # Each execution would extract data & insert into the appropriate table, then close
+
+
+    ### Fetch
+    # soup = Web.GetPageChrome(WEBSITE, CATEGORY)
+    soup = Web.GetPage(WEBSITE, CATEGORY)
+
+
+    ### Extract
+    test_data = Extract.pccg(soup, CATEGORY) # TODO: Modify class to accept "WEBSITE" programmatically
     # print(test_data)
     print(json.dumps(test_data, indent=4))
-
-    ### Open SQL
-    # MySQL = SQL()
-    # MySQL.use_database()
-    # MySQL.create_tables() # Don't overwrite existing tables
-
-    ### Insert
-    # MySQL.Insert.hdd(test_data, MySQL.cnx)
-
-    ### Close SQL
-    # MySQL.select_all_from_table("HDD")
-    # MySQL.close()
+    # exit()
 
 
+    ### Export
+    print(f"\nExporting data to {OUT_JSON_FILE}\n")
+    if not os.path.exists(OUT_JSON_DIR):
+        os.makedirs(OUT_JSON_DIR)
+    f = open(OUT_JSON_FILE, "w")
+    # f.write(json.dumps(test_data, indent=4)) # The indents definitely don't need to be here
+    f.write(json.dumps(test_data))
+
+
+    ### Cleanup
+    os.system("pkill firefox")
     return
 
 if __name__ == "__main__":

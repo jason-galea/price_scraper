@@ -1,15 +1,16 @@
 #!/usr/bin/python3
 
 ### Imports
-import time
-
-# File Imports
-from Table import Table
+# import time
+import datetime
 
 
-class Extract:
+class Extract: # TODO: Modify class to accept "WEBSITE" programmatically
+
     @staticmethod
     def pccg(soup, data_type):
+        NOW = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S") # UTC is much easier
+        
         data = []
 
         for product in soup.find_all('div', class_="product-container"):
@@ -55,7 +56,8 @@ class Extract:
             #         pass
 
             data.append({
-                "Time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                # "Time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "UTCTime": NOW,
                 "Retailer": "PCCG",
                 "Title": p_title,
                 "URL": p_url,

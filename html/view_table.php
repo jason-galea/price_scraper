@@ -9,80 +9,128 @@
 <body>
     <header>
         <h2>
-            View Website Data - Table
+            View Data - Table
         </h2>
     </header>
     
-    <?php include_once("nav.php");?>
+    <?php
+        include_once("nav.php");
+        include_once("nav_view.php");
+    ?>
 
     <main>
+
         <?php
-            // TODO: Make a "home" menu
-                // 1. Scrape website data
-                    // a. "Which site?"
-                    // b. "Which hardware category?"
-                    // c. --> Pass arguments to script                        
-                        // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
-                // 2. View website data
-                    // a. "Graph?"
-                        // "Select metric"
-                            // Eg. Price, Capacity, Price per TB
-                    // b. "Table?"
-                        // "Select ???"
-                    // c. "Clear table?"
-                        // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
+
+        // PRINT FORM
+        include_once("web_cat_form.php");
+
+        // CHECK FORM
+        if (isset($_POST["website"]) and isset($_POST["category"])) {
+            $website = $_POST["website"];
+            $category = $_POST["category"];
+            echo "<p>Showing \"$category\" data from \"$website\"</p>";
+        } else {
+            exit();
+        }
 
 
-            // Import classes
-            include_once("SQL.php");
 
-            // Variables
-            $sqlTable = "HDD"; // TODO: Turn this into a button
-            $sqlColumnToOrderBy = "HDDPricePerTB"; // TODO: Turn this into a button
-            $sqlOrderDirection = "ASC"; // TODO: Turn this into a button
+        // VARS
+        $result_dir = "/var/www/out";
 
 
-            // CONNECT TO MYSQL
-            // $con = mysqli_connect($SQL, $SQL_USER, $SQL_PASS);
-            // mysqli_select_db($con, $SQL_DB);
-            $mySQL = new SQL();
+
+        // GET FILENAME
+        $filenames = scandir($result_dir, SCANDIR_SORT_DESCENDING);
+        $filenames = preg_grep("~^scrape_result_$website\_$category\_.*.json$~", $filenames); 
+        $file = "$result_dir/$filenames[0]";
+        // DEBUG
+        echo "<p>";
+        // echo "$result_dir <br>";
+        // echo "$filenames[0] <br>";
+        echo "$file <br>";
+        echo "</p>";
 
 
-            // CREATE TABLE
-            echo "<table>";
-            // Fetch table headers
-            // $result = mysqli_query($con,
-            //     "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table';"
-            // );
-            $result = $mySQL->getColumns($sqlTable);
-            // Insert table headers
+
+        // OPEN FILE
+        $json_s = file_get_contents($file, True);
+        if ($json_s === false) {
+            echo "ERROR: Unable to open file \"$file\"";
+            exit();
+        }
+        // DEBUG
+        // echo "<p>";
+        // echo $json_s;
+        // echo "</p>";
+
+
+
+        // Convert string to JSON object
+        $json_a = json_decode($json_s, true);
+        if ($json_a === null) {
+            echo "ERROR: Unable to convert JSON string to object";
+            exit();
+        }
+        // // DEBUG
+        // foreach ($json_a as $array_i => $array) {
+        //     echo "<p>";
+        //     echo "Iterating over array #$array_i <br>";
+        //     foreach ($array as $key => $val) {
+        //         echo "$key : $val <br>";
+        //     }
+        //     echo "</p>";
+        // }
+
+
+
+        // CREATE TABLE
+        echo "<table>";
+
+        // Print headings
+        echo "<tr>";
+        foreach ($json_a[0] as $key => $val) {
+            switch ($key) {
+                // Fail conditions
+                case "website":
+                case "URL":
+                case "Brand":
+                case "Series":
+                    break;
+                default:
+                    echo "<th>$key</th>";
+                    
+            }
+        }
+        echo "</tr>";
+
+        // Print  rows
+        foreach ($json_a as $array_i => $array) {
             echo "<tr>";
-            // $header_row = mysqli_fetch_row($result);
-            $header_row = $mySQL->getColumns($orderColumn);
-            while ($header_row) {
-                echo "<th>" + $header_row[0] + "</th>";
-                // $headers_row = mysqli_fetch_row($result);
-                $headers_row = mysqli_fetch_row($result);
+            foreach ($array as $key => $val) {
+                switch ($key) {
+                    // Fail conditions
+                    case "website":
+                    case "URL":
+                    case "Brand":
+                    case "Series":
+                        break;
+                    // Special cases
+                    case "Title":
+                        $URL = $array["URL"];
+                        echo "<td><a href=\"$URL\">$val</a></td>";
+                        break;
+                    default:
+                        echo "<td>$val</td>";
+                        
+                }
             }
             echo "</tr>";
-            
-            // Fetch table contents
-            $result = mysqli_query($con,
-                "SELECT * FROM $sqlTable ORDER BY $orderColumn $orderDirection;"
-            );
-            $row = mysqli_fetch_row($result);
+        }
+        echo "</table>";
 
-            // Insert rows
-            while ($row) { // Loop until $row is NULL
-                echo "<tr>";
-                foreach ($row as $value) {
-                    echo "<td>$value</td>";
-                } 
-                echo "</tr>";
-                $row = mysqli_fetch_row($result); // Fetch new row
-            }
-
-            echo "</table>";
         ?>
+
     </main>
 </body>

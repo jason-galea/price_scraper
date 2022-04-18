@@ -9,42 +9,79 @@
 <body>
     <header>
         <h2>
-            Scrape Website Data
+            Scrape Data
         </h2>
     </header>
 
     <?php include_once("nav.php");?>
 
     <main>
+
         <?php
-            // TODO: Make a "home" menu
-                // 1. Scrape website data
-                    // a. "Which site?"
-                    // b. "Which hardware category?"
-                    // c. --> Pass arguments to script                        
-                        // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
-                // 2. View website data
-                    // a. "Graph?"
-                        // "Select metric"
-                            // Eg. Price, Capacity, Price per TB
-                    // b. "Table?"
-                        // "Select ???"
-                    // c. "Clear table?"
-                        // WHEN IMPLEMENTED, THE SCRIPT CAN BE MANAGED ENTIRELY FROM THE SITE
+
+        // PRINT FORM
+        include_once("web_cat_form.php");
+
+        // CHECK FORM
+        if (isset($_POST["website"]) and isset($_POST["category"])) {
+            $website = $_POST["website"];
+            $category = $_POST["category"];
+            echo "<p>Received website \"$website\" and category \"$category\"</p>";
+        } else {
+            exit();
+        }
+
+
+        // VARS
+        $cmd = "/var/www/script/scrape.py";
+        // $cmd = "/var/www/script/scrape.py $website $category"; # Example with args
+        // $cmd = "/usr/bin/tree"; # TESTING BUILTIN
+        // $cmd = "/var/www/script/TEST.py"; # TESTING PYTHON
+        $temp_file = "/var/www/html/scrape_output.txt";
 
 
 
-            // Functions
-            // function scrape() {
+        // PREPARE
+        if (file_exists($temp_file)) {
+        echo "<p>Removing temp file \"$temp_file\"...</p>";
+            unlink($temp_file);
+        }
 
-            // }
-            
+        // EXECUTE
+        echo "<p>Starting script \"$cmd\"...</p>";
+        shell_exec("$cmd > $temp_file 2>&1 &"); // BACKGROUND
 
+        // WAIT
+        for ($i = 0; $i <= 15; $i++) {
+            sleep(1);
+            echo "Script has been running for $i seconds...<br>";
+            flush();
+            ob_flush();
 
-            // EXECUTE
-            // 1. Get use arguments (site & category)
+            // PRINT WHEN COMPLETE
+            if (file_exists($temp_file) and (file_get_contents($temp_file))) {
+                echo "<br>Found temp file \"$temp_file\"<br>";
+                echo nl2br(file_get_contents($temp_file));
+                echo "<br>";
 
-            // 2. Invoke the script
+                echo "<br>Deleting temp file \"$temp_file\"<br>";
+                unlink($temp_file);
+
+                break;
+            }
+
+            // // DEBUG
+            // echo $temp_file."<br>";
+            // echo nl2br(file_get_contents($temp_file));
+            // // $f = fopen($temp_file, "r");
+            // // while(! feof($f)) {
+            // //     $line = fgets($f);
+            // //     echo $f. "<br>";
+            // // }
+
+        }
+        
         ?>
+
     </main>
 </body>
