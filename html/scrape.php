@@ -19,11 +19,17 @@
 
         <?php
 
-        // TODO: GET ARGS (Site & Category)
-        // echo "<form>";
-        // $website = "???";
-        // $category = "???";
-        // echo "</form>";
+        // PRINT FORM
+        include_once("web_cat_form.php");
+
+        // CHECK FORM
+        if (isset($_POST["website"]) and isset($_POST["category"])) {
+            $website = $_POST["website"];
+            $category = $_POST["category"];
+            echo "<p>Received website \"$website\" and category \"$category\"</p>";
+        } else {
+            exit();
+        }
 
 
         // VARS
@@ -31,51 +37,35 @@
         // $cmd = "/var/www/script/scrape.py $website $category"; # Example with args
         // $cmd = "/usr/bin/tree"; # TESTING BUILTIN
         // $cmd = "/var/www/script/TEST.py"; # TESTING PYTHON
-
-
-        // EXECUTE SCRIPT (v1)
-        // echo "<p>Running script \"$cmd\"...</p>";
-        // $output = shell_exec($cmd); # This might help force the command to continue?
-        // $output_clean = nl2br($output);
-        // echo "<p>Printing command output:<br><br>$output_clean</p>";
-
-
-        // EXECUTE SCRIPT (v2)
         $temp_file = "/var/www/html/scrape_output.txt";
-        // TEMP FILE
-        // echo "<p>Removing temp file \"$temp_file\"...</p>";
-        // if (file_exists($temp_file)) {
-        //     unlink($temp_file);
-        // }
-        // echo "<p>Creating temp file \"$temp_file\"...</p>";
-        // if (! file_exists($temp_file)) {
-        //     file_put_contents($temp_file, "test 1");
-        // }
 
-        // START SCRIPT IN BACKGROUND
+
+
+        // PREPARE
+        if (file_exists($temp_file)) {
+        echo "<p>Removing temp file \"$temp_file\"...</p>";
+            unlink($temp_file);
+        }
+
+        // EXECUTE
         echo "<p>Starting script \"$cmd\"...</p>";
-        // https://stackoverflow.com/questions/45953/php-execute-a-background-process
-        // system("echo 'test 2' > $temp_file"); // WORKS
-        // system("echo 'test 3' > $temp_file 2>&1 &"); // WORKS
-        // system("$cmd > $temp_file 2>&1 &"); // DOESN'T WORK!
-        shell_exec("$cmd >> $temp_file 2>&1 &"); // WORKS (With sleep)
+        shell_exec("$cmd > $temp_file 2>&1 &"); // BACKGROUND
 
+        // WAIT
         for ($i = 0; $i <= 15; $i++) {
             sleep(1);
             echo "Script has been running for $i seconds...<br>";
             flush();
             ob_flush();
 
-            // - Check if temp file exists:
-            //     - Delete file
-            //     - Print contents
-            //     - End loop
+            // PRINT WHEN COMPLETE
             if (file_exists($temp_file) and (file_get_contents($temp_file))) {
-                echo "<br>Temp file found! Printing output:<br>";
+                echo "<br>Found temp file \"$temp_file\"<br>";
                 echo nl2br(file_get_contents($temp_file));
                 echo "<br>";
 
-                // unlink($temp_file);
+                echo "<br>Deleting temp file \"$temp_file\"<br>";
+                unlink($temp_file);
 
                 break;
             }
@@ -90,9 +80,7 @@
             // // }
 
         }
-            
-
-            
+        
         ?>
 
     </main>

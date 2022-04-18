@@ -22,21 +22,28 @@
 
         <?php
 
-        // Vars
-        // TODO: Add form to choose $retailer & $category
-        $retailer = "PCCG";
-        // $retailer = "SCORPTEC";
-        $category = "HDD";
+        // PRINT FORM
+        include_once("web_cat_form.php");
+
+        // CHECK FORM
+        if (isset($_POST["website"]) and isset($_POST["category"])) {
+            $website = $_POST["website"];
+            $category = $_POST["category"];
+            echo "<p>Showing \"$category\" data from \"$website\"</p>";
+        } else {
+            exit();
+        }
+
+
+
+        // VARS
         $result_dir = "/var/www/out";
 
-        // Signposting
-        echo "<p>";
-        echo "Showing \"$category\" data from retailer \"$retailer\"";
-        echo "</p>";
 
-        // Fetch & filter filenames
+
+        // GET FILENAME
         $filenames = scandir($result_dir, SCANDIR_SORT_DESCENDING);
-        $filenames = preg_grep("~^scrape_result_$retailer\_$category\_.*.json$~", $filenames); 
+        $filenames = preg_grep("~^scrape_result_$website\_$category\_.*.json$~", $filenames); 
         $file = "$result_dir/$filenames[0]";
         // DEBUG
         echo "<p>";
@@ -45,7 +52,9 @@
         echo "$file <br>";
         echo "</p>";
 
-        // Open file
+
+
+        // OPEN FILE
         $json_s = file_get_contents($file, True);
         if ($json_s === false) {
             echo "ERROR: Unable to open file \"$file\"";
@@ -55,6 +64,8 @@
         // echo "<p>";
         // echo $json_s;
         // echo "</p>";
+
+
 
         // Convert string to JSON object
         $json_a = json_decode($json_s, true);
@@ -72,15 +83,17 @@
         //     echo "</p>";
         // }
 
+
+
         // CREATE TABLE
         echo "<table>";
 
-        // Table headings
+        // Print headings
         echo "<tr>";
         foreach ($json_a[0] as $key => $val) {
             switch ($key) {
                 // Fail conditions
-                case "Retailer":
+                case "website":
                 case "URL":
                 case "Brand":
                 case "Series":
@@ -92,14 +105,13 @@
         }
         echo "</tr>";
 
-
-        // Table rows
+        // Print  rows
         foreach ($json_a as $array_i => $array) {
             echo "<tr>";
             foreach ($array as $key => $val) {
                 switch ($key) {
                     // Fail conditions
-                    case "Retailer":
+                    case "website":
                     case "URL":
                     case "Brand":
                     case "Series":
