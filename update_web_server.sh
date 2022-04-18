@@ -1,25 +1,32 @@
 #!/usr/bin/bash
 
-# This relies on the scraper container from the "proxmox_automation" repo
+### This relies on the scraper container from the "proxmox_automation" repo
+USER="root"
+HOST="172.26.0.125"
+WWW="/var/www"
+TMP="/tmp/apache"
 
-# Delete
-ssh root@172.26.0.125 "rm -rf /var/www/*"
+
+
+### Delete
+ssh $USER@$HOST "rm -rf $WWW/*"
 echo
 
-# Push
-# scp -r ../price_scraper/* root@172.26.0.125:/var/www/
-scp -r ./* root@172.26.0.125:/var/www/
+### Push
+# scp -r ../price_scraper/* $USER@$HOST:$WWW/
+scp -r ./* $USER@$HOST:$WWW/
 echo
 
-# Display
-# ssh root@172.26.0.125 "tree /var/www/"
+### Set permissions & ownership
+ssh $USER@$HOST "chown -R www-data:www-data $WWW/"
+ssh $USER@$HOST "chmod -R 755 $WWW"
+
+### Display
+# ssh $USER@$HOST "tree $WWW/"
 # echo
 
-# Set folder permissions (matching proxmox_automation/services/scraper.yml)
-ssh root@172.26.0.125 "chmod -R 755 /var/www"
-
-# Restart webserver
-ssh root@172.26.0.125 "systemctl restart apache2"
-ssh root@172.26.0.125 "systemctl status apache2"
+### Restart webserver
+ssh $USER@$HOST "systemctl restart apache2"
+ssh $USER@$HOST "systemctl status apache2"
 echo
 

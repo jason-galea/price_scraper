@@ -1,6 +1,12 @@
 #!/usr/bin/python3
 
 import time
+# import os
+# import datetime
+# import json
+
+from Extract import Extract
+from Web import Web
 
 print("This is some test output from python")
 
@@ -11,8 +17,8 @@ print("1.")
 print("2.")
 print("3.")
 
-print("Waiting for 5 seconds...")
-time.sleep(5)
+print("Waiting for 3 seconds...")
+time.sleep(3)
 
 print("DONE")
 
