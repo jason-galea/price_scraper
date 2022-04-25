@@ -42,7 +42,7 @@ def main():
     URLS = {
         "pccg": {
             "hdd": "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives",
-            "ssd": "",
+            "ssd": "https://www.pccasegear.com/category/210_902/hard-drives-ssds/solid-state-drives-ssd",
             "cpu": "",
             "gpu": "",
         },
