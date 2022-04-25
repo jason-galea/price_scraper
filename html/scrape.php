@@ -18,24 +18,15 @@
 
         <?php
 
-        // PRINT FORM
-        include_once("templates/web_cat_form.php");
-
-        // CHECK FORM
-        if (isset($_POST["website"]) and isset($_POST["category"])) {
-            $website = $_POST["website"];
-            $category = $_POST["category"];
-            echo "<p>Received website \"$website\" and category \"$category\"</p>";
-        } else {
-            exit();
-        }
+        // PRINT & PROCESS FORM
+        include_once("templates/form_website_category.php");
 
 
         // VARS
-        $cmd = "/var/www/script/scrape.py";
-        // $cmd = "/var/www/script/scrape.py $website $category"; # Example with args
-        // $cmd = "/usr/bin/tree"; # TESTING BUILTIN
-        // $cmd = "/var/www/script/TEST.py"; # TESTING PYTHON
+        // $cmd = "/var/www/script/scrape.py";
+        $cmd = "/var/www/script/scrape.py $website $category"; # Example with args
+        // $cmd = "/usr/bin/tree"; # Short test
+        // $cmd = "/usr/bin/sleep 5"; # Long test
         $temp_file = "/var/www/html/scrape_output.txt";
 
 

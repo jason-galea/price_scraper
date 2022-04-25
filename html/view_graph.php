@@ -12,17 +12,17 @@
         </h2>
     </header>
     
-    <?php
-        include_once("templates/nav.php");
-        include_once("templates/nav_view.php");
-    ?>
-
+    <?php include_once("templates/nav.php"); ?>
+    <?php include_once("templates/nav_view.php"); ?>
+     
     <main>  
 
         <?php
 
+        // TODO: Research & decide on a graphing solution
+        // Native PHP?
+        // Plotly?
 
-            // Haha fuck, this is going to be a pain
         ?>
         
     </main>

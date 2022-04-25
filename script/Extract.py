@@ -1,82 +1,95 @@
 #!/usr/bin/python3
 
 ### Imports
-# import time
 import datetime
+
+from Web import Web
 
 
 class Extract: # TODO: Modify class to accept "WEBSITE" programmatically
 
     @staticmethod
-    def pccg(soup, data_type):
-        NOW = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S") # UTC is much easier
+    def extract(website, category, soup):
+        if website == "pccg":
+            return Extract.pccg(category, soup)
+        elif website == "scorptec":
+            pass
+        elif website == "centrecom":
+            pass
+        # elif website == "???":
+        #     pass
+
+
+    @staticmethod
+    def pccg(category, soup):
         
-        data = []
+        results = []
 
         for product in soup.find_all('div', class_="product-container"):
-            
-            ### Common attributes
-            # Data extracted from DOM
-            p_title = product.find_next("a", class_="product-title").string
-            p_url = product.find_next("a", class_="product-title").attrs["href"]
-            # p_incomplete_desc = product.find_next("p").string
-            p_price_aud = int(product.find_next("div", class_="price").string.strip("$")) # "$123" --> 123
 
-            # Data extrapolated from previous extraction
-            p_title_array = p_title.split()
-            # p_incomplete_desc_array = p_incomplete_desc.split()
-            p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
-            p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2) # Round to two decimal places
-
-            # Brand/Series/Model fuckery, extrapolated from Title
-            if p_title_array[0] == "Western":
-                p_brand = "Western Digital"
-                p_series = p_title_array[3] # "Blue"
-                if p_series == "Red": # Logic to handle multi-word series names
-                    p_series += " " + p_title_array[4] # "Red Plus"
-                    p_model_number = p_title_array[6] # "WD8001FZBX"
-                else:
-                    # p_series is already correct
-                    p_model_number = p_title_array[5]
-            
-            elif p_title_array[0] == "Seagate":
-                p_brand = "Seagate"
-                p_series = p_title_array[1] # "Ironwolf"
-                p_model_number = p_title_array[3] # "ST8000VN004"
-            
-            # TODO: Separate common & unique attribute extraction logic.
-            # Eg Title/price/URL are common attributes
-            # HDD Capacity is unique
-
-            # match data_type:
-            #     case "HDD":
-            #         p_hdd_capacity = int(next(x for x in p_title_array if x.__contains__("TB")).strip("TB")) # "10TB" --> 10
-            #         p_hdd_price_per_tb = round(p_price_aud/p_hdd_capacity, 2)
-            #     case _: # Default case
-            #         pass
-
-            data.append({
-                # "Time": time.strftime("%Y-%m-%d %H:%M:%S"),
-                "UTCTime": NOW,
+            ### Setup & data common to PCCG
+            result = {
+                "UTCTime": datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S"),
                 "Retailer": "PCCG",
-                "Title": p_title,
-                "URL": p_url,
-                # "IncompleteDescription": p_incomplete_desc,
-                "PriceAUD": p_price_aud,
-                "Brand": p_brand,
-                "Series": p_series,
-                "ModelNumber": p_model_number,
-                "HDDCapacity": p_hdd_capacity,
-                "HDDPricePerTB": p_hdd_price_per_tb,
-            })
+                "Title":product.find_next("a", class_="product-title").string,
+                "URL":product.find_next("a", class_="product-title").attrs["href"],
+                "PriceAUD":int(product.find_next("div", class_="price").string.strip("$")),
+            }
 
-        # Just sign-posting a lil' bit
-        # print(f"Success: Extracted data from PCCG {data_type} webpage")
-        # print()
-        # print(data)
-        # print()
+            ### TODO: Fetch full description from current products "url"
+            # description_soup = Web.GetPageSoup(result["URL"])
+            # result.update({
+            #     # "Description":description_soup.find_next("div", id_="overview").string
+            #     # "Description":description_soup.find_next("div", class_="tab-pane").string
+            #     "Description":description_soup.find_next("div", class_="tab-pane")
+            #     # "Description":description_soup.select_one("div.tab-pane.active")
+            # })
 
-        return data
+            ### TODO: Extract even more data from description?
+            ### Lots of caveats, as desciption varies enormously
+            # description_a = description.split()
 
+            title_a = result["Title"].split()
+
+            ### WEBSITE & CATEGORY SPECIFIC DATA
+            if category == "hdd":
+                
+                ### Clean up array, for consistency across brands
+                if title_a[0] == "Western": # ["Western", "Digital", "WD"] --> ["Western Digital"]
+                    title_a[0] = "Western Digital"
+                    del title_a[1:3]
+
+                    if title_a[1] == "Red": # ["Red", "Plus"] --> ["Red Plus"]
+                        title_a[1] = f"Red {title_a[2]}" # "Red Plus" or "Red Pro"
+                        del title_a[2]
+
+                ### Prepare
+                hdd_capacity = int(title_a[2].strip("TB"))
+
+                ### Update
+                result.update({
+                    "Brand":title_a[0],
+                    "Series":title_a[1],
+                    "ModelNumber":title_a[3],
+                    "HDDCapacity":hdd_capacity,
+                    "HDDPricePerTB":round(result["PriceAUD"]/hdd_capacity, 2),
+                })
+
+
+            elif category == "cpu":
+                pass
+            elif category == "gpu":
+                pass
+            else:
+                print(f"Unknown category '{category}', exiting...")
+                exit(1)
+
+
+            results.append(result)
+
+
+        return results
+
+    @staticmethod
     def scorptec():
         pass

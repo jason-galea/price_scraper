@@ -12,32 +12,19 @@
         </h2>
     </header>
     
-    <?php
-        include_once("templates/nav.php");
-        include_once("templates/nav_view.php");
-    ?>
+    <?php include_once("templates/nav.php"); ?>
+    <?php include_once("templates/nav_view.php"); ?>
 
     <main>
 
         <?php
 
-        // PRINT FORM
-        include_once("templates/web_cat_form.php");
-
-        // CHECK FORM
-        if (isset($_POST["website"]) and isset($_POST["category"])) {
-            $website = $_POST["website"];
-            $category = $_POST["category"];
-            echo "<p>Showing \"$category\" data from \"$website\"</p>";
-        } else {
-            exit();
-        }
-
+        // GET VARS $website AND $category
+        include_once("templates/form_website_category.php");
 
 
         // VARS
         $result_dir = "/var/www/out";
-
 
 
         // GET FILENAME
@@ -52,7 +39,6 @@
         echo "</p>";
 
 
-
         // OPEN FILE
         $json_s = file_get_contents($file, True);
         if ($json_s === false) {
@@ -63,7 +49,6 @@
         // echo "<p>";
         // echo $json_s;
         // echo "</p>";
-
 
 
         // Convert string to JSON object

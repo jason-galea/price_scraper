@@ -12,17 +12,16 @@
         </h2>
     </header>
     
-    <?php
-        include_once("templates/nav.php");
-        include_once("templates/nav_view.php");
-    ?>
+    <?php include_once("templates/nav.php"); ?>
+    <?php include_once("templates/nav_view.php"); ?>
 
     <main>
 
         <?php
 
-
-            // asd
+        // asd
+        
+        
         ?>
         
     </main>
