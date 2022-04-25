@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="style.css"/>
+    <?php include_once("templates/meta.php");?>
     
     <title>Price Scraper</title>
 </head>
@@ -13,14 +12,14 @@
         </h2>
     </header>
 
-    <?php include_once("nav.php");?>
+    <?php include_once("templates/nav.php");?>
 
     <main>
 
         <?php
 
         // PRINT FORM
-        include_once("web_cat_form.php");
+        include_once("templates/web_cat_form.php");
 
         // CHECK FORM
         if (isset($_POST["website"]) and isset($_POST["category"])) {

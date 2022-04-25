@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="style.css"/>
+    <?php include_once("templates/meta.php");?>
     
     <title>Price Scraper</title>
 </head>
@@ -14,8 +13,8 @@
     </header>
     
     <?php
-        include_once("nav.php");
-        include_once("nav_view.php");
+        include_once("templates/nav.php");
+        include_once("templates/nav_view.php");
     ?>
 
     <main>
