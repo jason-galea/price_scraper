@@ -2,11 +2,13 @@
 
 ### This relies on the scraper container from the "proxmox_automation" repo
 USER="root"
-HOST="172.26.0.125"
+# HOST="172.26.0.125"
+HOST="10.1.1.160"
 WWW="/var/www"
 TMP="/tmp/apache"
 
-
+echo
+echo "Updating webserver on $HOST"
 
 ### Delete
 ssh $USER@$HOST "rm -rf $WWW/*"

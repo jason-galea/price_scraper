@@ -31,8 +31,17 @@ def export(test_data, dir, file):
 ### MAIN
 def main():
 
+    ### Require args
+    if (len(sys.argv) in [1, 2]):
+        print("\nPlease provide website & category as arguments, E.G:")
+        print("$ scrape.py pccg hdd\n")
+        print("$ scrape.py scorptec gpu --debug\n")
+        exit(1)
+        
+
     ### Vars
-    NOW = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S") # UTC is much easier 
+    DEBUG = ("--debug" in sys.argv)
+    NOW = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S") 
     WEBSITE = sys.argv[1] # "pccg"
     CATEGORY = sys.argv[2] # "hdd"
     # OUT_JSON_DIR = f"{path.abspath(path.dirname(__file__))}/../scrape_result"
@@ -56,15 +65,15 @@ def main():
     }
     URL = URLS[WEBSITE][CATEGORY]
 
-    ### Fetch
+    ### Begin
     soup = Web.GetPageSoup(URL)
-
-
-    ### Extract
     test_data = Extract.extract(WEBSITE, CATEGORY, soup)
-    # print(test_data)
-    print(json.dumps(test_data, indent=4))
-    # exit()
+
+    ### Debug
+    if (DEBUG):
+        # print(test_data)
+        print(json.dumps(test_data, indent=4))
+        # exit()
 
 
     ### Export
