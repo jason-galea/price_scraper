@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-
-### IMPORTS
 import os
 from os import path
 import sys
@@ -10,8 +8,6 @@ import json
 
 from Extract import Extract 
 from Web import Web
-# import Extract
-# import Web # AttributeError: module 'Web' has no attribute 'GetPage'
 
 
 ### FUNCTIONS

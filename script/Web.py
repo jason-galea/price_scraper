@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 
 from bs4 import BeautifulSoup as bs
-
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities, Firefox
 from selenium.webdriver.firefox.options import Options
-
 
 
 class Web:
