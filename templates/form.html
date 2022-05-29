@@ -3,7 +3,7 @@
 
 <!-- TODO: Generate form -->
 <br>
-<form>
+<form action="javascript:void(0)">
     {% for key, dict in form_labels.items() %}
         <p class="subtitle">
             Please select a {{ key }}:
@@ -30,6 +30,11 @@ if (isset($_POST["website"]) and isset($_POST["category"])) {
 <!-- TODO: -->
 
 
+<br>
+
+
+<br>
+{% block form_content %}{% endblock %}
 <br>
 
 {% endblock %}

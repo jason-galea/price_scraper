@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
 ### Imports
-from cProfile import label
-from unittest import result
 from flask import Flask, render_template
 
 
@@ -12,6 +10,7 @@ page_info = {
     "index":{
         "name":"Home",
         "title":"Welcome to Price Scraper (TM)!",
+        # "title":"POTATO",
         "path":"/",
     },
     "scrape":{
@@ -52,51 +51,51 @@ form_labels = {
 
 ### Flask routes
 ### TODO: Explode this function back into separate pages, combine after logic is final
+# @app.route("/", methods=('GET', 'POST'))
+# @app.route("/<path:path>", methods=('GET', 'POST'))
+# def routes(path="index"):
+#     return render_template(
+#         f"children/{path}.html",
+#         page_info=page_info,
+#         form_labels=form_labels,
+#         title=page_info[path]['title'],
+#     )
+
 @app.route("/")
-@app.route("/<path:path>")
-def routes(path="index"):
+def index():
     return render_template(
-        f"children/{path}.html",
+        "children/index.html",
         page_info=page_info,
-        form_labels=form_labels,
-        title=page_info[path]['title'],
+        # form_labels=form_labels,
+        title=page_info["index"]['title'],
     )
 
-# @app.route("/")
-# def index():
-#     return render_template(
-#         "children/index.html",
-#         page_info=page_info,
-#         form_labels=form_labels,
-#         title=page_info["index"]['title'],
-#     )
+@app.route("/scrape")
+def scrape():
+    return render_template(
+        "children/scrape.html",
+        page_info=page_info,
+        form_labels=form_labels,
+        title=page_info["scrape"]['title'],
+    )
 
-# @app.route("/scrape")
-# def scrape():
-#     return render_template(
-#         "children/scrape.html",
-#         page_info=page_info,
-#         form_labels=form_labels,
-#         title=page_info["scrape"]['title'],
-#     )
+@app.route("/view_table")
+def view_table():
+    return render_template(
+        "children/view_table.html",
+        page_info=page_info,
+        form_labels=form_labels,
+        title=page_info["view_table"]['title'],
+    )
 
-# @app.route("/view_table")
-# def view_table():
-#     return render_template(
-#         "children/view_table.html",
-#         page_info=page_info,
-#         form_labels=form_labels,
-#         title=page_info["view_table"]['title'],
-#     )
-
-# @app.route("/view_graph")
-# def view_graph():
-#     return render_template(
-#         "children/view_graph.html",
-#         page_info=page_info,
-#         form_labels=form_labels,
-#         title=page_info["view_graph"]['title'],
-#     )
+@app.route("/view_graph")
+def view_graph():
+    return render_template(
+        "children/view_graph.html",
+        page_info=page_info,
+        form_labels=form_labels,
+        title=page_info["view_graph"]['title'],
+    )
 
 
 
