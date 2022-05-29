@@ -4,13 +4,13 @@
 <!-- TODO: Generate form -->
 <br>
 <form action="javascript:void(0)">
-    {% for key, dict in form_labels.items() %}
+    {% for dict_key, dict in form_labels.items() %}
         <p class="subtitle">
-            Please select a {{ key }}:
+            Please select a {{ dict_key }}:
             <br>
-            {% for label, detail in dict.items() %}
-                <input type='radio' id='{{ label }}' name='{{ key }}' value='{{ label }}'>
-                <label for='{{ label }}'>{{ detail }}</label><br>
+            {% for label, value in dict.items() %}
+                <input type='radio' id='{{ label }}' name='{{ dict_key }}' value='{{ label }}'>
+                <label for='{{ label }}'>{{ value }}</label><br>
             {% endfor %}
         </p>
     {% endfor %}
@@ -29,8 +29,6 @@ if (isset($_POST["website"]) and isset($_POST["category"])) {
 
 <!-- TODO: -->
 
-
-<br>
 
 
 <br>

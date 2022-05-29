@@ -23,8 +23,8 @@
         </h2>
 
         <nav>
-        {% for key, dict in page_info.items() %}
-            <a href={{ dict['path'] }}>{{ dict['name'] }}</a>
+        {% for name, path in nav_info.items() %}
+            <a href={{ path }}>{{ name }}</a>
         {% endfor %}
         </nav>
 
