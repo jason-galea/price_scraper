@@ -5,5 +5,5 @@ Dependencies:
 - python 3.xx
 - selenium
 - beautifulsoup4
-- google-chrome-stable 95
-- chromedriver 95
+- firefox
+- firefox-geckodriver
