@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <title>Price Scraper</title>
+    <!-- <style type="text/css">
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    </style> -->
+</head>
+
+<body>
+    <section class="section">
+    <div class="container">
+        <h2 class="title">
+        <!-- Welcome to Price Scraper (TM)! -->
+        {{ title }}
+        </h2>
+
+        <nav>
+        {% for key, dict in page_info.items() %}
+            <a href={{ dict['path'] }}>{{ dict['name'] }}</a>
+        {% endfor %}
+        </nav>
+
+        <br>
+        {% block content %}{% endblock %}
+        <br>
+
+    </div>
+    </section>
+</body>
+
+</html>

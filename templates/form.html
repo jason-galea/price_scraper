@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- TODO: Generate form -->
+<br>
+<form>
+    {% for key, dict in form_labels.items() %}
+        <p class="subtitle">
+            Please select a {{ key }}:
+            <br>
+            {% for label, detail in dict.items() %}
+                <input type='radio' id='{{ label }}' name='{{ key }}' value='{{ label }}'>
+                <label for='{{ label }}'>{{ detail }}</label><br>
+            {% endfor %}
+        </p>
+    {% endfor %}
+    <input type='submit' value='Submit'>
+</form>
+
+
+<!-- // CHECK FORM
+if (isset($_POST["website"]) and isset($_POST["category"])) {
+    $website = $_POST["website"];
+    $category = $_POST["category"];
+    echo "<p>Received website \"$website\" and category \"$category\"</p>";
+} else {
+    exit();
+} -->
+
+<!-- TODO: -->
+
+
+<br>
+
+{% endblock %}
