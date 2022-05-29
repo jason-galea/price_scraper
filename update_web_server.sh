@@ -2,8 +2,8 @@
 
 ### This relies on the scraper container from the "proxmox_automation" repo
 USER="root"
-# HOST="172.26.0.125"
-HOST="10.1.1.160"
+HOST="172.26.0.125"
+# HOST="10.1.1.160"
 WWW="/var/www"
 TMP="/tmp/apache"
 
