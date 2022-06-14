@@ -83,8 +83,10 @@ class Extract:
                 if title_split[0] == "Western": # ["Western", "Digital", "WD"] --> ["Western Digital"]
                     title_split = Extract.combineArrayItems(title_split, 0, 1)
 
-                    if title_split[1] == "Red": # ["Red", "Plus"] --> ["Red Plus"]
+                    if (title_split[1] == "Red") and (title_split[2] in ["Plus", "Pro"]):
                         title_split = Extract.combineArrayItems(title_split, 1, 2)
+
+                print(title_split)
 
                 ### Preprocess common values
                 capacity_gb = int(title_split[2].strip("TB"))*1024
