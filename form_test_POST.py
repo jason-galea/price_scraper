@@ -16,7 +16,7 @@ from flask import (
 ### Vars
 app = Flask(__name__)
 nav_info = {
-    "FORM TEST!!!!1!":"/",
+    "FORM TEST POST":"/",
     "Scrape Data":"/scrape",
     "View Table":"/view_table",
     "View Graph":"/view_graph",
@@ -26,7 +26,7 @@ page_titles = {
     "scrape":"Scrape Data",
     "view_table":"View data in table",
     "view_graph":"View data in graph",
-    "form_test":"A TEST PAGE, FOR TESTING FORMS.",
+    "form_test":"FORM TEST POST",
 }
 form_labels = {
     "website":{
@@ -68,11 +68,6 @@ def index():
         "title":page_titles["form_test"],
     }
 
-    # if (request.method == "POST"):
-    #     context.update({
-    #         "website": request.form["website"],
-    #         "category": request.form["category"],
-    #     })
     if (len(request.values) != 0):
         context.update({
             "website": request.values.get('website'),
@@ -80,7 +75,7 @@ def index():
         })
 
     return render_template(
-        template_name_or_list="children/form_test.html",
+        template_name_or_list="children/form_test_POST.html",
         **context,
     )
 

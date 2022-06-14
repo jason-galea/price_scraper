@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- TODO: Generate form -->
+
 <br>
-<!-- <form action="javascript:void(0)"> -->
-<form>
+<!-- <form method="GET"> -->
+<form method="POST">
     {% for dict_key, dict in form_labels.items() %}
         <p class="subtitle">
             Please select a {{ dict_key }}:
@@ -19,21 +19,9 @@
 </form>
 
 
-<!-- TODO: Check form -->
-<!--
-if (isset($_POST["website"]) and isset($_POST["category"])) {
-    $website = $_POST["website"];
-    $category = $_POST["category"];
-    echo "<p>Received website \"$website\" and category \"$category\"</p>";
-} else {
-    exit();
-}
--->
-
-
-
 <br>
 {% block form_content %}{% endblock %}
 <br>
+
 
 {% endblock %}

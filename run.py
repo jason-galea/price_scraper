@@ -104,30 +104,29 @@ def index():
 @app.route("/view_table", methods=('GET', 'POST'))
 def view_table():
 
+    print(
+        f"""
+        request.values.__dict__ = {request.values.__dict__}
+        len(request.values) = {len(request.values)}
+        request.values.get('website') = {request.values.get('website')}
+        request.values.get('category') = {request.values.get('category')}
+
+        """
+    )
+
     context = {
         "nav_info":nav_info,
         "form_labels":form_labels,
         "title":page_titles["view_table"],
-        # "website":website,
-        # "category":category,
     }
 
-    if (request.method == "POST"):
-        # website = request.form["website"]
-        # category = request.form["category"]
+    if (len(request.values) != 0):
         context.update({
-            "website": request.form["website"],
-            "category": request.form["category"],
+            "website": request.values.get('website'),
+            "category": request.values.get('category'),
         })
 
     return render_template(
-        # "children/view_table.html",
-        # page_info=page_info,
-        # nav_info=nav_info,
-        # form_labels=form_labels,
-        # title=page_titles["view_table"],
-        # website=website,
-        # category=category,
         template_name_or_list="children/view_table.html",
         **context,
     )
