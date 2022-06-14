@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 ### Imports
+from multiprocessing import context
 from flask import (
     Flask,
     render_template,
@@ -102,16 +103,33 @@ def index():
 
 @app.route("/view_table", methods=('GET', 'POST'))
 def view_table():
+
+    context = {
+        "nav_info":nav_info,
+        "form_labels":form_labels,
+        "title":page_titles["view_table"],
+        # "website":website,
+        # "category":category,
+    }
+
     if (request.method == "POST"):
-        website = request.form["website"]
-        category = request.form["category"]
+        # website = request.form["website"]
+        # category = request.form["category"]
+        context.update({
+            "website": request.form["website"],
+            "category": request.form["category"],
+        })
 
     return render_template(
-        "children/view_table.html",
+        # "children/view_table.html",
         # page_info=page_info,
-        nav_info=nav_info,
-        form_labels=form_labels,
-        title=page_titles["view_table"],
+        # nav_info=nav_info,
+        # form_labels=form_labels,
+        # title=page_titles["view_table"],
+        # website=website,
+        # category=category,
+        template_name_or_list="children/view_table.html",
+        **context,
     )
 
 # @app.route("/view_graph", methods=('GET', 'POST'))
