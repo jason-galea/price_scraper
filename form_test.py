@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 ### Imports
+import sys
 from multiprocessing import context
 from flask import (
     Flask,
@@ -15,7 +16,7 @@ from flask import (
 ### Vars
 app = Flask(__name__)
 nav_info = {
-    "Home":"/",
+    "FORM TEST!!!!1!":"/",
     "Scrape Data":"/scrape",
     "View Table":"/view_table",
     "View Graph":"/view_graph",
@@ -25,7 +26,7 @@ page_titles = {
     "scrape":"Scrape Data",
     "view_table":"View data in table",
     "view_graph":"View data in graph",
-    "form_test":"A TEST PAGE, FOR TESTING FORMS. TEST",
+    "form_test":"A TEST PAGE, FOR TESTING FORMS.",
 }
 form_labels = {
     "website":{
@@ -46,17 +47,36 @@ form_labels = {
 @app.route("/", methods=('GET', 'POST'))
 def index():
 
+    print(
+        # request.form.__dict__ = {request.form.__dict__}
+        # request.args.__dict__ = {request.args.__dict__}
+        # request.form.get.__dict__ = {request.args.__dict__}
+        f"""
+        request.values.__dict__ = {request.values.__dict__}
+        request.values.__len__ = {request.values.__len__}
+        len(request.values) = {len(request.values)}
+        request.values.get('website') = {request.values.get('website')}
+        request.values.get('category') = {request.values.get('category')}
+        
+
+        """
+    )
+
     context = {
         "nav_info":nav_info,
         "form_labels":form_labels,
-        # "title":page_titles["form_test"],
-        "title":page_titles["index"],
+        "title":page_titles["form_test"],
     }
 
-    if (request.method == "POST"):
+    # if (request.method == "POST"):
+    #     context.update({
+    #         "website": request.form["website"],
+    #         "category": request.form["category"],
+    #     })
+    if (len(request.values) != 0):
         context.update({
-            "website": request.form["website"],
-            "category": request.form["category"],
+            "website": request.values.get('website'),
+            "category": request.values.get('category'),
         })
 
     return render_template(
@@ -72,3 +92,11 @@ if __name__ == '__main__':
         debug=True,
         host='0.0.0.0',
     )
+
+    # try:
+    #     app.run(
+    #         debug=True,
+    #         host='0.0.0.0',
+    #     )
+    # except SystemExit:
+    #     print("Encountered SystemExit")
