@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p>The current contents of the result directory is:</p>
+<br>
+
+{% for line in ls_stdout %}
+    {{ line }} <br>
+{% endfor %}
+<br>
+
+{% endblock %}

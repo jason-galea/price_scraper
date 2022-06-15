@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 ### Imports
+import subprocess
 from multiprocessing import context
 from flask import (
     Flask,
@@ -12,6 +13,7 @@ from flask import (
 )
 
 
+###########################################################
 ### Vars
 app = Flask(__name__)
 # page_info = {
@@ -42,17 +44,20 @@ app = Flask(__name__)
 #     #     "path":"",
 #     # },
 # }
+
 nav_info = {
     "Home":"/",
     "Scrape Data":"/scrape",
     "View Table":"/view_table",
     "View Graph":"/view_graph",
+    "View All Results":"/view_all_results",
 }
 page_titles = {
     "index":"Welcome to Price Scraper (TM)!",
     "scrape":"Scrape Data",
     "view_table":"View data in table",
     "view_graph":"View data in graph",
+    "view_all_results":"View all existing result files",
 }
 form_labels = {
     "website":{
@@ -69,6 +74,8 @@ form_labels = {
 }
 
 
+
+###########################################################
 ### Flask routes
 ### TODO: Explode this function into separate pages (and combine after logic complete?)
 # @app.route("/", methods=('GET', 'POST'))
@@ -91,20 +98,12 @@ def index():
         title=page_titles["index"],
     )
 
-# @app.route("/scrape", methods=('GET', 'POST'))
-# def scrape():
-#     return render_template(
-#         "children/scrape.html",
-#         # page_info=page_info,
-#         nav_info=nav_info,
-#         form_labels=form_labels,
-#         title=page_titles["scrape"],
-#     )
-
-@app.route("/view_table", methods=('GET', 'POST'))
-def view_table():
+@app.route("/scrape", methods=('GET', 'POST'))
+def scrape():
 
     print(
+        # request.values['website'] = {request.values['website']}
+        # request.values['category'] = {request.values['category']}
         f"""
         request.values.__dict__ = {request.values.__dict__}
         len(request.values) = {len(request.values)}
@@ -113,6 +112,51 @@ def view_table():
 
         """
     )
+
+    context = {
+        "nav_info":nav_info,
+        "form_labels":form_labels,
+        "title":page_titles["scrape"],
+    }
+
+    # if (len(request.values) != 0):
+    if (
+        (request.values.get('website') != None)
+        and (request.values.get('website') != None)
+    ):
+        context.update({
+            "website": request.values.get('website'),
+            "category": request.values.get('category'),
+        })
+
+        ### Start subprocess (async)
+        print("\nStarting subprocess")
+        # p = subprocess.Popen(['ls', '-lh'])
+        # p = subprocess.Popen(['sleep', '3'])
+        p = subprocess.Popen(['./script/scrape.py', 'pccg', 'hdd'])
+        print("Waiting for subprocess to complete...")
+
+        ### Wait for output
+        # p.communicate() #now wait plus that you can send commands to process
+        
+
+    return render_template(
+        template_name_or_list="children/scrape.html",
+        **context,
+    )
+
+@app.route("/view_table", methods=('GET', 'POST'))
+def view_table():
+
+    # print(
+    #     f"""
+    #     request.values.__dict__ = {request.values.__dict__}
+    #     len(request.values) = {len(request.values)}
+    #     request.values.get('website') = {request.values.get('website')}
+    #     request.values.get('category') = {request.values.get('category')}
+
+    #     """
+    # )
 
     context = {
         "nav_info":nav_info,
@@ -141,6 +185,35 @@ def view_table():
 #         title=page_titles["view_graph"],
 #     )
 
+@app.route("/view_all_results")
+def view_all_results():
+
+    # result = subprocess.run(
+    #     ['ls', '-lh'],
+    #     stdout=subprocess.PIPE,
+    #     encoding='text')
+    result = subprocess.check_output(
+        ['ls', '-lh', './out/'],
+        encoding='utf-8').split('\n')
+    # print(
+    #     f"""
+    #     result = {result}
+    #     result.stdout = {result.stdout}
+    #     result.stderr = {result.stderr}
+    #     """
+    # )
+    context = {
+        "nav_info": nav_info,
+        "form_labels": form_labels,
+        "title": page_titles["view_all_results"],
+        # "ls_stdout": result.stdout,
+        "ls_stdout": result,
+    }
+
+    return render_template(
+        template_name_or_list="children/view_all_results.html",
+        **context,
+    )
 
 
 

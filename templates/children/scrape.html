@@ -1,10 +1,10 @@
 {% extends "form.html" %}
 {% block form_content %}
 
-<p class="subtitle">
-    This website will scrape and display the price and specs of computer hardware.
-    <br>
-    It specifically focuses on Australian computer parts retailers.
-</p>
+<p>SCRAPE!</p>
+
+{% if website and category %}
+    <p>Received website {{ website }} and category {{ category }}</p>
+{% endif %}
 
 {% endblock %}
