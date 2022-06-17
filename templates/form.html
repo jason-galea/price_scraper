@@ -1,10 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-
-<br>
-<!-- <form method="GET"> -->
-<form method="POST">
+<form method='POST' class="subtitle">
     {% for dict_key, dict in FORM_LABELS.items() %}
         <p class="subtitle">
             Please select a {{ dict_key }}:
@@ -17,11 +14,11 @@
     {% endfor %}
     <input type='submit' value='Submit'>
 </form>
-
-
 <br>
+
+
+<p>
 {% block form_content %}{% endblock %}
-<br>
-
+</p>
 
 {% endblock %}

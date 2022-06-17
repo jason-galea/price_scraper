@@ -17,21 +17,6 @@ from flask import (
 ### Vars
 app = Flask(__name__)
 
-# nav_info = {
-#     "Home":"/",
-#     "Scrape Data":"/scrape",
-#     "View Table":"/view_table",
-#     "View Graph":"/view_graph",
-#     "View All Results":"/view_all_results",
-# }
-# page_titles = {
-#     "index":"Welcome to Price Scraper (TM)!",
-#     "scrape":"Scrape Data",
-#     "view_table":"View data in table",
-#     "view_graph":"View data in graph",
-#     "view_all_results":"View all existing result files",
-# }
-
 ### NOTE: Would this be better as a pd.DataFrame?
 ### NOTE: Jinja can work with dataframes without imports... hmmm
 PAGE_INFO = {
@@ -39,31 +24,61 @@ PAGE_INFO = {
         'route':'/',
         'template':'children/index.html',
         'title':'Home',
-        'desc':'Welcome to Price Scraper (TM)!',
+        # 'desc':'Welcome to Price Scraper (TM)!',
+        'desc':'''
+            Welcome to Price Scraper (TM)!
+            This website will scrape & display the latest price/specs/etc. of computer hardware.
+            It's designed to work with specific Australian computer parts retailers.
+        ''',
     },
     'scrape':{
         'route':'/scrape',
         'template':'children/scrape.html',
-        'title':'Scrape Data',
-        'desc':'Collect new product data from a chosen website',
+        # 'title':'Scrape Data',
+        'title':'Scrape',
+        # 'desc':'Collect new product data from a chosen website',
+        'desc':'''
+            This page lets you scrape the latest data from your chosen website & category.
+            Make a selection and press "Submit" to continue.
+            This will launch a subprocess, which will run in the background.
+            To verify that the job was successful, head to the "Results" page.
+        ''',
     },
     'view_table':{
         'route':'/view_table',
         'template':'children/view_table.html',
-        'title':'View Table',
-        'desc':'View collected data in table',
+        # 'title':'View Table',
+        'title':'Table',
+        # 'desc':'View collected data in table',
+        'desc':'''
+            This page allows you to view the most recent result for a given website & category.
+            The data will be displayed in a table.
+            Make a selection and press "Submit" to continue.
+        ''',
     },
     'view_graph':{
         'route':'/view_graph',
         'template':'children/view_graph.html',
-        'title':'View Graph',
-        'desc':'View collected data in graph',
+        # 'title':'View Graph',
+        'title':'Graph',
+        # 'desc':'View collected data in graph',
+        'desc':'''
+            This page allows you to view the most recent result for a given website & category.
+            The data will be displayed in a graph.
+            Make a selection and press "Submit" to continue.
+        ''',
     },
     'view_all_results':{
         'route':'/view_all_results',
         'template':'children/view_all_results.html',
-        'title':'View All Results',
-        'desc':'View all existing result files',
+        # 'title':'View All Results',
+        'title':'Results',
+        # 'desc':'View all existing result files',
+        'desc':'''
+            This page shows every result currently saved on the webserver.
+            If no results are found, or if the "ls -lh ./out/" subprocess fails, try
+            scraping some more data on the "Scrape" page.
+        ''',
     },
     # '':{
     #     'route':'',
@@ -86,11 +101,6 @@ FORM_LABELS = {
     },
 }
 
-# COMMON_CONTEXT = {
-#     'nav_info':nav_info,
-#     'form_labels':form_labels,
-#     'title':page_titles['scrape'],
-# }
 
 
 
@@ -114,7 +124,8 @@ def renderTemplateWithContext(key, unique_context={}):
     ### Create common context args
     context = {
         'key':key,
-        'PAGE_INFO':PAGE_INFO
+        'PAGE_INFO':PAGE_INFO,
+        'desc':PAGE_INFO[key]['desc'],
     }
 
     ### Append args unique to the page being rendered
@@ -148,60 +159,74 @@ def index():
 @app.route('/scrape', methods=['GET', 'POST'])
 def scrape():
 
+    key = 'scrape'
+
     ### Get form vars
     unique_context = getFormContext(request.values)
 
     ### Start subprocess, if args are defined
-    if all ((key in unique_context) for key in ['website', 'category']):
+    if all ((k in unique_context) for k in ['website', 'category']):
         cmd = './script/scrape.py pccg hdd' ### Much cleaner
 
         ### Run & block
         # p = sp.run(scrape_command.split())
 
-        ### Run and wait
+        ### Run & wait
         p = sp.Popen(cmd.split())
-        # p.communicate() ### Print STDOUT to console 
+        # p.communicate() ### Print STDOUT to console
 
-    return renderTemplateWithContext('scrape', unique_context)
+    return renderTemplateWithContext(key, unique_context)
 
 
 @app.route("/view_table", methods=['GET', 'POST'])
 def view_table():
 
+    key = 'view_table'
+
     ### Get form vars
     unique_context = getFormContext(request.values)
 
     ### Render
-    return renderTemplateWithContext('view_table', unique_context)
+    return renderTemplateWithContext(key, unique_context)
 
 
 @app.route("/view_graph", methods=['GET', 'POST'])
 def view_graph():
 
+    key = 'view_graph'
+
     ### Get form vars
     unique_context = getFormContext(request.values)
 
     ### Render
-    return renderTemplateWithContext('view_graph', unique_context)
+    return renderTemplateWithContext(key, unique_context)
 
 
 @app.route("/view_all_results")
 def view_all_results():
 
+    key = 'view_all_results'
+
     ### Get form vars
     unique_context = getFormContext(request.values)
+
 
     ### Get unique vars
     try:
         cmd = 'ls -lh ./out/'
         result = sp.check_output( cmd.split(), encoding='utf-8' ).split('\n')
+        sp_success = True
     except sp.CalledProcessError as e:
-        result = ['Exception raised from subprocess:', e] ### The template expects a list
+        result = [e] ### The template expects a list
+        sp_success = False
 
-    unique_context.update({ 'ls_stdout':result })
+    unique_context.update({
+        'ls_stdout':result,
+        'sp_success':sp_success
+    })
 
     ### Render
-    return renderTemplateWithContext('view_all_results', unique_context)
+    return renderTemplateWithContext(key, unique_context)
 
 
 if __name__ == '__main__':
