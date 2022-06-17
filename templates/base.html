@@ -19,12 +19,12 @@
     <div class="container">
         <h2 class="title">
         <!-- Welcome to Price Scraper (TM)! -->
-        {{ title }}
+        {{ PAGE_INFO[key]['title'] }}
         </h2>
 
         <nav>
-        {% for name, path in nav_info.items() %}
-            <a href={{ path }}>{{ name }}</a>
+        {% for dict in PAGE_INFO.values() %}
+            <a href={{ dict['route'] }}>{{ dict['title'] }}</a>
         {% endfor %}
         </nav>
 
