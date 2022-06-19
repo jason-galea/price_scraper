@@ -11,6 +11,7 @@ from flask import (
     flash,
     redirect,
 )
+import pandas as pd
 
 
 
@@ -166,9 +167,12 @@ def viewTable_GetVars(unique_context):
         filtered_results.sort()
 
         matching_result = filtered_results[-1]
+    
+        df = pd.read_json(matching_result)
 
         return {
             'matching_result': matching_result,
+            'table_html': df.to_html()
         }
 
     else:
