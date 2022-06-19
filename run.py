@@ -127,7 +127,7 @@ def isAllListInList(needles, haystack):
     ### 'haystack_list' can also be a dict, where 'haystack_list.keys()' will be searched instead
     ### NOTE: This requires an exact match
 
-    return all([ (k in haystack) for k in needles ])
+    return any([ (k in haystack) for k in needles ])
 
 def getAllResultsFiles():
     ### Returns a list of filenames
@@ -201,8 +201,8 @@ def routes(path='index'):
         scrape_StartSubprocess(unique_context)
     elif (key == 'view_table'):
         unique_context.update( viewTable_GetVars(unique_context) )
-    # elif (key == 'view_graph'):
-    #     unique_context.update(viewGraph_GetVars())
+    elif (key == 'view_graph'):
+        pass
     elif (key == 'view_all_results'):
         unique_context.update({ 'results': getAllResultsFiles() })
 
