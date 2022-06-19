@@ -122,19 +122,19 @@ def renderTemplateWithContext(key, unique_context={}):
         **context,
     )
 
-def allListItemsExistInList(needle_list, haystack_list):
+def isAllListInList(needles, haystack):
     ### Returns True if all items in 'needle_list' exist in 'haystack_list'
     ### 'haystack_list' can also be a dict, where 'haystack_list.keys()' will be searched instead
+    ### NOTE: This requires an exact match
 
-    return (
-        all ((k in haystack_list) for k in needle_list)
-    )
+    return all([ (k in haystack) for k in needles ])
 
 def getAllResultsFiles():
     ### Returns a list of filenames
 
     # cmd = 'ls -lh ./out/'
-    cmd = 'ls ./out/'
+    # cmd = 'ls ./out/'
+    cmd = 'find ./out/'
 
     try:
         return sp.check_output( cmd.split(), encoding='utf-8' ).split('\n')
@@ -146,8 +146,7 @@ def getAllResultsFiles():
 ### Route-specific functions
 def scrape_StartSubprocess(unique_context):
     ### Start subprocess, if required args are defined
-    if allListItemsExistInList(['website', 'category'], unique_context):
-        # cmd = './script/scrape.py pccg hdd'
+    if isAllListInList(['website', 'category'], unique_context):
         cmd = f"./script/scrape.py {unique_context['website']} {unique_context['category']}"
         
         # p = sp.run(scrape_command.split()) ### Run & block
@@ -155,20 +154,25 @@ def scrape_StartSubprocess(unique_context):
         p = sp.Popen(cmd.split()) ### Run 
         # p.communicate() ### Wait & print to STDOUT
 
-def viewAllResults_GetVars():
-    # try:
-    #     return {
-    #         'ls_stdout': getAllResultsFiles,
-    #         'sp_success': True
-    #     }
+def viewTable_GetVars(unique_context):
+    if isAllListInList(['website', 'category'], unique_context):
+        # web = unique_context['website']
+        # cat = unique_context['category']
+        needles = [unique_context['website'], unique_context['category']]
+    
+        results = getAllResultsFiles()
 
-    # except sp.CalledProcessError as e:
-    #     return {
-    #         'ls_stdout': [e], ### The template expects a list
-    #         'sp_success': False
-    #     }
+        filtered_results = [ s for s in results if isAllListInList(needles, s.split('_')) ]
+        filtered_results.sort()
 
-    return { 'ls_stdout': getAllResultsFiles() }
+        matching_result = filtered_results[-1]
+
+        return {
+            'matching_result': matching_result,
+        }
+
+    else:
+        return {}
 
 
 ###########################################################
@@ -196,11 +200,11 @@ def routes(path='index'):
     elif (key == 'scrape'):
         scrape_StartSubprocess(unique_context)
     elif (key == 'view_table'):
-        unique_context = getFormContext(request.values)
+        unique_context.update( viewTable_GetVars(unique_context) )
     # elif (key == 'view_graph'):
-    #     unique_context = getFormContext(request.values)
+    #     unique_context.update(viewGraph_GetVars())
     elif (key == 'view_all_results'):
-        unique_context.update(viewAllResults_GetVars())
+        unique_context.update({ 'results': getAllResultsFiles() })
 
 
     ###########################################################

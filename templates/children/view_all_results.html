@@ -4,8 +4,8 @@
 <p>The results directory currently contains the following files:</p>
 <br>
 
-{% if (ls_stdout != None) %}
-    {% for line in ls_stdout %}
+{% if (results != None) %}
+    {% for line in results %}
         {{ line }} <br>
     {% endfor %}
 
