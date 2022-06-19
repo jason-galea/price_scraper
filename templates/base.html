@@ -29,9 +29,11 @@
         </nav>
 
         <br>
-        <p>
-        {{ desc }}
-        </p>
+        {% for line in desc %}
+            <p>
+            {{ line }}
+            </p>
+        {% endfor %}
 
         <br>
         {% block content %}{% endblock %}

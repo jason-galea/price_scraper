@@ -1,17 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 
-
-{% if sp_success %}
-    <p>The current contents of the result directory is:</p>
-{% else %}
-    <p>Exception raised by subprocess:</p>
-{% endif %}
+<p>The results directory currently contains the following files:</p>
 <br>
 
-{% for line in ls_stdout %}
-    {{ line }} <br>
-{% endfor %}
+{% if (ls_stdout != None) %}
+    {% for line in ls_stdout %}
+        {{ line }} <br>
+    {% endfor %}
+
+{% else %}
+    ERROR
+
+{% endif %}
 <br>
 
 {% endblock %}
