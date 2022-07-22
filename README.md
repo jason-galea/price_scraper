@@ -13,7 +13,7 @@ Pip dependencies:
 - pandas
 
 Setup:
-    $ setup.py
+    $ setup.sh
 
 Run
     $ ./run.py
