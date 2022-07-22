@@ -2,7 +2,7 @@
 
 A python web-scraper for PC hardware websites, to quickly compare prices &amp; specs
 
-## Package dependencies:
+## Package dependencies
 
 - python3.8
 - selenium
@@ -10,22 +10,20 @@ A python web-scraper for PC hardware websites, to quickly compare prices &amp; s
 - firefox
 - firefox-geckodriver
 
-## Pip dependencies:
+## Pip dependencies
 
 - flask
 - pandas
 
-## Clone:
+## Clone
 
-    $ git clone
-    $ cd price_scraper
+    git clone
+    cd price_scraper
 
-## Setup:
+## Setup
 
-    $ setup.sh
+    ./setup.sh
 
 ## Run
 
-    $ ./run.py
-
-
+    ./run.py
