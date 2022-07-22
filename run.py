@@ -2,7 +2,7 @@
 
 ### Imports
 import subprocess as sp
-from multiprocessing import context
+# from multiprocessing import context
 from flask import (
     Flask,
     render_template,
@@ -135,7 +135,7 @@ def getAllResultsFiles():
 
     # cmd = 'ls -lh ./out/'
     # cmd = 'ls ./out/'
-    cmd = 'find ./out/'
+    cmd = 'find ./out/ -type f'
 
     try:
         return sp.check_output( cmd.split(), encoding='utf-8' ).split('\n')
