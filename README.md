@@ -17,7 +17,7 @@ A python web-scraper for PC hardware websites, to quickly compare prices &amp; s
 
 ## Clone
 
-    git clone
+    git clone https://github.com/jason-galea/price_scraper.git
     cd price_scraper
 
 ## Setup
