@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 ### Imports
+import os
 import subprocess as sp
 # from multiprocessing import context
 from flask import (
@@ -89,11 +90,12 @@ FORM_LABELS = {
     },
 }
 
+ROOT = app.root_path
 
 
 ###########################################################
 ### Generic functions
-def getFormContext(request_values):
+def getFormVars(request_values):
     
     ### Create
     result = { 'FORM_LABELS':FORM_LABELS }
@@ -135,7 +137,7 @@ def getAllResultsFiles():
 
     # cmd = 'ls -lh ./out/'
     # cmd = 'ls ./out/'
-    cmd = 'find ./out/ -type f'
+    cmd = f"find {ROOT}/out/ -type f"
 
     try:
         return sp.check_output( cmd.split(), encoding='utf-8' ).split('\n')
@@ -148,7 +150,7 @@ def getAllResultsFiles():
 def scrape_StartSubprocess(unique_context):
     ### Start subprocess, if required args are defined
     if isAllListInList(['website', 'category'], unique_context):
-        cmd = f"./script/scrape.py {unique_context['website']} {unique_context['category']}"
+        cmd = f"{ROOT}/script/scrape.py {unique_context['website']} {unique_context['category']}"
         
         # p = sp.run(scrape_command.split()) ### Run & block
 
@@ -156,6 +158,8 @@ def scrape_StartSubprocess(unique_context):
         # p.communicate() ### Wait & print to STDOUT
 
 def viewTable_GetVars(unique_context):
+    print(f"\nunique_context = {unique_context}\n")
+    
     if isAllListInList(['website', 'category'], unique_context):
         # web = unique_context['website']
         # cat = unique_context['category']
@@ -185,15 +189,16 @@ def viewTable_GetVars(unique_context):
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def routes(path='index'):
+
     key = path ### Deal with it
+    unique_context = {}
 
 
     ###########################################################
     ### Get form vars
     if (key in ['scrape', 'view_table', 'view_graph']):
-        unique_context = getFormContext(request.values)
-    else: 
-        unique_context = {}
+        unique_context = getFormVars(request.values)
+        # unique_context.update( getFormVars(request.values) )
 
 
     ###########################################################
@@ -201,6 +206,12 @@ def routes(path='index'):
     ### No switch-case in python 3.9, kill me
     if (key == 'index'):
         pass
+        # print()
+        # print(f"os.path.dirname(app.root_path) = {os.path.dirname(app.root_path)}")
+        # print(f"os.path.dirname(app.instance_path) = {os.path.dirname(app.instance_path)}")
+        # print(f"app.root_path = {app.root_path}")
+        # print(f"app.instance_path = {app.instance_path}")
+        # print()
     elif (key == 'scrape'):
         scrape_StartSubprocess(unique_context)
     elif (key == 'view_table'):
