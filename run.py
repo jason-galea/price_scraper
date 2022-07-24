@@ -2,6 +2,7 @@
 
 ### Imports
 import os
+import json
 import subprocess as sp
 # from multiprocessing import context
 from flask import (
@@ -108,35 +109,39 @@ def getFormVars(request_values):
 
     return result
 
-def renderTemplateWithContext(key, unique_context={}):
-    ### Create common context args
-    context = {
-        'key':key,
-        'PAGE_INFO':PAGE_INFO,
-        'desc':PAGE_INFO[key]['desc'],
-    }
+# def renderTemplateWithContext(key, unique_context={}):
+#     ### Create common context args
+#     # context = {
+#     #     'key':key,
+#     #     'PAGE_INFO':PAGE_INFO,
+#     #     'desc':PAGE_INFO[key]['desc'],
+#     # }
 
-    ### Append args unique to the page being rendered
-    context.update(unique_context) ### For example, 'website' and 'category'
+#     # ### Append args unique to the page being rendered
+#     # context.update(unique_context) ### For example, 'website' and 'category'
 
-    ### Render
-    return render_template(
-        template_name_or_list=PAGE_INFO[key]['template'],
-        **context,
-    )
+#     ### Render
+#     # return render_template(
+#     #     template_name_or_list=PAGE_INFO[key]['template'],
+#     #     **context,
+#     # )
+#     return render_template(
+#         template_name_or_list= PAGE_INFO[key]['template'],
+#         # **context,
+#         key= key,
+#         PAGE_INFO= PAGE_INFO,
+#         desc= PAGE_INFO[key]['desc'],
+#         **unique_context,
+#     )
 
-def isAllListInList(needles, haystack):
-    ### Returns True if all items in 'needle_list' exist in 'haystack_list'
-    ### 'haystack_list' can also be a dict, where 'haystack_list.keys()' will be searched instead
-    ### NOTE: This requires an exact match
+# def isAllListInList(needles, haystack):
+#     ### Returns True if all items in 'needle_list' exist in 'haystack_list'
+#     ### 'haystack_list' can also be a dict, where 'haystack_list.keys()' will be searched instead
+#     ### NOTE: This requires an exact match
 
-    return any([ (k in haystack) for k in needles ])
+#     return any([ (k in haystack) for k in needles ])
 
 def getAllResultsFiles():
-    ### Returns a list of filenames
-
-    # cmd = 'ls -lh ./out/'
-    # cmd = 'ls ./out/'
     cmd = f"find {ROOT}/out/ -type f"
 
     try:
@@ -149,7 +154,8 @@ def getAllResultsFiles():
 ### Route-specific functions
 def scrape_StartSubprocess(unique_context):
     ### Start subprocess, if required args are defined
-    if isAllListInList(['website', 'category'], unique_context):
+    # if isAllListInList(['website', 'category'], unique_context):
+    if ('website' in unique_context) and ('category' in unique_context): ### Compare dict as dict.keys()
         cmd = f"{ROOT}/script/scrape.py {unique_context['website']} {unique_context['category']}"
         
         # p = sp.run(scrape_command.split()) ### Run & block
@@ -158,16 +164,17 @@ def scrape_StartSubprocess(unique_context):
         # p.communicate() ### Wait & print to STDOUT
 
 def viewTable_GetVars(unique_context):
-    print(f"\nunique_context = {unique_context}\n")
     
-    if isAllListInList(['website', 'category'], unique_context):
-        # web = unique_context['website']
-        # cat = unique_context['category']
-        needles = [unique_context['website'], unique_context['category']]
+    # if isAllListInList(['website', 'category'], unique_context):
+    if ('website' in unique_context) and ('category' in unique_context): ### Compare dict as dict.keys()
+        web = unique_context['website']
+        cat = unique_context['category']
+        # needles = [unique_context['website'], unique_context['category']]
     
-        results = getAllResultsFiles()
+        all_results = getAllResultsFiles()
 
-        filtered_results = [ s for s in results if isAllListInList(needles, s.split('_')) ]
+        # filtered_results = [ s for s in all_results if isAllListInList(needles, s.split('_')) ]
+        filtered_results = [ s for s in all_results if (web in s.split('_')[2]) and (cat in s.split('_')[3]) ]
         filtered_results.sort()
 
         matching_result = filtered_results[-1]
@@ -224,7 +231,16 @@ def routes(path='index'):
 
     ###########################################################
     ### Render
-    return renderTemplateWithContext(key, unique_context)
+    print(f"\nunique_context: \n{json.dumps(unique_context, indent=2)}\n")
+    # return renderTemplateWithContext(key, unique_context)
+    return render_template(
+        template_name_or_list= PAGE_INFO[key]['template'],
+        # **context,
+        key= key,
+        PAGE_INFO= PAGE_INFO,
+        desc= PAGE_INFO[key]['desc'],
+        **unique_context,
+    )
 
 if __name__ == '__main__':
     app.run(
