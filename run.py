@@ -4,7 +4,11 @@
 import os
 import json
 import html
+from posixpath import basename
 import subprocess as sp
+from unicodedata import category
+import pandas as pd
+
 # from multiprocessing import context
 from flask import (
     Flask,
@@ -14,7 +18,8 @@ from flask import (
     flash,
     redirect,
 )
-import pandas as pd
+from glob import glob
+
 
 
 
@@ -42,9 +47,9 @@ PAGE_INFO = {
             'Make a selection and press "Submit" to continue.',
         ],
     },
-    'view_table':{
-        'route':'/view_table',
-        'template':'children/view_table.html',
+    'table':{
+        'route':'/table',
+        'template':'children/table.html',
         'title':'Table',
         'desc':[
             'This page allows you to view the most recent result for a given website & category.',
@@ -52,9 +57,9 @@ PAGE_INFO = {
             'Make a selection and press "Submit" to continue.',
         ],
     },
-    'view_graph':{
-        'route':'/view_graph',
-        'template':'children/view_graph.html',
+    'graph':{
+        'route':'/graph',
+        'template':'children/graph.html',
         'title':'Graph',
         'desc':[
             'This page allows you to view the most recent result for a given website & category.',
@@ -62,9 +67,9 @@ PAGE_INFO = {
             'Make a selection and press "Submit" to continue.',
         ],
     },
-    'view_all_results':{
-        'route':'/view_all_results',
-        'template':'children/view_all_results.html',
+    'results':{
+        'route':'/results',
+        'template':'children/results.html',
         'title':'Results',
         'desc':[
             'This page shows all previously collected result files.',
@@ -93,53 +98,35 @@ FORM_LABELS = {
 }
 
 ROOT = app.root_path
+OUT_DIR = f"{ROOT}/out"
+FORM_COLS = ['website', 'category']
 
 
 ###########################################################
 ### Generic functions
-def getFormVars(request_values):
+def readForm(request_values):
     
     ### Create
     result = { 'FORM_LABELS':FORM_LABELS }
 
     ### Get form vars (if they exist)
-    for s in ['website', 'category']:
+    for s in FORM_COLS:
         val = request_values.get(s)
         if (val != None):
             result.update({ s:val })
 
     return result
 
-# def renderTemplateWithContext(key, unique_context={}):
-#     ### Create common context args
-#     # context = {
-#     #     'key':key,
-#     #     'PAGE_INFO':PAGE_INFO,
-#     #     'desc':PAGE_INFO[key]['desc'],
-#     # }
+def readAllJSON():
+    return glob(f"{OUT_DIR}/*.json")
 
-#     # ### Append args unique to the page being rendered
-#     # context.update(unique_context) ### For example, 'website' and 'category'
-
-#     ### Render
-#     # return render_template(
-#     #     template_name_or_list=PAGE_INFO[key]['template'],
-#     #     **context,
-#     # )
-#     return render_template(
-#         template_name_or_list= PAGE_INFO[key]['template'],
-#         # **context,
-#         key= key,
-#         PAGE_INFO= PAGE_INFO,
-#         desc= PAGE_INFO[key]['desc'],
-#         **unique_context,
-#     )
-
-def isAllListInList(needles, haystack):
+def getHaystackMatchingNeedles(needles, haystack):
+    ### TODO: Refactor to only account for web and cat
     result = []
 
     for item in haystack:
-        tokens = os.path.splitext(item)[0].split("_")
+        # tokens = os.path.splitext(item)[0].split("_")
+        tokens = item.split('.')[0].split("_")
 
         flag = False
         for needle in needles:
@@ -151,69 +138,47 @@ def isAllListInList(needles, haystack):
             result.append(item)
     
     return result
-    
 
-
-    # return any([ (k in haystack) for k in needles ])
-
-
-def getAllResultsFiles():
-    cmd = f"find {ROOT}/out/ -type f"
-
-    try:
-        return sp.check_output( cmd.split(), encoding='utf-8' ).split('\n')
-    except sp.CalledProcessError as e:
-        return None
-
+def listContainsAllValues(haystack, needles):
+    return not any((n not in haystack) for n in needles)
 
 ###########################################################
 ### Route-specific functions
 def scrape_StartSubprocess(unique_context):
-    ### Start subprocess, if required args are defined
-    # if isAllListInList(['website', 'category'], unique_context):
-    if ('website' in unique_context) and ('category' in unique_context):
-        cmd = f"{ROOT}/script/scrape.py {unique_context['website']} {unique_context['category']}"
-        
-        # p = sp.run(scrape_command.split()) ### Run & block
-        p = sp.Popen(cmd.split()) ### Run 
-        # p.communicate() ### Wait & print to STDOUT
+    cmd = f"{ROOT}/script/scrape.py {unique_context['website']} {unique_context['category']}"
+    # _p = sp.Popen(cmd.split())
+    sp.Popen(cmd.split())
 
 def viewTable_GetVars(unique_context):
-    
-    # if isAllListInList(['website', 'category'], unique_context):
-    if ('website' in unique_context) and ('category' in unique_context): ### Compare dict as dict.keys()
-        web = unique_context['website']
-        cat = unique_context['category']
-        needles = [unique_context['website'], unique_context['category']]
-    
-        all_results = getAllResultsFiles()
 
-        # filtered_results = [ s for s in all_results if isAllListInList(needles, s.split('_')) ]
-        # filtered_results = [ s for s in all_results if (web in s.split('_')[2]) and (cat in s.split('_')[3]) ]
-        filtered_results = isAllListInList(needles, all_results)
-        filtered_results.sort() 
-        print(f"filtered_results = {filtered_results}")
+    ### Filter to files containing the chosen website & category
+    needles = [unique_context['website'], unique_context['category']]
+    # filtered_files = getHaystackMatchingNeedles(needles, readAllJSON())
+    filtered_files = [
+        s for s in readAllJSON()
+        if listContainsAllValues(s.split('.')[0].split("_"), needles)
+    ]
+    latest_file = max(filtered_files, key=os.path.getctime)
 
-        matching_result = filtered_results[-1]
-    
-        df = pd.read_json(matching_result)
-        df['TitleLink'] = df.apply(
-            lambda row: f"<a href={row['URL']}>{row['Title']}</a>",
-            axis=1,
-        )
-        df = df[['Retailer', 'TitleLink', 'Brand', 'PriceAUD', 'CapacityTB', 'PricePerTB']]
-        df = df.sort_values('PricePerTB', ignore_index=True)
-        cols_no_titlelink = list(df.columns)
-        cols_no_titlelink.remove("TitleLink")
-        df[cols_no_titlelink].apply(html.escape, axis=1)
+    df = pd.read_json(latest_file)
 
-        return {
-            'matching_result': matching_result,
-            'table_html': df.to_html(escape=False)
-        }
+    ### Create col with embedded URL
+    df['TitleLink'] = df.apply(
+        lambda row: f"<a href={row['URL']}>{row['Title']}</a>",
+        axis=1,
+    )
 
-    else:
-        return {}
+    ### Restrict columns
+    df = df[['Retailer', 'TitleLink', 'Brand', 'PriceAUD', 'CapacityTB', 'PricePerTB']]
+    df = df.sort_values('PricePerTB', ignore_index=True)
+
+    ### Escape all cols (except TitleLink)
+    df[[c for c in list(df.columns) if (c != 'TitleLink')]].apply( html.escape, axis=1 )
+
+    return {
+        'latest_file': latest_file,
+        'table_html': df.to_html(escape=False)
+    }
 
 
 ###########################################################
@@ -229,9 +194,8 @@ def routes(path='index'):
 
     ###########################################################
     ### Get form vars
-    if (key in ['scrape', 'view_table', 'view_graph']):
-        unique_context = getFormVars(request.values)
-        # unique_context.update( getFormVars(request.values) )
+    if (key in ['scrape', 'table', 'graph']):
+        unique_context = readForm(request.values)
 
 
     ###########################################################
@@ -245,14 +209,20 @@ def routes(path='index'):
         # print(f"app.root_path = {app.root_path}")
         # print(f"app.instance_path = {app.instance_path}")
         # print()
+
     elif (key == 'scrape'):
-        scrape_StartSubprocess(unique_context)
-    elif (key == 'view_table'):
-        unique_context.update( viewTable_GetVars(unique_context) )
-    elif (key == 'view_graph'):
+        if listContainsAllValues(unique_context.keys(), FORM_COLS):
+            scrape_StartSubprocess(unique_context)
+
+    elif (key == 'table'):
+        if listContainsAllValues(unique_context.keys(), FORM_COLS):
+            unique_context.update( viewTable_GetVars(unique_context) )
+
+    elif (key == 'graph'):
         pass
-    elif (key == 'view_all_results'):
-        unique_context.update({ 'results': getAllResultsFiles() })
+
+    elif (key == 'results'):
+        unique_context.update({ 'results': readAllJSON() })
 
 
     ###########################################################
