@@ -42,7 +42,8 @@ def main():
     CATEGORY = sys.argv[2] # "hdd"
     # OUT_JSON_DIR = f"{path.abspath(path.dirname(__file__))}/../scrape_result"
     OUT_JSON_DIR = f"{path.abspath(path.dirname(__file__))}/../out"
-    OUT_JSON_FILE = f"{OUT_JSON_DIR}/scrape_result_{WEBSITE}_{CATEGORY}_{NOW}.json"
+    # OUT_JSON_FILE = f"{OUT_JSON_DIR}/scrape_result_{WEBSITE}_{CATEGORY}_{NOW}.json"
+    OUT_JSON_FILE = f"{OUT_JSON_DIR}/{NOW}_{WEBSITE}_{CATEGORY}.json"
     
     URLS = {
         "pccg": {

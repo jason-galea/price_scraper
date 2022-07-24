@@ -90,6 +90,7 @@ class Extract:
 
                 ### Preprocess common values
                 capacity_gb = int(title_split[2].strip("TB"))*1024
+                capacity_tb = round(capacity_gb/1024, 2)
 
                 ### Save
                 result.update({
@@ -99,6 +100,8 @@ class Extract:
                     # "CapacityRaw":title_split[2],
                     "CapacityGB":capacity_gb,
                     "PricePerGB":round(result["PriceAUD"]/capacity_gb, 2),
+                    "CapacityTB":capacity_tb,
+                    "PricePerTB":round(result["PriceAUD"]/capacity_tb, 2),
                 })
 
 

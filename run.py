@@ -3,6 +3,7 @@
 ### Imports
 import os
 import json
+import html
 import subprocess as sp
 # from multiprocessing import context
 from flask import (
@@ -134,12 +135,27 @@ def getFormVars(request_values):
 #         **unique_context,
 #     )
 
-# def isAllListInList(needles, haystack):
-#     ### Returns True if all items in 'needle_list' exist in 'haystack_list'
-#     ### 'haystack_list' can also be a dict, where 'haystack_list.keys()' will be searched instead
-#     ### NOTE: This requires an exact match
+def isAllListInList(needles, haystack):
+    result = []
 
-#     return any([ (k in haystack) for k in needles ])
+    for item in haystack:
+        tokens = os.path.splitext(item)[0].split("_")
+
+        flag = False
+        for needle in needles:
+            if not needle in tokens:
+                flag = True
+                break
+        
+        if not flag:
+            result.append(item)
+    
+    return result
+    
+
+
+    # return any([ (k in haystack) for k in needles ])
+
 
 def getAllResultsFiles():
     cmd = f"find {ROOT}/out/ -type f"
@@ -155,11 +171,10 @@ def getAllResultsFiles():
 def scrape_StartSubprocess(unique_context):
     ### Start subprocess, if required args are defined
     # if isAllListInList(['website', 'category'], unique_context):
-    if ('website' in unique_context) and ('category' in unique_context): ### Compare dict as dict.keys()
+    if ('website' in unique_context) and ('category' in unique_context):
         cmd = f"{ROOT}/script/scrape.py {unique_context['website']} {unique_context['category']}"
         
         # p = sp.run(scrape_command.split()) ### Run & block
-
         p = sp.Popen(cmd.split()) ### Run 
         # p.communicate() ### Wait & print to STDOUT
 
@@ -169,21 +184,32 @@ def viewTable_GetVars(unique_context):
     if ('website' in unique_context) and ('category' in unique_context): ### Compare dict as dict.keys()
         web = unique_context['website']
         cat = unique_context['category']
-        # needles = [unique_context['website'], unique_context['category']]
+        needles = [unique_context['website'], unique_context['category']]
     
         all_results = getAllResultsFiles()
 
         # filtered_results = [ s for s in all_results if isAllListInList(needles, s.split('_')) ]
-        filtered_results = [ s for s in all_results if (web in s.split('_')[2]) and (cat in s.split('_')[3]) ]
-        filtered_results.sort()
+        # filtered_results = [ s for s in all_results if (web in s.split('_')[2]) and (cat in s.split('_')[3]) ]
+        filtered_results = isAllListInList(needles, all_results)
+        filtered_results.sort() 
+        print(f"filtered_results = {filtered_results}")
 
         matching_result = filtered_results[-1]
     
         df = pd.read_json(matching_result)
+        df['TitleLink'] = df.apply(
+            lambda row: f"<a href={row['URL']}>{row['Title']}</a>",
+            axis=1,
+        )
+        df = df[['Retailer', 'TitleLink', 'Brand', 'PriceAUD', 'CapacityTB', 'PricePerTB']]
+        df = df.sort_values('PricePerTB', ignore_index=True)
+        cols_no_titlelink = list(df.columns)
+        cols_no_titlelink.remove("TitleLink")
+        df[cols_no_titlelink].apply(html.escape, axis=1)
 
         return {
             'matching_result': matching_result,
-            'table_html': df.to_html()
+            'table_html': df.to_html(escape=False)
         }
 
     else:
@@ -231,11 +257,9 @@ def routes(path='index'):
 
     ###########################################################
     ### Render
-    print(f"\nunique_context: \n{json.dumps(unique_context, indent=2)}\n")
-    # return renderTemplateWithContext(key, unique_context)
+    # print(f"\nunique_context: \n{json.dumps(unique_context, indent=2)}\n")
     return render_template(
         template_name_or_list= PAGE_INFO[key]['template'],
-        # **context,
         key= key,
         PAGE_INFO= PAGE_INFO,
         desc= PAGE_INFO[key]['desc'],
