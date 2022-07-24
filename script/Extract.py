@@ -67,7 +67,7 @@ class Extract:
 
             title_split = result["Title"].split()
             # print(["Brand", "Series", "ModelNumber", "FormFactor", "Protocol", "Capacity"])
-            print(title_split)
+            # print(title_split)
 
 
             ### Discard unwanted items
@@ -86,11 +86,11 @@ class Extract:
                     if (title_split[1] == "Red") and (title_split[2] in ["Plus", "Pro"]):
                         title_split = Extract.combineArrayItems(title_split, 1, 2)
 
-                print(title_split)
+                # print(title_split)
 
                 ### Preprocess common values
-                capacity_gb = int(title_split[2].strip("TB"))*1024
-                capacity_tb = round(capacity_gb/1024, 2)
+                capacity_gb = int(title_split[2].strip("TB"))*1000
+                capacity_tb = round(capacity_gb/1000, 2)
 
                 ### Save
                 result.update({
@@ -127,13 +127,14 @@ class Extract:
                         "Samsung":"Samsung",
                         "ADATA":"ADATA",
                         "Corsair":"Corsair",
+                        "Crucial":"Crucial",
                         "Kingston":"Kingston",
                         "MSI":"MSI",
                         "Team":"Team",
                         "Western":"Western Digital",
                         "Gigabyte":"Gigabyte",
                     }
-                }            
+                }
                 for col, dict in common_dicts.items():
                     for key, val in dict.items():
                         if (key in title_split):
@@ -144,7 +145,7 @@ class Extract:
 
                 ### "CapacityGB", "PricePerGB", "PricePerGB"
                 capacity_dict = {
-                    "TB":1024,
+                    "TB":1000,
                     "GB":1,
                 }
                 for label, val in capacity_dict.items():
@@ -153,10 +154,10 @@ class Extract:
                             capacity_gb = int(s.strip(label))*val
                             result.update({
                                 "CapacityGB":capacity_gb,
-                                # "CapacityTB":capacity_gb/1024,
-                                "CapacityTB":round( capacity_gb/1024, 2 ),
+                                # "CapacityTB":capacity_gb/1000,
+                                "CapacityTB":round( capacity_gb/1000, 2 ),
                                 "PricePerGB":round( result["PriceAUD"]/capacity_gb, 2 ),
-                                "PricePerTB":round( result["PriceAUD"]/(capacity_gb/1024), 2 ),
+                                "PricePerTB":round( result["PriceAUD"]/(capacity_gb/1000), 2 ),
                             })
                             break
                 if ("CapacityGB" not in result.keys()):
@@ -211,7 +212,7 @@ class Extract:
 
                 # print(result)
                 # print(result)
-                print(json.dumps(result, indent=4))
+                # print(json.dumps(result, indent=4))
                 # input("\nPress ENTER to continue\n")
 
 

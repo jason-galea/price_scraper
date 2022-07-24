@@ -19,7 +19,7 @@ def export(test_data, dir, file):
         os.makedirs(dir)
 
     # Write
-    f = open(file, "w")
+    f = open(file, 'w')
     # f.write(json.dumps(test_data, indent=4)) # The indents definitely don't need to be here
     f.write(json.dumps(test_data))
 
@@ -29,34 +29,32 @@ def main():
 
     ### Require args
     if (len(sys.argv) in [1, 2]):
-        print("\nPlease provide website & category as arguments, E.G:")
-        print("$ scrape.py pccg hdd\n")
-        print("$ scrape.py scorptec gpu --debug\n")
+        print('\nPlease provide website & category as arguments, E.G:')
+        print('$ scrape.py pccg hdd\n')
+        print('$ scrape.py scorptec gpu --debug\n')
         exit(1)
         
 
     ### Vars
-    DEBUG = ("--debug" in sys.argv)
-    NOW = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S") 
-    WEBSITE = sys.argv[1] # "pccg"
-    CATEGORY = sys.argv[2] # "hdd"
-    # OUT_JSON_DIR = f"{path.abspath(path.dirname(__file__))}/../scrape_result"
+    DEBUG = ('--debug' in sys.argv)
+    NOW = datetime.datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S') 
+    WEBSITE = sys.argv[1] # 'pccg'
+    CATEGORY = sys.argv[2] # 'hdd'
     OUT_JSON_DIR = f"{path.abspath(path.dirname(__file__))}/../out"
-    # OUT_JSON_FILE = f"{OUT_JSON_DIR}/scrape_result_{WEBSITE}_{CATEGORY}_{NOW}.json"
     OUT_JSON_FILE = f"{OUT_JSON_DIR}/{NOW}_{WEBSITE}_{CATEGORY}.json"
     
     URLS = {
-        "pccg": {
-            "hdd": "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives",
-            "ssd": "https://www.pccasegear.com/category/210_902/hard-drives-ssds/solid-state-drives-ssd",
-            "cpu": "",
-            "gpu": "",
+        'pccg': {
+            'hdd': 'https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives',
+            'ssd': 'https://www.pccasegear.com/category/210_902/hard-drives-ssds/solid-state-drives-ssd',
+            'cpu': '',
+            'gpu': '',
         },
-        "scorptec": {
-            "hdd": "",
-            "ssd": "",
-            "cpu": "",
-            "gpu": "",
+        'scorptec': {
+            'hdd': '',
+            'ssd': '',
+            'cpu': '',
+            'gpu': '',
         },
         # etc...
     }
@@ -78,9 +76,9 @@ def main():
 
 
     ### Cleanup
-    os.system("pkill firefox")
+    os.system('pkill firefox')
     return
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
 

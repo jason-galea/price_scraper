@@ -96,6 +96,26 @@ FORM_LABELS = {
         'gpu':'GPU',
     },
 }
+TABLE_COLS = {
+    'hdd':{
+        'display_cols': ['Retailer', 'TitleLink', 'Brand', 'PriceAUD', 
+            'CapacityGB', 'CapacityTB', 'PricePerTB'],
+        'sort_col':'PricePerTB',
+    },
+    'ssd':{
+        'display_cols': ['Retailer', 'TitleLink', 'Brand', 'PriceAUD',
+            'CapacityGB', 'CapacityTB', 'PricePerTB'],
+        'sort_col':'PricePerTB',
+    },
+    # 'cpu':{
+    #     'display_cols':['Retailer', 'TitleLink', 'Brand', 'PriceAUD', 'CapacityTB', 'PricePerTB'],
+    #     'sort_col':'PricePerTB',
+    # },
+    # 'gpu':{
+    #     'display_cols':['Retailer', 'TitleLink', 'Brand', 'PriceAUD', 'CapacityTB', 'PricePerTB'],
+    #     'sort_col':'PricePerTB',
+    # },
+}
 
 ROOT = app.root_path
 OUT_DIR = f"{ROOT}/out"
@@ -104,10 +124,10 @@ FORM_COLS = ['website', 'category']
 
 ###########################################################
 ### Generic functions
-def readForm(request_values):
+def getFormVars(request_values):
     
     ### Create
-    result = { 'FORM_LABELS':FORM_LABELS }
+    result = {}
 
     ### Get form vars (if they exist)
     for s in FORM_COLS:
@@ -120,47 +140,44 @@ def readForm(request_values):
 def readAllJSON():
     return glob(f"{OUT_DIR}/*.json")
 
-def getHaystackMatchingNeedles(needles, haystack):
-    ### TODO: Refactor to only account for web and cat
+def getMatchingFiles(haystack, needles):
     result = []
 
     for item in haystack:
-        # tokens = os.path.splitext(item)[0].split("_")
         tokens = item.split('.')[0].split("_")
 
-        flag = False
-        for needle in needles:
-            if not needle in tokens:
-                flag = True
-                break
-        
-        if not flag:
+        if all((n in tokens) for n in needles):
             result.append(item)
-    
+
     return result
 
 def listContainsAllValues(haystack, needles):
-    return not any((n not in haystack) for n in needles)
+    return all((n in haystack) for n in needles)
+
 
 ###########################################################
 ### Route-specific functions
-def scrape_StartSubprocess(unique_context):
-    cmd = f"{ROOT}/script/scrape.py {unique_context['website']} {unique_context['category']}"
-    # _p = sp.Popen(cmd.split())
+def scrape_StartSubprocess(page_vars):
+    cmd = f"{ROOT}/script/scrape.py {page_vars['website']} {page_vars['category']}"
+
     sp.Popen(cmd.split())
 
-def viewTable_GetVars(unique_context):
+def viewTable_GetVars(page_vars):
+
+    ### Vars
+    website = page_vars['website']
+    category = page_vars['category']
+    needles = [website, category]
 
     ### Filter to files containing the chosen website & category
-    needles = [unique_context['website'], unique_context['category']]
-    # filtered_files = getHaystackMatchingNeedles(needles, readAllJSON())
-    filtered_files = [
-        s for s in readAllJSON()
-        if listContainsAllValues(s.split('.')[0].split("_"), needles)
-    ]
+    filtered_files = getMatchingFiles(readAllJSON(), needles)
+
     latest_file = max(filtered_files, key=os.path.getctime)
 
     df = pd.read_json(latest_file)
+
+    ### Clean up Title col
+    df['Title'] = df.apply(fixTitleCol, axis=1)
 
     ### Create col with embedded URL
     df['TitleLink'] = df.apply(
@@ -168,9 +185,9 @@ def viewTable_GetVars(unique_context):
         axis=1,
     )
 
-    ### Restrict columns
-    df = df[['Retailer', 'TitleLink', 'Brand', 'PriceAUD', 'CapacityTB', 'PricePerTB']]
-    df = df.sort_values('PricePerTB', ignore_index=True)
+    ### Restrict & sort cols
+    df = df[TABLE_COLS[category]['display_cols']]
+    df = df.sort_values(TABLE_COLS[category]['sort_col'], ignore_index=True)
 
     ### Escape all cols (except TitleLink)
     df[[c for c in list(df.columns) if (c != 'TitleLink')]].apply( html.escape, axis=1 )
@@ -180,60 +197,68 @@ def viewTable_GetVars(unique_context):
         'table_html': df.to_html(escape=False)
     }
 
+def fixTitleCol(row):
+    match_replace_dict = {
+        'Hard Drive': 'HDD',
+        '3.5in ': '',
+        'WD ': '',
+    }
+    result = str(row["Title"])
+    
+    for match, replace in match_replace_dict.items():
+        result = result.replace(match, replace)
+
+    return result
+
 
 ###########################################################
 ### Flask routes
-### TODO: Explode this function into separate pages (and combine after logic complete?)
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def routes(path='index'):
 
     key = path ### Deal with it
-    unique_context = {}
+    common_vars = {
+        'PAGE_INFO':PAGE_INFO,
+        'key':key,
+        'template_name_or_list':PAGE_INFO[key]['template'],
+        'desc':PAGE_INFO[key]['desc'],
+    }
+    page_vars = {}
 
-
-    ###########################################################
-    ### Get form vars
     if (key in ['scrape', 'table', 'graph']):
-        unique_context = readForm(request.values)
+        page_vars.update({ 'FORM_LABELS':FORM_LABELS })
+        page_vars.update( getFormVars(request.values) )
 
 
     ###########################################################
-    ### Get unique vars
-    ### No switch-case in python 3.9, kill me
-    if (key == 'index'):
-        pass
-        # print()
-        # print(f"os.path.dirname(app.root_path) = {os.path.dirname(app.root_path)}")
-        # print(f"os.path.dirname(app.instance_path) = {os.path.dirname(app.instance_path)}")
-        # print(f"app.root_path = {app.root_path}")
-        # print(f"app.instance_path = {app.instance_path}")
-        # print()
+    ### Page-specific actions/vars
+    # if (key == 'index'):
+    #     pass
 
-    elif (key == 'scrape'):
-        if listContainsAllValues(unique_context.keys(), FORM_COLS):
-            scrape_StartSubprocess(unique_context)
+    # elif (key == 'scrape'):
+    if (key == 'scrape'):
+        if listContainsAllValues(page_vars.keys(), FORM_COLS):
+            scrape_StartSubprocess(page_vars)
 
     elif (key == 'table'):
-        if listContainsAllValues(unique_context.keys(), FORM_COLS):
-            unique_context.update( viewTable_GetVars(unique_context) )
+        if listContainsAllValues(page_vars.keys(), FORM_COLS):
+            page_vars.update( viewTable_GetVars(page_vars) )
 
-    elif (key == 'graph'):
-        pass
+    # elif (key == 'graph'):
+    #     pass
 
     elif (key == 'results'):
-        unique_context.update({ 'results': readAllJSON() })
+        page_vars.update({ 'results': readAllJSON() })
 
 
     ###########################################################
+    ### DEBUG
+    print(f"\npage_vars: \n{json.dumps(page_vars, indent=2)}\n")
     ### Render
-    # print(f"\nunique_context: \n{json.dumps(unique_context, indent=2)}\n")
     return render_template(
-        template_name_or_list= PAGE_INFO[key]['template'],
-        key= key,
-        PAGE_INFO= PAGE_INFO,
-        desc= PAGE_INFO[key]['desc'],
-        **unique_context,
+        **common_vars,
+        **page_vars,
     )
 
 if __name__ == '__main__':
