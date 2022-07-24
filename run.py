@@ -118,7 +118,8 @@ TABLE_COLS = {
 }
 
 ROOT = app.root_path
-OUT_DIR = f"{ROOT}/out"
+# OUT_DIR = f"{ROOT}/out"
+OUT_DIR = os.path.join(ROOT, "out")
 FORM_COLS = ['website', 'category']
 
 
@@ -137,8 +138,13 @@ def getFormVars(request_values):
 
     return result
 
-def readAllJSON():
-    return glob(f"{OUT_DIR}/*.json")
+def readAllJSON(remove_paths=False):
+    ### We need to keep paths for use in "os.path.join", which try to access the file
+    if remove_paths:
+        return [os.path.basename(s) for s in glob(os.path.join(OUT_DIR, "*.json"))]
+    else:
+        return glob(f"{OUT_DIR}/*.json") ### With path
+
 
 def getMatchingFiles(haystack, needles):
     result = []
@@ -172,8 +178,16 @@ def viewTable_GetVars(page_vars):
     ### Filter to files containing the chosen website & category
     filtered_files = getMatchingFiles(readAllJSON(), needles)
 
-    latest_file = max(filtered_files, key=os.path.getctime)
+    # print(f"\nROOT = {ROOT}\n")
+    # print(f"\nOUT_DIR = {OUT_DIR}\n")
+    # print(f"\nmax(filtered_files, key=os.path.getctime) = {max(filtered_files, key=os.path.getctime)}\n")
+    # latest_file = f"{OUT_DIR}/{max(filtered_files, key=os.path.getctime)}"
+    latest_file = os.path.join(OUT_DIR, max(filtered_files, key=os.path.getctime))
 
+    ### DEBUG
+    print(f"\nlatest_file = {latest_file}\n")
+
+    ### Read
     df = pd.read_json(latest_file)
 
     ### Clean up Title col
@@ -249,7 +263,7 @@ def routes(path='index'):
     #     pass
 
     elif (key == 'results'):
-        page_vars.update({ 'results': readAllJSON() })
+        page_vars.update({ 'results': readAllJSON(remove_paths=True) })
 
 
     ###########################################################
