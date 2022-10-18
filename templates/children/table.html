@@ -3,7 +3,7 @@
 
 {% if website and category %}
     <p>Received website '{{ website }}' and category '{{ category }}'</p>
-    <p>MATCHING RESULT: {{ latest_file }}</p>
+    <p>MATCHING RESULT: {{ latest_file_short }}</p>
 
     {{ table_html|safe }}
 {% endif %}

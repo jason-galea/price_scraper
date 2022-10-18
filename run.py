@@ -141,10 +141,11 @@ def getFormVars(request_values):
 def readAllJSON(remove_paths=False):
     ### We need to keep paths for use in "os.path.join", which try to access the file
     if remove_paths:
-        return [os.path.basename(s) for s in glob(os.path.join(OUT_DIR, "*.json"))]
+        results = [os.path.basename(s) for s in glob(os.path.join(OUT_DIR, "*.json"))]
+        results.sort() ### WHY DOESN'T THIS HAVE A RETURN VALUE???
+        return results
     else:
         return glob(f"{OUT_DIR}/*.json") ### With path
-
 
 def getMatchingFiles(haystack, needles):
     result = []
@@ -207,7 +208,8 @@ def viewTable_GetVars(page_vars):
     df[[c for c in list(df.columns) if (c != 'TitleLink')]].apply( html.escape, axis=1 )
 
     return {
-        'latest_file': latest_file,
+        # 'latest_file': latest_file,
+        'latest_file_short': os.path.basename(latest_file), ### Signposting
         'table_html': df.to_html(escape=False)
     }
 
