@@ -233,39 +233,39 @@ def fixTitleCol(row):
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def routes(path='index'):
 
-    key = path ### Deal with it
+    # key = path ### Deal with it
     common_vars = {
         'PAGE_INFO':PAGE_INFO,
-        'key':key,
-        'template_name_or_list':PAGE_INFO[key]['template'],
-        'desc':PAGE_INFO[key]['desc'],
+        'key':path,
+        'template_name_or_list':PAGE_INFO[path]['template'],
+        'desc':PAGE_INFO[path]['desc'],
     }
     page_vars = {}
 
-    if (key in ['scrape', 'table', 'graph']):
-        page_vars.update({ 'FORM_LABELS':FORM_LABELS })
-        page_vars.update( getFormVars(request.values) )
+    match path:
+        case "index":
+            pass
 
+        case "scrape":
+            page_vars.update({ 'FORM_LABELS':FORM_LABELS })
+            page_vars.update( getFormVars(request.values) )
 
-    ###########################################################
-    ### Page-specific actions/vars
-    # if (key == 'index'):
-    #     pass
+            if listContainsAllValues(page_vars.keys(), FORM_COLS):
+                scrape_StartSubprocess(page_vars)
 
-    # elif (key == 'scrape'):
-    if (key == 'scrape'):
-        if listContainsAllValues(page_vars.keys(), FORM_COLS):
-            scrape_StartSubprocess(page_vars)
+        case "table":
+            page_vars.update({ 'FORM_LABELS':FORM_LABELS })
+            page_vars.update( getFormVars(request.values) )
 
-    elif (key == 'table'):
-        if listContainsAllValues(page_vars.keys(), FORM_COLS):
-            page_vars.update( viewTable_GetVars(page_vars) )
+            if listContainsAllValues(page_vars.keys(), FORM_COLS):
+                page_vars.update( viewTable_GetVars(page_vars) )
 
-    # elif (key == 'graph'):
-    #     pass
+        case "graph":
+            page_vars.update({ 'FORM_LABELS':FORM_LABELS })
+            page_vars.update( getFormVars(request.values) )
 
-    elif (key == 'results'):
-        page_vars.update({ 'results': readAllJSON(remove_paths=True) })
+        case "results":
+            page_vars.update({ 'results': readAllJSON(remove_paths=True) })
 
 
     ###########################################################
