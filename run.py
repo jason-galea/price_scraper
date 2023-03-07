@@ -143,6 +143,7 @@ def readAllJSON(remove_paths=False):
     if remove_paths:
         results = [os.path.basename(s) for s in glob(os.path.join(OUT_DIR, "*.json"))]
         results.sort() ### WHY DOESN'T THIS HAVE A RETURN VALUE???
+        results.reverse()
         return results
     else:
         return glob(f"{OUT_DIR}/*.json") ### With path
