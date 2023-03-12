@@ -7,18 +7,17 @@ import json
 # import lib.Web as Web
 
 
-def combineArrayItems(a, i, j):
-    ### Receives array & two indexes
-    ### Returns array with elements between the indexes (inclusive) concaternated
+def concaternate_items_within_list(l, i, j):
+    ### Receives list & two indexes
+    ### Returns list with elements between the indexes concaternated (inclusive)
+    ### E.G: concaternate_items_within_list(["a", "b", "c", "d"], 1, 2) --> ["a", "b c", "d"]
     for _ in range(j - i):
-        a[i] = f"{a[i]} {a[i + 1]}"
-        del a[i + 1]
+        l[i] = f"{l[i]} {l[i + 1]}"
+        del l[i + 1]
 
-    return a
+    return l
 
 def remove_multiple_strings_from_list(l=list, strings_to_remove=list):
-    # return [s for s in l if (s not in strings_to_remove)]
-
     for s in strings_to_remove:
         try:
             l.remove(s)
@@ -71,10 +70,10 @@ def pccg(category, soup):
             
             ### Make array consistent to Brand/Series/Model
             if title_split[0] == "Western": # ["Western", "Digital", "WD"] --> ["Western Digital"]
-                title_split = combineArrayItems(title_split, 0, 1)
+                title_split = concaternate_items_within_list(title_split, 0, 1)
 
                 if (title_split[1] == "Red") and (title_split[2] in ["Plus", "Pro"]):
-                    title_split = combineArrayItems(title_split, 1, 2)
+                    title_split = concaternate_items_within_list(title_split, 1, 2)
 
             # print(title_split)
 
@@ -84,14 +83,14 @@ def pccg(category, soup):
 
             ### Save
             result.update({
-                "Brand":title_split[0],
-                "Series":title_split[1],
-                "Model":title_split[3],
-                # "CapacityRaw":title_split[2],
-                "CapacityGB":capacity_gb,
-                "PricePerGB":round(result["PriceAUD"]/capacity_gb, 2),
-                "CapacityTB":capacity_tb,
-                "PricePerTB":round(result["PriceAUD"]/capacity_tb, 2),
+                "Brand": title_split[0],
+                "Series": title_split[1],
+                "Model": title_split[3],
+                # "CapacityRaw": title_split[2],
+                "CapacityGB": capacity_gb,
+                "PricePerGB": round(result["PriceAUD"]/capacity_gb, 2),
+                "CapacityTB": capacity_tb,
+                "PricePerTB": round(result["PriceAUD"]/capacity_tb, 2),
             })
 
 
@@ -100,7 +99,7 @@ def pccg(category, soup):
             ### Common 1:1 matches
             ### "FormFactor", "Protocol", "Brand"
             ### TODO: Use REGEX instead?
-            common_dicts = {
+            common_category_mappings = {
                 "FormFactor":{
                     "2.5in":"2.5in",
                     "2.5inch":"2.5in",
@@ -130,13 +129,15 @@ def pccg(category, soup):
                     "Gigabyte":"Gigabyte",
                 }
             }
-            for col, dict in common_dicts.items():
-                for key, val in dict.items():
-                    if (key in title_split):
-                        result.update({ col:val })
+
+            for d_categories, category_mappings in common_category_mappings.items():
+                for matching_string, value in category_mappings.items():
+                    if (matching_string in title_split):
+                        result.update({ d_categories:value })
                         break
-                if (col not in result.keys()):
-                    print(f"{col} not found in title: {title_split}")
+
+                if (d_categories not in result.keys()):
+                    print(f"{d_categories} not found in title: {title_split}")
 
             ### "CapacityGB", "PricePerGB", "PricePerGB"
             capacity_dict = {
@@ -169,18 +170,18 @@ def pccg(category, soup):
             #     # ['Samsung', '870', 'EVO', '2.5in', 'SATA', 'SSD', '500GB']
             #     # ['Samsung', '970', 'EVO', 'Plus', 'NVMe', 'SSD', '1TB']
             #     if title_split[3] == "Plus":
-            #         title_split = combineArrayItems(title_split, 2, 3)
+            #         title_split = concaternate_items_within_list(title_split, 2, 3)
 
             # elif title_split[0] == "ADATA":
             #     if title_split[3] == "Pro":
-            #         title_split = combineArrayItems(title_split, 2, 3)
+            #         title_split = concaternate_items_within_list(title_split, 2, 3)
             #     if title_split[4] == "Blade":
-            #         title_split = combineArrayItems(title_split, 2, 4)
+            #         title_split = concaternate_items_within_list(title_split, 2, 4)
 
             # elif title_split[0] == "Western":
             #     # title_split[0] = "Western Digital"
             #     # del title_split[1]
-            #     title_split = combineArrayItems(title_split, 0, 1)
+            #     title_split = concaternate_items_within_list(title_split, 0, 1)
 
             # # elif title_split[0] == ":"
             # #     title_split[0] = "???"
