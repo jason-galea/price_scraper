@@ -16,8 +16,16 @@ def combineArrayItems(a, i, j):
 
     return a
 
-def removeStrings(a, strings_a):
-    return [s for s in a if (s not in strings_a)]
+def remove_multiple_strings_from_list(l=list, strings_to_remove=list):
+    # return [s for s in l if (s not in strings_to_remove)]
+
+    for s in strings_to_remove:
+        try:
+            l.remove(s)
+        except ValueError:
+            pass
+
+    return l
 
 def pccg(category, soup):
     
@@ -59,7 +67,7 @@ def pccg(category, soup):
         ### WEBSITE & CATEGORY SPECIFIC DATA
         if category == "hdd":
             ### Remove unneeded words
-            title_split = removeStrings(title_split, ["WD"])
+            title_split = remove_multiple_strings_from_list(title_split, ["WD"])
             
             ### Make array consistent to Brand/Series/Model
             if title_split[0] == "Western": # ["Western", "Digital", "WD"] --> ["Western Digital"]
@@ -95,17 +103,22 @@ def pccg(category, soup):
             common_dicts = {
                 "FormFactor":{
                     "2.5in":"2.5in",
+                    "2.5inch":"2.5in",
+                    "2.5-inch":"2.5in",
                     "M.2":"M.2",
                     "NVMe":"M.2",
                     "NVME":"M.2",
                 },
                 "Protocol":{
                     "SATA":"SATA",
+                    "2.5inch":"SATA",
                     "Gen4":"NVMe Gen4",
-                    "NVMe":"NVMe Gen3",
+                    "Gen4x4":"NVMe Gen4",
+                    "NVMe":"NVMe Gen3", ### NOTE: Assume "NVMe" = PCIe Gen3, since we already found all Gen4 drives 
                     "NVME":"NVMe Gen3",
                 },
                 "Brand":{
+                    "ASUS":"ASUS",
                     "Samsung":"Samsung",
                     "ADATA":"ADATA",
                     "Corsair":"Corsair",
@@ -136,7 +149,6 @@ def pccg(category, soup):
                         capacity_gb = int(s.strip(label))*val
                         result.update({
                             "CapacityGB":capacity_gb,
-                            # "CapacityTB":capacity_gb/1000,
                             "CapacityTB":round( capacity_gb/1000, 2 ),
                             "PricePerGB":round( result["PriceAUD"]/capacity_gb, 2 ),
                             "PricePerTB":round( result["PriceAUD"]/(capacity_gb/1000), 2 ),
@@ -147,9 +159,9 @@ def pccg(category, soup):
             
             # ### Remove unneeded words
             # ### All remaining elements should be required for: ["Brand", "Series", "ModelNumber"]
-            # title_split = removeStrings(
-            #     title_split, ["PCIe", "PCI-E", "SSD", "Series",
-            #         "M.2", "SATA", "2.5in", "NVMe", "NVME", "Gen4"]
+            # title_split = remove_multiple_strings_from_list(
+            #     title_split,
+            #     ["PCIe", "PCI-E", "SSD", "Series", "M.2", "SATA", "2.5in", "NVMe", "NVME", "Gen4"],
             # )
 
             # ### ["Brand", "Series", "ModelNumber"]
