@@ -38,24 +38,8 @@ FORM_COLS = ['website', 'category']
 
 ###########################################################
 ### Generic functions
-def getFormVars(request_values):
-    
-    ### Create
-    result = {}
-
-    ### Get form vars (if they exist)
-    for s in FORM_COLS:
-        val = request_values.get(s)
-        if (val != None):
-            result.update({ s:val })
-
-    return result
-
 def getJSONFilenames():
     return glob(f"{JSON_OUTPUT_DIR}/*.json")
-
-# def getMatchingFiles(haystack, needles):
-#     return [item for item in haystack if (listContainsAllValues(item.split('.')[0].split("_"), needles))]
 
 def listContainsAllValues(haystack, needles):
     return all((n in haystack) for n in needles)
@@ -73,11 +57,7 @@ def scrape_StartSubprocess(website, category):
     )
     scrape_thread.start()
 
-def viewTable_GetVars(page_vars):
-
-    ### Vars
-    website = page_vars['website']
-    category = page_vars['category']
+def viewTable_GetVars(website, category):
 
     ### Filter to files containing the chosen website & category
     filtered_files = [ item
@@ -144,34 +124,34 @@ def routes(path='index'):
         'template_name_or_list': PAGE_INFO[path]['template'],
         'desc': PAGE_INFO[path]['desc'],
     }
-    page_vars = {}
+    page_vars = {
+        "FORM_LABELS": FORM_LABELS,
+        **request.form,
+    }
+
+    FORM_IS_VALID = False
+    if listContainsAllValues(page_vars.keys(), FORM_COLS):
+        website = page_vars['website']
+        category = page_vars['category']
+        FORM_IS_VALID = True
 
     match path:
         case "index":
             pass
 
         case "scrape":
-            page_vars.update({ 'FORM_LABELS':FORM_LABELS })
-            page_vars.update( getFormVars(request.values) )
-
-            if listContainsAllValues(page_vars.keys(), FORM_COLS):
-                # scrape_StartSubprocess(page_vars)
-                # Scrape(page_vars['website'], page_vars['category'])
-                scrape_StartSubprocess(page_vars['website'], page_vars['category'])
+            if FORM_IS_VALID:
+                scrape_StartSubprocess(website, category)
 
         case "table":
-            page_vars.update({ 'FORM_LABELS':FORM_LABELS })
-            page_vars.update( getFormVars(request.values) )
-
-            if listContainsAllValues(page_vars.keys(), FORM_COLS):
-                page_vars.update( viewTable_GetVars(page_vars) )
+            if FORM_IS_VALID:
+                page_vars.update( viewTable_GetVars(website, category) )
 
         case "graph":
-            page_vars.update({ 'FORM_LABELS':FORM_LABELS })
-            page_vars.update( getFormVars(request.values) )
+            pass
 
         case "results":
-            results = [os.path.basename(s) for s in getJSONFilenames()] ### 
+            results = [os.path.basename(s) for s in getJSONFilenames()]
             results.sort(reverse=True) ### Sort by reverse date, newest items on top
 
             page_vars.update({ 'results': results })
