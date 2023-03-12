@@ -4,9 +4,7 @@
 import os
 import json
 import html
-from posixpath import basename
 import subprocess as sp
-from unicodedata import category
 import pandas as pd
 
 # from multiprocessing import context
@@ -83,6 +81,7 @@ PAGE_INFO = {
     #     'desc':'',
     # },
 }
+
 FORM_LABELS = {
     'website':{
         'pccg':'PC Case Gear',
@@ -96,6 +95,7 @@ FORM_LABELS = {
         'gpu':'GPU',
     },
 }
+
 TABLE_COLS = {
     'hdd':{
         'display_cols': ['Retailer', 'TitleLink', 'Brand', 'PriceAUD', 
@@ -118,8 +118,7 @@ TABLE_COLS = {
 }
 
 ROOT = app.root_path
-# OUT_DIR = f"{ROOT}/out"
-OUT_DIR = os.path.join(ROOT, "out")
+JSON_OUTPUT_DIR = os.path.join(ROOT, "out")
 FORM_COLS = ['website', 'category']
 
 
@@ -138,26 +137,11 @@ def getFormVars(request_values):
 
     return result
 
-def readAllJSON(remove_paths=False):
-    ### We need to keep paths for use in "os.path.join", which try to access the file
-    if remove_paths:
-        results = [os.path.basename(s) for s in glob(os.path.join(OUT_DIR, "*.json"))]
-        results.sort() ### WHY DOESN'T THIS HAVE A RETURN VALUE???
-        results.reverse()
-        return results
-    else:
-        return glob(f"{OUT_DIR}/*.json") ### With path
+def getJSONFilenames():
+    return glob(os.path.join(JSON_OUTPUT_DIR, "*.json"))
 
-def getMatchingFiles(haystack, needles):
-    result = []
-
-    for item in haystack:
-        tokens = item.split('.')[0].split("_")
-
-        if all((n in tokens) for n in needles):
-            result.append(item)
-
-    return result
+# def getMatchingFiles(haystack, needles):
+#     return [item for item in haystack if (listContainsAllValues(item.split('.')[0].split("_"), needles))]
 
 def listContainsAllValues(haystack, needles):
     return all((n in haystack) for n in needles)
@@ -175,16 +159,18 @@ def viewTable_GetVars(page_vars):
     ### Vars
     website = page_vars['website']
     category = page_vars['category']
-    needles = [website, category]
 
     ### Filter to files containing the chosen website & category
-    filtered_files = getMatchingFiles(readAllJSON(), needles)
+    filtered_files = [ item
+        for item in getJSONFilenames()
+        if (listContainsAllValues(item.split('.')[0].split("_"), [website, category]))
+    ]
 
     # print(f"\nROOT = {ROOT}\n")
-    # print(f"\nOUT_DIR = {OUT_DIR}\n")
+    # print(f"\nJSON_OUTPUT_DIR = {JSON_OUTPUT_DIR}\n")
     # print(f"\nmax(filtered_files, key=os.path.getctime) = {max(filtered_files, key=os.path.getctime)}\n")
-    # latest_file = f"{OUT_DIR}/{max(filtered_files, key=os.path.getctime)}"
-    latest_file = os.path.join(OUT_DIR, max(filtered_files, key=os.path.getctime))
+    # latest_file = f"{JSON_OUTPUT_DIR}/{max(filtered_files, key=os.path.getctime)}"
+    latest_file = os.path.join(JSON_OUTPUT_DIR, max(filtered_files, key=os.path.getctime))
 
     ### DEBUG
     print(f"\nlatest_file = {latest_file}\n")
@@ -193,7 +179,7 @@ def viewTable_GetVars(page_vars):
     df = pd.read_json(latest_file)
 
     ### Clean up Title col
-    df['Title'] = df.apply(fixTitleCol, axis=1)
+    df['Title'] = df.apply(viewTable_fixTitleCol, axis=1)
 
     ### Create col with embedded URL
     df['TitleLink'] = df.apply(
@@ -214,7 +200,7 @@ def viewTable_GetVars(page_vars):
         'table_html': df.to_html(escape=False)
     }
 
-def fixTitleCol(row):
+def viewTable_fixTitleCol(row):
     match_replace_dict = {
         'Hard Drive': 'HDD',
         '3.5in ': '',
@@ -236,10 +222,10 @@ def routes(path='index'):
 
     # key = path ### Deal with it
     common_vars = {
-        'PAGE_INFO':PAGE_INFO,
-        'key':path,
-        'template_name_or_list':PAGE_INFO[path]['template'],
-        'desc':PAGE_INFO[path]['desc'],
+        'PAGE_INFO': PAGE_INFO,
+        'key': path,
+        'template_name_or_list': PAGE_INFO[path]['template'],
+        'desc': PAGE_INFO[path]['desc'],
     }
     page_vars = {}
 
@@ -266,7 +252,10 @@ def routes(path='index'):
             page_vars.update( getFormVars(request.values) )
 
         case "results":
-            page_vars.update({ 'results': readAllJSON(remove_paths=True) })
+            results = [os.path.basename(s) for s in getJSONFilenames()] ### 
+            results.sort(reverse=True) ### Sort by reverse date, newest items on top
+
+            page_vars.update({ 'results': results })
 
 
     ###########################################################
