@@ -4,10 +4,11 @@
 import os
 import json
 import html
-import subprocess as sp
+# import subprocess as sp
+import threading
 import pandas as pd
 
-# from multiprocessing import context
+from glob import glob
 from flask import (
     Flask,
     render_template,
@@ -16,7 +17,7 @@ from flask import (
     flash,
     redirect,
 )
-from glob import glob
+from lib.Scrape import Scrape
 
 
 
@@ -62,10 +63,15 @@ def listContainsAllValues(haystack, needles):
 
 ###########################################################
 ### Route-specific functions
-def scrape_StartSubprocess(page_vars):
-    cmd = f"{ROOT}/script/scrape.py {page_vars['website']} {page_vars['category']}"
+def scrape_StartSubprocess(website, category):
+    # cmd = f"{ROOT}/script/scrape.py {website} {category}"
+    # sp.Popen(cmd.split())
 
-    sp.Popen(cmd.split())
+    scrape_thread = threading.Thread(
+        target=Scrape,
+        args=(website, category),
+    )
+    scrape_thread.start()
 
 def viewTable_GetVars(page_vars):
 
@@ -149,7 +155,9 @@ def routes(path='index'):
             page_vars.update( getFormVars(request.values) )
 
             if listContainsAllValues(page_vars.keys(), FORM_COLS):
-                scrape_StartSubprocess(page_vars)
+                # scrape_StartSubprocess(page_vars)
+                # Scrape(page_vars['website'], page_vars['category'])
+                scrape_StartSubprocess(page_vars['website'], page_vars['category'])
 
         case "table":
             page_vars.update({ 'FORM_LABELS':FORM_LABELS })
