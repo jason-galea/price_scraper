@@ -24,101 +24,14 @@ from glob import glob
 ###########################################################
 ### Vars
 app = Flask(__name__)
-
-PAGE_INFO = {
-    'index':{
-        'route':'/',
-        'template':'children/index.html',
-        'title':'Home',
-        'desc':[
-            'Welcome to Price Scraper (TM)!',
-            'This website will scrape & display the latest price/specs/etc. of computer hardware.',
-            'It\'s designed to work with specific Australian computer parts retailers.',
-        ],
-    },
-    'scrape':{
-        'route':'/scrape',
-        'template':'children/scrape.html',
-        'title':'Scrape',
-        'desc':[
-            'This page lets you scrape the latest data from your chosen website & category.',
-            'Make a selection and press "Submit" to continue.',
-        ],
-    },
-    'table':{
-        'route':'/table',
-        'template':'children/table.html',
-        'title':'Table',
-        'desc':[
-            'This page allows you to view the most recent result for a given website & category.',
-            'The data will be displayed in a table.',
-            'Make a selection and press "Submit" to continue.',
-        ],
-    },
-    'graph':{
-        'route':'/graph',
-        'template':'children/graph.html',
-        'title':'Graph',
-        'desc':[
-            'This page allows you to view the most recent result for a given website & category.',
-            'The data will be displayed in a graph.',
-            'Make a selection and press "Submit" to continue.',
-        ],
-    },
-    'results':{
-        'route':'/results',
-        'template':'children/results.html',
-        'title':'Results',
-        'desc':[
-            'This page shows all previously collected result files.',
-            'In case of any error, collecting some more data in the "Scrape" page',
-        ],
-    },
-    # '':{
-    #     'route':'',
-    #     'template':'',
-    #     'title':'',
-    #     'desc':'',
-    # },
-}
-
-FORM_LABELS = {
-    'website':{
-        'pccg':'PC Case Gear',
-        'scorptec':'Scorptec',
-        'centrecom':'Centre Com',
-    },
-    'category':{
-        'hdd':'3.5\' Hard Drive',
-        'ssd':'SSD',
-        'cpu':'CPU',
-        'gpu':'GPU',
-    },
-}
-
-TABLE_COLS = {
-    'hdd':{
-        'display_cols': ['Retailer', 'TitleLink', 'Brand', 'PriceAUD', 
-            'CapacityGB', 'CapacityTB', 'PricePerTB'],
-        'sort_col':'PricePerTB',
-    },
-    'ssd':{
-        'display_cols': ['Retailer', 'TitleLink', 'Brand', 'PriceAUD',
-            'CapacityGB', 'CapacityTB', 'PricePerTB'],
-        'sort_col':'PricePerTB',
-    },
-    # 'cpu':{
-    #     'display_cols':['Retailer', 'TitleLink', 'Brand', 'PriceAUD', 'CapacityTB', 'PricePerTB'],
-    #     'sort_col':'PricePerTB',
-    # },
-    # 'gpu':{
-    #     'display_cols':['Retailer', 'TitleLink', 'Brand', 'PriceAUD', 'CapacityTB', 'PricePerTB'],
-    #     'sort_col':'PricePerTB',
-    # },
-}
-
 ROOT = app.root_path
-JSON_OUTPUT_DIR = os.path.join(ROOT, "out")
+CONF_DIR = f"{ROOT}/conf"
+JSON_OUTPUT_DIR = f"{ROOT}/out"
+
+with open(f"{CONF_DIR}/page_info.json", "r") as f: PAGE_INFO = json.load(f)
+with open(f"{CONF_DIR}/form_labels.json", "r") as f: FORM_LABELS = json.load(f)
+with open(f"{CONF_DIR}/table_cols.json", "r") as f: TABLE_COLS = json.load(f)
+
 FORM_COLS = ['website', 'category']
 
 
@@ -138,7 +51,7 @@ def getFormVars(request_values):
     return result
 
 def getJSONFilenames():
-    return glob(os.path.join(JSON_OUTPUT_DIR, "*.json"))
+    return glob(f"{JSON_OUTPUT_DIR}/*.json")
 
 # def getMatchingFiles(haystack, needles):
 #     return [item for item in haystack if (listContainsAllValues(item.split('.')[0].split("_"), needles))]
@@ -165,15 +78,13 @@ def viewTable_GetVars(page_vars):
         for item in getJSONFilenames()
         if (listContainsAllValues(item.split('.')[0].split("_"), [website, category]))
     ]
-
-    # print(f"\nROOT = {ROOT}\n")
-    # print(f"\nJSON_OUTPUT_DIR = {JSON_OUTPUT_DIR}\n")
-    # print(f"\nmax(filtered_files, key=os.path.getctime) = {max(filtered_files, key=os.path.getctime)}\n")
-    # latest_file = f"{JSON_OUTPUT_DIR}/{max(filtered_files, key=os.path.getctime)}"
-    latest_file = os.path.join(JSON_OUTPUT_DIR, max(filtered_files, key=os.path.getctime))
+    # print(f"filtered_files = {filtered_files}")
+    latest_file = max(filtered_files, key=os.path.getctime)
+    latest_file_basename = os.path.basename(latest_file)
 
     ### DEBUG
-    print(f"\nlatest_file = {latest_file}\n")
+    # print(f"latest_file = {latest_file}")
+    # print(f"latest_file_basename = {latest_file_basename}")
 
     ### Read
     df = pd.read_json(latest_file)
@@ -196,7 +107,7 @@ def viewTable_GetVars(page_vars):
 
     return {
         # 'latest_file': latest_file,
-        'latest_file_short': os.path.basename(latest_file), ### Signposting
+        'latest_file_basename': latest_file_basename, ### Signposting
         'table_html': df.to_html(escape=False)
     }
 
@@ -258,9 +169,11 @@ def routes(path='index'):
             page_vars.update({ 'results': results })
 
 
-    ###########################################################
     ### DEBUG
-    print(f"\npage_vars: \n{json.dumps(page_vars, indent=2)}\n")
+    # print(f"\npage_vars: \n{json.dumps(page_vars, indent=2)}\n")
+
+
+    ###########################################################
     ### Render
     return render_template(
         **common_vars,

@@ -1,0 +1,18 @@
+{
+    "hdd":{
+        "display_cols": ["Retailer", "TitleLink", "Brand", "PriceAUD", "CapacityGB", "CapacityTB", "PricePerTB"],
+        "sort_col":"PricePerTB"
+    },
+    "ssd":{
+        "display_cols": ["Retailer", "TitleLink", "Brand", "PriceAUD", "CapacityGB", "CapacityTB", "PricePerTB"],
+        "sort_col":"PricePerTB"
+    },
+    "cpu":{
+        "display_cols":["Retailer", "TitleLink", "Brand", "PriceAUD"],
+        "sort_col":"PriceAUD"
+    },
+    "gpu":{
+        "display_cols":["Retailer", "TitleLink", "Brand", "PriceAUD"],
+        "sort_col":"PriceAUD"
+    }
+}
