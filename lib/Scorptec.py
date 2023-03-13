@@ -19,9 +19,9 @@ class Scorptec:
     CATEGORY_URLS = {
         "hdd": "https://www.scorptec.com.au/product/hard-drives-&-ssds/hdd-3.5-drives",
         "ssd": "https://www.scorptec.com.au/product/hard-drives-&-ssds/solid-state-drives-ssd",
-        "cpu": "",
-        "gpu": "",
-    },
+        # "cpu": "",
+        # "gpu": "",
+    }
 
     def __init__(self, category, output_dir, output_file, debug=False) -> None:
 
@@ -45,19 +45,34 @@ class Scorptec:
 
 
         ### Pagination fun!!!1!!!!!
-        page_size_dropdown = Select(driver.find_element(By.ID, "pagination-view-count"))
-        page_size_dropdown.select_by_visible_text("90")
 
-        while (
-            driver.find_element(By.ID, "current-page").text
-            != driver.find_element(By.ID, "total-page").text
-        ):
-            for element in driver.find_elements(By.CLASS_NAME, "detail-product-title"):
+        ### 90 items per page
+        items_per_page_dropdown = Select(driver.find_element(By.ID, "pagination-view-count"))
+        items_per_page_dropdown.select_by_visible_text("90")
+        
+        ### Sort by price, low to high
+        sort_dropdown = Select(driver.find_element(By.ID, "widget-sort"))
+        sort_dropdown.select_by_visible_text("Price (low to high)")
+
+        last_page = driver.find_element(By.ID, "total-page").text
+        print(f"last_page = {last_page}")
+
+        while True:
+            for element in driver.find_elements(
+                By.XPATH,
+                "//div[@class='detail-product-title']/a",
+            ):
                 print(element.get_attribute("href"))
 
-            driver.find_element(By.CLASS_NAME, "icomoon icomoon-chevron-right").click()
+            current_page = driver.find_element(By.ID, "current-page").text
+            print(f"current_page = {current_page}")
+            # if (current_page != last_page):
+            #     driver.find_element(By.CLASS_NAME, "pagination-next").click()
+            # else:
+            #     break
+            break
 
-        exit(1)
+        return
 
         ### Create HTML parser
         bs4_html_parser = bs(

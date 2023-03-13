@@ -314,4 +314,3 @@ class PCCG:
             results.append(result)
 
         return results
-

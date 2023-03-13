@@ -57,6 +57,7 @@ def scrape_start_extract_thread(website, category) -> None:
         case "scorptec": website_class = Scorptec
         case "centrecom": website_class = CentreCom
 
+    # print(f"Scraping with website '{website}' and category '{category}'")
     scrape_thread = threading.Thread(
         target=website_class,
         args=(category, JSON_OUTPUT_DIR, JSON_OUTPUT_FILE),
