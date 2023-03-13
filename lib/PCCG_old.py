@@ -14,16 +14,21 @@ from lib.common import *
 
 
 class PCCG:
-    CATEGORY_URLS = {
+    URLS = {
         "hdd": "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives",
         "ssd": "https://www.pccasegear.com/category/210_902/hard-drives-ssds/solid-state-drives-ssd",
-        # "cpu": "",
-        # "gpu": "",
+        "cpu": "",
+        "gpu": "",
     }
 
-    def __init__(self, category, output_dir, output_file, debug=False) -> None:
+    def __init__(self, category) -> None:
+        self.category = category
 
-        url = self.CATEGORY_URLS[category]
+    def download_html(self, url="") -> bs:
+
+        ### Workaround for not being able to use "self.var" as default value
+        if (url == ""):
+            url = self.URLS[self.category]
 
         ### Options
         ff_opts = Options()
@@ -31,6 +36,7 @@ class PCCG:
         ff_cap = DesiredCapabilities.FIREFOX
         ff_cap["marionette"] = True
 
+        # driver = webdriver.Firefox(
         driver = Firefox(
             options=ff_opts,
             capabilities=ff_cap,
@@ -39,35 +45,14 @@ class PCCG:
         ### Request page
         driver.get(url)
 
-        ### Create HTML parser
-        bs4_html_parser = bs(
+        ### Return BS object, containing parsed HTML
+        return bs(
             markup=driver.page_source,
             features="html.parser"
         )
 
-        ### Extract
-        extracted_data = self._extract(category, bs4_html_parser)
-        # CATEGORY_EXTRACT_FUNCTIONS = {
-        #     "hdd": self._extract_hdd_data,
-        #     "ssd": self._extract_ssd_data,
-        #     # "cpu": "",
-        #     # "gpu": "",
-        # }
-        # extracted_data = CATEGORY_EXTRACT_FUNCTIONS[category](bs4_html_parser)
-
-        ### Debug
-        if (debug):
-            print(json.dumps(extracted_data, indent=4))
-
-        ### Export
-        export_json(extracted_data, output_dir, output_file)
-
-        ### Cleanup
-        os.system('pkill firefox') ### Lol. Lmao
-        return ### TODO: Delete this, right? 
-
-    def _extract(self, category, bs4_html_parser: bs) -> list:
-        match category:
+    def extract(self, bs4_html_parser: bs) -> list:
+        match self.category:
             case "hdd":
                 return self._extract_hdd_data(bs4_html_parser)
             case "ssd":

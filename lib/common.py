@@ -19,3 +19,14 @@ def concaternate_items_within_list(l, i, j):
 
 def remove_multiple_strings_from_list(l=list, strings_to_remove=list):
     return [s for s in l if (s not in strings_to_remove)]
+
+def export_json(extracted_data, dir, file):
+    print(f"\nExporting data to {file}\n")
+
+    ### Check/Create dir
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+    ### Write
+    with open(file, "w") as f:
+        f.write(json.dumps(extracted_data))
