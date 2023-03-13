@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import os
 import datetime
 import enum
 import json
@@ -7,6 +8,7 @@ import json
 # import lib.Web as Web
 
 
+### FUNCTIONS
 def concaternate_items_within_list(l, i, j):
     ### Receives list & two indexes
     ### Returns list with elements between the indexes concaternated (inclusive)
@@ -18,19 +20,110 @@ def concaternate_items_within_list(l, i, j):
     return l
 
 def remove_multiple_strings_from_list(l=list, strings_to_remove=list):
-    for s in strings_to_remove:
-        try:
-            l.remove(s)
-        except ValueError:
-            pass
+    return [s for s in l if (s not in strings_to_remove)]
 
-    return l
+def export_to_JSON(extracted_data, dir, file):
+    print(f"\nExporting data to {file}\n")
+
+    ### Check/Create dir
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+    ### Write
+    with open(file, "w") as f:
+        f.write(json.dumps(extracted_data))
+
+
+
+def entrypoint(website, category, export_dir, export_file, debug=False):
+    match website:
+        case "pccg":
+            my_extract_subclass = PCCG()
+        case "scorptec":
+            my_extract_subclass = Scorptec()
+        case "centrecom":
+            my_extract_subclass = Centrecom()
+
+    ### Download HTML
+    bs4_html = my_extract_subclass._download_html(my_extract_subclass.URLS[category])
+
+    ### Extract
+    match category:
+        case "hdd":
+            extracted_data = PCCG._extract_hdd_data()
+        case "sdd":
+            extracted_data = PCCG._extract_sdd_data()
+
+    ### Debug
+    if (debug):
+        print(json.dumps(extracted_data, indent=4))
+
+    ### Export
+    export_to_JSON(extracted_data, export_dir, export_file)
+
+    ### Cleanup
+    os.system('pkill firefox')
+    return
+
+
+### CLASSES
+class PCCG:
+    URLS = {
+        "hdd": "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives",
+        "ssd": "https://www.pccasegear.com/category/210_902/hard-drives-ssds/solid-state-drives-ssd",
+        "cpu": "",
+        "gpu": "",
+    }
+
+    def download_html(self): pass
+
+    def extract(self, bs4_html, category):
+        match category:
+            case "hdd":
+                return self._extract_hdd_data(bs4_html)
+
+    def _extract_hdd_data(bs4_html): pass
+
+    def _extract_sdd_data(): pass
+
+class Scorptec:
+    URLS = {
+        "hdd": "",
+        "ssd": "",
+        "cpu": "",
+        "gpu": "",
+    },
+        
+    def download_html(): pass
+
+    def _extract_hdd_data(): pass
+
+    def _extract_sdd_data(): pass
+
+class Centrecom:
+    URLS = {
+        "hdd": "",
+        "ssd": "",
+        "cpu": "",
+        "gpu": "",
+    },
+
+    def begin(): pass
+        
+    def _download_html(): pass
+
+    def _extract_hdd_data(): pass
+
+    def _extract_sdd_data(): pass
+
+
+
 
 def pccg(category, soup):
     
     results = []
 
-    for product in soup.find_all('div', class_="product-container"):
+    for product in soup.find_all("div", class_="product-container"):
 
         ### Setup & data common to PCCG
         result = {
@@ -223,9 +316,3 @@ def pccg(category, soup):
         results.append(result)
 
     return results
-
-def scorptec():
-    pass
-
-def centrecom():
-    pass

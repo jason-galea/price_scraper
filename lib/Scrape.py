@@ -6,21 +6,10 @@ import sys
 import datetime
 import json
 
-import lib.Extract as Extract
-import lib.Web as Web
-
-
-### FUNCTIONS
-def export_to_JSON(extracted_data, dir, file):
-    print(f"\nExporting data to {file}\n")
-
-    ### Check/Create dir
-    if not path.exists(dir):
-        os.makedirs(dir)
-
-    ### Write
-    with open(file, "w") as f:
-        f.write(json.dumps(extracted_data))
+# import lib.Extract as Extract
+# import lib.Web as Web
+from lib.Extract import Extract
+from lib.Web import Web
 
 
 ### GLOBALS
@@ -49,23 +38,27 @@ def Scrape(website, category, debug=False):
     OUT_JSON_FILE = f"{OUT_JSON_DIR}/{NOW}_{website}_{category}.json"
     URL = URLS[website][category]
 
-    EXTRACT_FUNCTIONS = {
-        "pccg": Extract.pccg,
-        "scorptec": Extract.scorptec,
-        "centrecom": Extract.centrecom,
-    }
-
     ### Begin
-    soup = Web.get_BS4_HTML_from_URL(URL)
-    extracted_data = EXTRACT_FUNCTIONS[website](category, soup)
+    Extract.entrypoint(website, category, OUT_JSON_DIR, OUT_JSON_DIR)
 
-    ### Debug
-    if (debug):
-        print(json.dumps(extracted_data, indent=4))
+    ### Download HTML
+    # soup = Web.get_BS4_HTML_from_URL(URL)
 
-    ### Export
-    export_to_JSON(extracted_data, OUT_JSON_DIR, OUT_JSON_FILE)
+    ### Extract
+    # match website:
+    #     case "pccg": extracted_data = Extract.pccg(category, soup)
+    #     case "scorptec": extracted_data = Extract.scorptec(category, soup)
+    #     case "centrecom": extracted_data = Extract.centrecom(category, soup)
+    # extracted_data = Extract.PCCG.begin()
 
-    ### Cleanup
-    os.system('pkill firefox')
-    return
+
+    # ### Debug
+    # if (debug):
+    #     print(json.dumps(extracted_data, indent=4))
+
+    # ### Export
+    # export_to_JSON(extracted_data, OUT_JSON_DIR, OUT_JSON_FILE)
+
+    # ### Cleanup
+    # os.system('pkill firefox')
+    # return
