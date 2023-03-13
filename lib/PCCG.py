@@ -23,8 +23,6 @@ class PCCG:
 
     def __init__(self, category, output_dir, output_file, debug=False) -> None:
 
-        url = self.CATEGORY_URLS[category]
-
         ### Options
         ff_opts = Options()
         ff_opts.add_argument('-headless')
@@ -37,7 +35,7 @@ class PCCG:
         )
 
         ### Request page
-        driver.get(url)
+        driver.get(self.CATEGORY_URLS[category])
 
         ### Create HTML parser
         bs4_html_parser = bs(

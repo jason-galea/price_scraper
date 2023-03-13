@@ -16,15 +16,13 @@ from lib.common import *
 
 class Scorptec:
     CATEGORY_URLS = {
-        "hdd": "",
-        "ssd": "",
+        "hdd": "https://www.scorptec.com.au/product/hard-drives-&-ssds/hdd-3.5-drives",
+        "ssd": "https://www.scorptec.com.au/product/hard-drives-&-ssds/solid-state-drives-ssd",
         "cpu": "",
         "gpu": "",
     },
 
     def __init__(self, category, output_dir, output_file, debug=False) -> None:
-
-        url = self.CATEGORY_URLS[category]
 
         ### Options
         ff_opts = Options()
@@ -38,7 +36,12 @@ class Scorptec:
         )
 
         ### Request page
-        driver.get(url)
+        driver.get(self.CATEGORY_URLS[category])
+
+        ### Pagination fun!!!1!!!!!
+        driver.find_element(By.CLASS_NAME, "asd")
+
+        exit(1)
 
         ### Create HTML parser
         bs4_html_parser = bs(
