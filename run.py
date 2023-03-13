@@ -17,9 +17,8 @@ from flask import (
     flash,
     redirect,
 )
-from lib.Scrape import Scrape
-
-
+# from lib._Scrape import Scrape
+import lib.Extract as Extract
 
 
 ###########################################################
@@ -47,13 +46,10 @@ def listContainsAllValues(haystack, needles):
 
 ###########################################################
 ### Route-specific functions
-def scrape_StartSubprocess(website, category):
-    # cmd = f"{ROOT}/script/scrape.py {website} {category}"
-    # sp.Popen(cmd.split())
-
+def scrape_StartExtractThread(website, category):
     scrape_thread = threading.Thread(
-        target=Scrape,
-        args=(website, category),
+        target=Extract.entrypoint,
+        args=(website, category, JSON_OUTPUT_DIR),
     )
     scrape_thread.start()
 
@@ -141,7 +137,7 @@ def routes(path='index'):
 
         case "scrape":
             if FORM_IS_VALID:
-                scrape_StartSubprocess(website, category)
+                scrape_StartExtractThread(website, category)
 
         case "table":
             if FORM_IS_VALID:

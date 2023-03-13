@@ -5,7 +5,10 @@ import datetime
 import enum
 import json
 
-# import lib.Web as Web
+from bs4 import BeautifulSoup as bs
+# from selenium import webdriver
+from selenium.webdriver import Firefox, DesiredCapabilities
+from selenium.webdriver.firefox.options import Options
 
 
 ### FUNCTIONS
@@ -22,7 +25,7 @@ def concaternate_items_within_list(l, i, j):
 def remove_multiple_strings_from_list(l=list, strings_to_remove=list):
     return [s for s in l if (s not in strings_to_remove)]
 
-def export_to_JSON(extracted_data, dir, file):
+def export_json(extracted_data, dir, file):
     print(f"\nExporting data to {file}\n")
 
     ### Check/Create dir
@@ -33,36 +36,35 @@ def export_to_JSON(extracted_data, dir, file):
     with open(file, "w") as f:
         f.write(json.dumps(extracted_data))
 
+# def entrypoint(website, category, export_dir, export_file, debug=False):
+def entrypoint(website, category, output_dir, debug=False):
+    NOW = datetime.datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S') 
+    # OUT_JSON_DIR = f"{os.path.abspath(os.path.dirname(__file__))}/../out" ### This shit sucks
+    OUT_JSON_FILE = f"{output_dir}/{NOW}_{website}_{category}.json"
 
-
-def entrypoint(website, category, export_dir, export_file, debug=False):
     match website:
         case "pccg":
-            my_extract_subclass = PCCG()
+            my_extract_instance = PCCG(category)
         case "scorptec":
-            my_extract_subclass = Scorptec()
+            my_extract_instance = Scorptec(category)
         case "centrecom":
-            my_extract_subclass = Centrecom()
+            my_extract_instance = Centrecom(category)
 
     ### Download HTML
-    bs4_html = my_extract_subclass._download_html(my_extract_subclass.URLS[category])
+    bs4_html = my_extract_instance.download_html()
 
     ### Extract
-    match category:
-        case "hdd":
-            extracted_data = PCCG._extract_hdd_data()
-        case "sdd":
-            extracted_data = PCCG._extract_sdd_data()
+    extracted_data = my_extract_instance.extract(bs4_html)
 
     ### Debug
     if (debug):
         print(json.dumps(extracted_data, indent=4))
 
     ### Export
-    export_to_JSON(extracted_data, export_dir, export_file)
+    export_json(extracted_data, output_dir, OUT_JSON_FILE)
 
     ### Cleanup
-    os.system('pkill firefox')
+    os.system('pkill firefox') ### Lol. Lmao
     return
 
 
@@ -75,16 +77,49 @@ class PCCG:
         "gpu": "",
     }
 
-    def download_html(self): pass
+    def __init__(self, category) -> None:
+        self.category = category
 
-    def extract(self, bs4_html, category):
-        match category:
+    def download_html(self, url=""):
+
+        ### Workaround for not being able to use "self.var" as default value
+        if (url == ""):
+            url = self.URLS[self.category]
+
+        ### Options
+        ff_opts = Options()
+        ff_opts.add_argument('-headless')
+        ff_cap = DesiredCapabilities.FIREFOX
+        ff_cap["marionette"] = True
+
+        # driver = webdriver.Firefox(
+        driver = Firefox(
+            options=ff_opts,
+            capabilities=ff_cap,
+        )
+
+        ### Request page
+        driver.get(url)
+
+        ### Return BS object, containing parsed HTML
+        ### TODO: Explicitely fulfil parameters
+        return bs(
+            driver.page_source,
+            "html.parser"
+        )
+
+    def extract(self, bs4_html):
+        match self.category:
             case "hdd":
                 return self._extract_hdd_data(bs4_html)
+            case "ssd":
+                return self._extract_hdd_data(bs4_html)
 
-    def _extract_hdd_data(bs4_html): pass
+    def _extract_hdd_data(bs4_html):
+        pass
 
-    def _extract_sdd_data(): pass
+    def _extract_sdd_data():
+        pass
 
 class Scorptec:
     URLS = {
@@ -93,6 +128,9 @@ class Scorptec:
         "cpu": "",
         "gpu": "",
     },
+
+    def __init__(self, category) -> None:
+        self.category = category
         
     def download_html(): pass
 
@@ -108,6 +146,9 @@ class Centrecom:
         "gpu": "",
     },
 
+    def __init__(self, category) -> None:
+        self.category = category
+
     def begin(): pass
         
     def _download_html(): pass
@@ -115,8 +156,6 @@ class Centrecom:
     def _extract_hdd_data(): pass
 
     def _extract_sdd_data(): pass
-
-
 
 
 def pccg(category, soup):
@@ -127,11 +166,11 @@ def pccg(category, soup):
 
         ### Setup & data common to PCCG
         result = {
-            "UTCTime": datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S"),
+            "UTCTime":  datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S"),
             "Retailer": "PCCG",
-            "Title":product.find_next("a", class_="product-title").string,
-            "URL":product.find_next("a", class_="product-title").attrs["href"],
-            "PriceAUD":int(product.find_next("div", class_="price").string.strip("$")),
+            "Title":    product.find_next("a", class_="product-title").string,
+            "URL":      product.find_next("a", class_="product-title").attrs["href"],
+            "PriceAUD": int(product.find_next("div", class_="price").string.strip("$")),
         }
 
         ### TODO: Fetch full description from current products "url"

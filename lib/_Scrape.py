@@ -6,10 +6,10 @@ import sys
 import datetime
 import json
 
-# import lib.Extract as Extract
-# import lib.Web as Web
-from lib.Extract import Extract
-from lib.Web import Web
+import lib.Extract as Extract
+import lib._Web as _Web
+# from lib.Extract import Extract
+# from lib.Web import Web
 
 
 ### GLOBALS
