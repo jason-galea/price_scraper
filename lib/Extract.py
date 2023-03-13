@@ -5,14 +5,12 @@ import datetime
 import enum
 import json
 
-from bs4 import BeautifulSoup as bs
-# from selenium import webdriver
-from selenium.webdriver import Firefox, DesiredCapabilities
-from selenium.webdriver.firefox.options import Options
-
-import lib.PCCG as PCCG
-import lib.Scorptec as Scorptec
-import lib.CentreCom as CentreCom
+# import lib.PCCG as PCCG
+# import lib.Scorptec as Scorptec
+# import lib.CentreCom as CentreCom
+from lib.PCCG import PCCG
+from lib.Scorptec import Scorptec
+from lib.CentreCom import CentreCom
 
 
 def export_json(extracted_data, dir, file):

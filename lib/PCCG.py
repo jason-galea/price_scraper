@@ -13,7 +13,6 @@ from selenium.webdriver.firefox.options import Options
 from lib.common import *
 
 
-
 class PCCG:
     URLS = {
         "hdd": "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives",
@@ -57,7 +56,7 @@ class PCCG:
             case "hdd":
                 return self._extract_hdd_data(bs4_html_parser)
             case "ssd":
-                return self._extract_hdd_data(bs4_html_parser)
+                return self._extract_ssd_data(bs4_html_parser)
 
     @staticmethod
     def _extract_hdd_data(bs4_html_parser: bs) -> list:
@@ -140,7 +139,7 @@ class PCCG:
         return results
 
     @staticmethod
-    def _extract_sdd_data(bs4_html_parser: bs) -> list:
+    def _extract_ssd_data(bs4_html_parser: bs) -> list:
 
         results = []
     

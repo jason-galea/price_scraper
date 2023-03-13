@@ -13,7 +13,6 @@ from selenium.webdriver.firefox.options import Options
 from lib.common import *
 
 
-
 class Scorptec:
     URLS = {
         "hdd": "",
