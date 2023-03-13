@@ -2,6 +2,7 @@
 
 import os
 import json
+import datetime
 import html
 import threading
 import pandas as pd
@@ -15,7 +16,10 @@ from flask import (
     redirect,
 )
 
-import lib.Extract as Extract
+# import lib.Extract as Extract
+from lib.PCCG import PCCG
+from lib.Scorptec import Scorptec
+from lib.CentreCom import CentreCom
 
 
 ###########################################################
@@ -45,9 +49,17 @@ def listContainsAllValues(haystack, needles) -> list:
 ###########################################################
 ### Route-specific functions
 def scrape_start_extract_thread(website, category) -> None:
+    NOW = datetime.datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S')
+    JSON_OUTPUT_FILE = f"{JSON_OUTPUT_DIR}/{NOW}_{website}_{category}.json"
+
+    match website:
+        case "pccg": website_class = PCCG
+        case "scorptec": website_class = Scorptec
+        case "centrecom": website_class = CentreCom
+
     scrape_thread = threading.Thread(
-        target=Extract.entrypoint,
-        args=(website, category, JSON_OUTPUT_DIR),
+        target=website_class,
+        args=(category, JSON_OUTPUT_DIR, JSON_OUTPUT_FILE),
     )
     scrape_thread.start()
 

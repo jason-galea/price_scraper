@@ -15,21 +15,16 @@ from lib.common import *
 
 
 class Scorptec:
-    URLS = {
+    CATEGORY_URLS = {
         "hdd": "",
         "ssd": "",
         "cpu": "",
         "gpu": "",
     },
 
-    def __init__(self, category) -> None:
-        self.category = category
+    def __init__(self, category, output_dir, output_file, debug=False) -> None:
 
-    def download_html(self, url="") -> bs:
-
-        ### Workaround for not being able to use "self.var" as default value
-        if (url == ""):
-            url = self.URLS[self.category]
+        url = self.CATEGORY_URLS[category]
 
         ### Options
         ff_opts = Options()
@@ -37,7 +32,6 @@ class Scorptec:
         ff_cap = DesiredCapabilities.FIREFOX
         ff_cap["marionette"] = True
 
-        # driver = webdriver.Firefox(
         driver = Firefox(
             options=ff_opts,
             capabilities=ff_cap,
@@ -46,21 +40,36 @@ class Scorptec:
         ### Request page
         driver.get(url)
 
-        driver.find_element(By.CLASS_NAME, "???")
-
-        ### Return BS object, containing parsed HTML
-        return bs(
+        ### Create HTML parser
+        bs4_html_parser = bs(
             markup=driver.page_source,
             features="html.parser"
         )
 
-    def extract(self, bs4_html_parser: bs) -> list:
-        match self.category:
+        ### Extract
+        extracted_data = self._extract(category, bs4_html_parser)
+
+        ### Debug
+        if (debug):
+            print(json.dumps(extracted_data, indent=4))
+
+        ### Export
+        export_json(extracted_data, output_dir, output_file)
+
+        ### Cleanup
+        os.system('pkill firefox') ### Lol. Lmao
+
+
+    ### TODO: Move this into a base class
+    def _extract(self, category, bs4_html_parser: bs) -> list:
+        match category:
             case "hdd":
                 return self._extract_hdd_data(bs4_html_parser)
             case "ssd":
                 return self._extract_ssd_data(bs4_html_parser)
 
+    @staticmethod
     def _extract_hdd_data(): pass
 
+    @staticmethod
     def _extract_ssd_data(): pass

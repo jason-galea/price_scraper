@@ -47,13 +47,6 @@ class PCCG:
 
         ### Extract
         extracted_data = self._extract(category, bs4_html_parser)
-        # CATEGORY_EXTRACT_FUNCTIONS = {
-        #     "hdd": self._extract_hdd_data,
-        #     "ssd": self._extract_ssd_data,
-        #     # "cpu": "",
-        #     # "gpu": "",
-        # }
-        # extracted_data = CATEGORY_EXTRACT_FUNCTIONS[category](bs4_html_parser)
 
         ### Debug
         if (debug):
@@ -64,8 +57,9 @@ class PCCG:
 
         ### Cleanup
         os.system('pkill firefox') ### Lol. Lmao
-        return ### TODO: Delete this, right? 
 
+
+    ### TODO: Move this into a base class
     def _extract(self, category, bs4_html_parser: bs) -> list:
         match category:
             case "hdd":
