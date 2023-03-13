@@ -23,6 +23,8 @@ class PCCG:
 
     def __init__(self, category, output_dir, output_file, debug=False) -> None:
 
+        ### TODO: Move this block into base class/common function
+        #####################################################################
         ### Options
         ff_opts = Options()
         ff_opts.add_argument('-headless')
@@ -36,6 +38,8 @@ class PCCG:
 
         ### Request page
         driver.get(self.CATEGORY_URLS[category])
+        #####################################################################
+
 
         ### Create HTML parser
         bs4_html_parser = bs(
@@ -57,7 +61,7 @@ class PCCG:
         os.system('pkill firefox') ### Lol. Lmao
 
 
-    ### TODO: Move this into a base class
+    ### TODO: Move this into base class/common function
     def _extract(self, category, bs4_html_parser: bs) -> list:
         match category:
             case "hdd":
