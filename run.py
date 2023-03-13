@@ -1,13 +1,10 @@
 #!/usr/bin/python3
 
-### Imports
 import os
 import json
 import html
-# import subprocess as sp
 import threading
 import pandas as pd
-
 from glob import glob
 from flask import (
     Flask,
@@ -17,14 +14,15 @@ from flask import (
     flash,
     redirect,
 )
-# from lib._Scrape import Scrape
+
 import lib.Extract as Extract
 
 
 ###########################################################
-### Vars
+### GLOBAL VARS
 app = Flask(__name__)
 ROOT = app.root_path
+
 CONF_DIR = f"{ROOT}/conf"
 JSON_OUTPUT_DIR = f"{ROOT}/out"
 
@@ -37,27 +35,27 @@ FORM_COLS = ['website', 'category']
 
 ###########################################################
 ### Generic functions
-def getJSONFilenames():
+def get_json_filenames() -> list:
     return glob(f"{JSON_OUTPUT_DIR}/*.json")
 
-def listContainsAllValues(haystack, needles):
+def listContainsAllValues(haystack, needles) -> list:
     return all((n in haystack) for n in needles)
 
 
 ###########################################################
 ### Route-specific functions
-def scrape_StartExtractThread(website, category):
+def scrape_start_extract_thread(website, category) -> None:
     scrape_thread = threading.Thread(
         target=Extract.entrypoint,
         args=(website, category, JSON_OUTPUT_DIR),
     )
     scrape_thread.start()
 
-def viewTable_GetVars(website, category):
+def table_get_template_vars(website, category) -> dict:
 
     ### Filter to files containing the chosen website & category
     filtered_files = [ item
-        for item in getJSONFilenames()
+        for item in get_json_filenames()
         if (listContainsAllValues(item.split('.')[0].split("_"), [website, category]))
     ]
     # print(f"filtered_files = {filtered_files}")
@@ -72,7 +70,7 @@ def viewTable_GetVars(website, category):
     df = pd.read_json(latest_file)
 
     ### Clean up Title col
-    df['Title'] = df.apply(viewTable_fixTitleCol, axis=1)
+    df['Title'] = df.apply(table_fix_title_col, axis=1)
 
     ### Create col with embedded URL
     df['TitleLink'] = df.apply(
@@ -84,8 +82,12 @@ def viewTable_GetVars(website, category):
     df = df[TABLE_COLS[category]['display_cols']]
     df = df.sort_values(TABLE_COLS[category]['sort_col'], ignore_index=True)
 
-    ### Escape all cols (except TitleLink)
-    df[[c for c in list(df.columns) if (c != 'TitleLink')]].apply( html.escape, axis=1 )
+    ### Escape all cols except "TitleLink"
+    df[[
+        c
+        for c in list(df.columns)
+        if (c != 'TitleLink')
+    ]].apply( html.escape, axis=1 )
 
     return {
         # 'latest_file': latest_file,
@@ -93,7 +95,7 @@ def viewTable_GetVars(website, category):
         'table_html': df.to_html(escape=False)
     }
 
-def viewTable_fixTitleCol(row):
+def table_fix_title_col(row) -> str:
     match_replace_dict = {
         'Hard Drive': 'HDD',
         '3.5in ': '',
@@ -125,11 +127,10 @@ def routes(path='index'):
         **request.form,
     }
 
-    FORM_IS_VALID = False
-    if listContainsAllValues(page_vars.keys(), FORM_COLS):
+    FORM_IS_VALID = listContainsAllValues(page_vars.keys(), FORM_COLS)
+    if FORM_IS_VALID:
         website = page_vars['website']
         category = page_vars['category']
-        FORM_IS_VALID = True
 
     match path:
         case "index":
@@ -137,17 +138,17 @@ def routes(path='index'):
 
         case "scrape":
             if FORM_IS_VALID:
-                scrape_StartExtractThread(website, category)
+                scrape_start_extract_thread(website, category)
 
         case "table":
             if FORM_IS_VALID:
-                page_vars.update( viewTable_GetVars(website, category) )
+                page_vars.update( table_get_template_vars(website, category) )
 
         case "graph":
             pass
 
         case "results":
-            results = [os.path.basename(s) for s in getJSONFilenames()]
+            results = [os.path.basename(s) for s in get_json_filenames()]
             results.sort(reverse=True) ### Sort by reverse date, newest items on top
 
             page_vars.update({ 'results': results })
@@ -163,6 +164,7 @@ def routes(path='index'):
         **common_vars,
         **page_vars,
     )
+
 
 if __name__ == '__main__':
     app.run(
