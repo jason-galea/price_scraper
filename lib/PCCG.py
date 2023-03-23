@@ -333,83 +333,69 @@ class PCCG:
 
             ### Setup & data common to PCCG
             temp_result = PCCG._get_common_data(product)
+            # temp_result = {}
             temp_result.update({ "MemoryType":"DDR4" })
 
             ### Split title
             title = temp_result["Title"]
-            title_split = temp_result["Title"].split()
-            # print(["Brand", "Series", "ModelNumber", "FormFactor", "Protocol", "Capacity"])
-            # print(title_split)
-
-
-            ### Discard unwanted items
-            if ("Upgrade" in title_split): continue
+            # title_split = temp_result["Title"].split()
+            # print(f"\n==> INFO: title = '{title}'")
 
 
             #############################################################################################
             ### STATIC FIELDS
 
             regex_result = re.search(
-                # pattern=r"(^[a-zA-Z]*) ([a-zA-Z\-\ ]*)(\d*GB) \((\dx\d*GB)\) (\d{4}MHz) (CL\d{2}) DDR4(.*)",
-                pattern=r"(^[a-zA-Z]*) ([a-zA-Z\-\ ]*)(\d*)GB \(((\d)x(\d*)GB)\) (\d{4}MHz) (CL\d{2}) DDR4(.*)",
+                # pattern=r"(^[a-zA-Z\.]*) *([a-zA-Z\-\ ]*)(\d*)GB *\(((\d)x(\d*)GB)\) *(\d{4}MHz) *(CL\d{2}) *DDR4(.*)",
+                # pattern=r"(^[\w\.]*) ([\w\-\ ]*)(\d*)GB \(((\d)x(\d*)GB)\) (\d{4}\w{3}) (CL\d{2}) *DDR4(.*)",
+                pattern=r"(^[a-zA-Z\.]+) ([a-zA-Z\-\ ]*)(\d+)GB \(((\d)x(\d+)GB)\) (\d{4}[mhzMHZ]{3}) (CL\d{2}) +DDR4(.*)",
                 string=title,
             )
 
             if (not regex_result):
-                print(f"==> WARN: Skipping product, REGEX failed on title: '{title}'")
+                print(f"==> WARN: REGEX failed on title: '{title}'")
+                print(f"==> WARN: Skipping product")
                 continue
 
+            ### Create dict from capture group results
             ### NOTE: Need to associate keys & values before removing anything
-            regex_groups_dict = dict(zip(
-                ["Brand", "Model", "CapacityGB", "KitConfiguration", "SticksPerKit", "CapacityPerStick", "Clock", "CASPrimary", "Misc"],
-                [val.strip() for val in regex_result.groups()],
-            ))
+            regex_groups_keys = ["Brand", "Model", "CapacityGB", "KitConfiguration", "SticksPerKit", "CapacityPerStick", "Clock", "CASPrimary", "Misc"]
+            regex_groups_vals = [ val.strip() for val in regex_result.groups() ] ### Strip spaces
+            regex_groups_vals = [ (int(s) if (s.isdigit()) else s) for s in regex_groups_vals ] ### Convert ints to ints
+            
+            # print(f"==> INFO: regex_groups_keys = {regex_groups_keys}")
+            # print(f"==> INFO: regex_groups_vals = {regex_groups_vals}")
+            # break
+            regex_groups_dict = dict(zip( regex_groups_keys, regex_groups_vals ))
+
 
             ### TODO: Handle wierd cases
             # if (regex_groups_dict["Misc"] == "White"):
             #     pass
+            # if (regex_groups_dict["Model"] == ""):
+            #     pass
 
+            # print(f"==> INFO: regex_groups_dict = {json.dumps(regex_groups_dict, indent=4)}")
             temp_result.update(regex_groups_dict)
 
             
             #############################################################################################
             ### CALCULATED FIELDS
-
-            ### RGB
-            ### NOTE: Assumption based on PCCG UI, there are only two possible values
-            ### NOTE: "Lighting" allows for other values from different retailers, such as "White"
             temp_result.update({
-                "Lighting": "RGB" if ( re.search(r"rgb|RGB", title) != None ) else "None"
+                ### NOTE: Assumption based on PCCG UI, there are only two possible values
+                ### NOTE: "Lighting" allows for other values from different retailers, such as "White"
+                "Lighting": "RGB" if ( re.search(r"RGB", title) != None ) else "None",
+                "FormFactor": "SODIMM" if ( re.search(r"SODIMM", title) != None ) else "DIMM",
+                "PricePerGB": round( temp_result["PriceAUD"] / temp_result["CapacityGB"], 2 ),
             })
-
-            
-            # ### "CapacityGB", "PricePerGB", "PricePerGB"
-            # capacity_dict = {
-            #     "TB":1000,
-            #     "GB":1,
-            # }
-            # for label, val in capacity_dict.items():
-            #     for s in reversed(title_split):
-            #         if (label in s):
-            #             capacity_gb = int(s.strip(label))*val
-            #             result.update({
-            #                 "CapacityGB":capacity_gb,
-            #                 "CapacityTB":round( capacity_gb/1000, 2 ),
-            #                 "PricePerGB":round( result["PriceAUD"]/capacity_gb, 2 ),
-            #                 "PricePerTB":round( result["PriceAUD"]/(capacity_gb/1000), 2 ),
-            #             })
-            #             break
-            # if ("CapacityGB" not in result.keys()):
-            #     print(f"CapacityGB not found in title: {title_split}")
-            
-
 
 
             #############################################################################################
             ### Add individual product data to results
+            # print(f"==> INFO: temp_result = {json.dumps(temp_result, indent=4)}")
             # break
             results.append(temp_result)
 
-        print(json.dumps(results, indent=4))
+        # print(json.dumps(results, indent=4))
         return results
 
