@@ -1,18 +1,26 @@
 {
-    "hdd":{
+    "hdd": {
         "display_cols": ["Retailer", "TitleLink", "Brand", "PriceAUD", "CapacityGB", "CapacityTB", "PricePerTB"],
-        "sort_col":"PricePerTB"
+        "sort_col":     "PricePerTB"
     },
-    "ssd":{
+    "ssd": {
         "display_cols": ["Retailer", "TitleLink", "Brand", "PriceAUD", "CapacityGB", "CapacityTB", "PricePerTB"],
-        "sort_col":"PricePerTB"
+        "sort_col":     "PricePerTB"
     },
-    "cpu":{
-        "display_cols":["Retailer", "TitleLink", "Brand", "PriceAUD"],
-        "sort_col":"PriceAUD"
+    "ddr4": {
+        "display_cols": ["Retailer", "TitleLink", "Brand", "PriceAUD"],
+        "sort_col":     "PricePerTB"
     },
-    "gpu":{
-        "display_cols":["Retailer", "TitleLink", "Brand", "PriceAUD"],
-        "sort_col":"PriceAUD"
+    "ddr5": {
+        "display_cols": ["Retailer", "TitleLink", "Brand", "PriceAUD"],
+        "sort_col":     "PricePerTB"
+    },
+    "cpu": {
+        "display_cols": ["Retailer", "TitleLink", "Brand", "PriceAUD"],
+        "sort_col":     "PricePerTB"
+    },
+    "gpu": {
+        "display_cols": ["Retailer", "TitleLink", "Brand", "PriceAUD"],
+        "sort_col":     "PricePerTB"
     }
 }

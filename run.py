@@ -7,14 +7,7 @@ import html
 import threading
 import pandas as pd
 from glob import glob
-from flask import (
-    Flask,
-    render_template,
-    request,
-    url_for,
-    flash,
-    redirect,
-)
+from flask import Flask, render_template, request
 
 # import lib.Extract as Extract
 from lib.PCCG import PCCG
@@ -62,6 +55,8 @@ def scrape_start_extract_thread(website, category) -> None:
         target=website_class,
         args=(category, JSON_OUTPUT_DIR, JSON_OUTPUT_FILE),
     )
+
+    print(f"\n==> INFO: Launching thread to scrape '{category}' data from '{website}'")
     scrape_thread.start()
 
 def table_get_template_vars(website, category) -> dict:

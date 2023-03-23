@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+import re
 import datetime
 import enum
 import json
@@ -17,6 +18,8 @@ class PCCG:
     CATEGORY_URLS = {
         "hdd": "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives",
         "ssd": "https://www.pccasegear.com/category/210_902/hard-drives-ssds/solid-state-drives-ssd",
+        "ddr4": "https://www.pccasegear.com/category/186_1782/memory/all-ddr4-memory",
+        "ddr5": "hhttps://www.pccasegear.com/category/186_2181/memory/all-ddr5-memory",
         # "cpu": "",
         # "gpu": "",
     }
@@ -68,6 +71,20 @@ class PCCG:
                 return self._extract_hdd_data(bs4_html_parser)
             case "ssd":
                 return self._extract_ssd_data(bs4_html_parser)
+            case "ddr4":
+                return self._extract_ddr4_data(bs4_html_parser)
+            case "ddr5":
+                return self._extract_ddr5_data(bs4_html_parser)
+
+    @staticmethod
+    def _get_common_data(product: bs) -> dict:
+        return {
+            "UTCTime":      datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S"),
+            "Retailer":     "PCCG",
+            "Title":        product.find_next("a", class_="product-title").string,
+            "URL":          product.find_next("a", class_="product-title").attrs["href"],
+            "PriceAUD":     int(product.find_next("div", class_="price").string.strip("$")),
+        }
 
     @staticmethod
     def _extract_hdd_data(bs4_html_parser: bs) -> list:
@@ -82,13 +99,7 @@ class PCCG:
             ### TODO: Move these into a common function
 
             ### Setup & data common to PCCG
-            result = {
-                "UTCTime":  datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S"),
-                "Retailer": "PCCG",
-                "Title":    product.find_next("a", class_="product-title").string,
-                "URL":      product.find_next("a", class_="product-title").attrs["href"],
-                "PriceAUD": int(product.find_next("div", class_="price").string.strip("$")),
-            }
+            result = PCCG._get_common_data(product)
 
             ### TODO: Fetch full description from current products "url"
             # description_soup = Web.get_bs4_html_parser_from_URL(result["URL"])
@@ -162,13 +173,7 @@ class PCCG:
             ### TODO: Move these into a common function
 
             ### Setup & data common to PCCG
-            result = {
-                "UTCTime":  datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S"),
-                "Retailer": "PCCG",
-                "Title":    product.find_next("a", class_="product-title").string,
-                "URL":      product.find_next("a", class_="product-title").attrs["href"],
-                "PriceAUD": int(product.find_next("div", class_="price").string.strip("$")),
-            }
+            result = PCCG._get_common_data(product)
 
             ### TODO: Fetch full description from current products "url"
             # description_soup = Web.get_bs4_html_parser_from_URL(result["URL"])
@@ -314,3 +319,97 @@ class PCCG:
             results.append(result)
 
         return results
+
+    @staticmethod
+    def _extract_ddr4_data(bs4_html_parser: bs) -> list:
+        
+        results = []
+    
+        for product in bs4_html_parser.find_all("div", class_="product-container"):
+
+            #############################################################################################
+            ### COMMON FIELDS
+            ### TODO: Move these into a common function
+
+            ### Setup & data common to PCCG
+            temp_result = PCCG._get_common_data(product)
+            temp_result.update({ "MemoryType":"DDR4" })
+
+            ### Split title
+            title = temp_result["Title"]
+            title_split = temp_result["Title"].split()
+            # print(["Brand", "Series", "ModelNumber", "FormFactor", "Protocol", "Capacity"])
+            # print(title_split)
+
+
+            ### Discard unwanted items
+            if ("Upgrade" in title_split): continue
+
+
+            #############################################################################################
+            ### STATIC FIELDS
+
+            regex_result = re.search(
+                # pattern=r"(^[a-zA-Z]*) ([a-zA-Z\-\ ]*)(\d*GB) \((\dx\d*GB)\) (\d{4}MHz) (CL\d{2}) DDR4(.*)",
+                pattern=r"(^[a-zA-Z]*) ([a-zA-Z\-\ ]*)(\d*)GB \(((\d)x(\d*)GB)\) (\d{4}MHz) (CL\d{2}) DDR4(.*)",
+                string=title,
+            )
+
+            if (not regex_result):
+                print(f"==> WARN: Skipping product, REGEX failed on title: '{title}'")
+                continue
+
+            ### NOTE: Need to associate keys & values before removing anything
+            regex_groups_dict = dict(zip(
+                ["Brand", "Model", "CapacityGB", "KitConfiguration", "SticksPerKit", "CapacityPerStick", "Clock", "CASPrimary", "Misc"],
+                [val.strip() for val in regex_result.groups()],
+            ))
+
+            ### TODO: Handle wierd cases
+            # if (regex_groups_dict["Misc"] == "White"):
+            #     pass
+
+            temp_result.update(regex_groups_dict)
+
+            
+            #############################################################################################
+            ### CALCULATED FIELDS
+
+            ### RGB
+            ### NOTE: Assumption based on PCCG UI, there are only two possible values
+            ### NOTE: "Lighting" allows for other values from different retailers, such as "White"
+            temp_result.update({
+                "Lighting": "RGB" if ( re.search(r"rgb|RGB", title) != None ) else "None"
+            })
+
+            
+            # ### "CapacityGB", "PricePerGB", "PricePerGB"
+            # capacity_dict = {
+            #     "TB":1000,
+            #     "GB":1,
+            # }
+            # for label, val in capacity_dict.items():
+            #     for s in reversed(title_split):
+            #         if (label in s):
+            #             capacity_gb = int(s.strip(label))*val
+            #             result.update({
+            #                 "CapacityGB":capacity_gb,
+            #                 "CapacityTB":round( capacity_gb/1000, 2 ),
+            #                 "PricePerGB":round( result["PriceAUD"]/capacity_gb, 2 ),
+            #                 "PricePerTB":round( result["PriceAUD"]/(capacity_gb/1000), 2 ),
+            #             })
+            #             break
+            # if ("CapacityGB" not in result.keys()):
+            #     print(f"CapacityGB not found in title: {title_split}")
+            
+
+
+
+            #############################################################################################
+            ### Add individual product data to results
+            # break
+            results.append(temp_result)
+
+        print(json.dumps(results, indent=4))
+        return results
+
