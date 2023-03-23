@@ -19,7 +19,7 @@ class PCCG:
         "hdd": "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives",
         "ssd": "https://www.pccasegear.com/category/210_902/hard-drives-ssds/solid-state-drives-ssd",
         "ddr4": "https://www.pccasegear.com/category/186_1782/memory/all-ddr4-memory",
-        "ddr5": "hhttps://www.pccasegear.com/category/186_2181/memory/all-ddr5-memory",
+        "ddr5": "https://www.pccasegear.com/category/186_2181/memory/all-ddr5-memory",
         # "cpu": "",
         # "gpu": "",
     }
@@ -72,9 +72,9 @@ class PCCG:
             case "ssd":
                 return self._extract_ssd_data(bs4_html_parser)
             case "ddr4":
-                return self._extract_ddr4_data(bs4_html_parser)
+                return self._extract_ram_data(bs4_html_parser, "DDR4")
             case "ddr5":
-                return self._extract_ddr5_data(bs4_html_parser)
+                return self._extract_ram_data(bs4_html_parser, "DDR5")
 
     @staticmethod
     def _get_common_data(product: bs) -> dict:
@@ -321,7 +321,7 @@ class PCCG:
         return results
 
     @staticmethod
-    def _extract_ddr4_data(bs4_html_parser: bs) -> list:
+    def _extract_ram_data(bs4_html_parser: bs, memory_type: str) -> list:
         
         results = []
     
@@ -334,7 +334,7 @@ class PCCG:
             ### Setup & data common to PCCG
             temp_result = PCCG._get_common_data(product)
             # temp_result = {}
-            temp_result.update({ "MemoryType":"DDR4" })
+            temp_result.update({ "MemoryType": memory_type })
 
             ### Split title
             title = temp_result["Title"]
@@ -346,9 +346,7 @@ class PCCG:
             ### STATIC FIELDS
 
             regex_result = re.search(
-                # pattern=r"(^[a-zA-Z\.]*) *([a-zA-Z\-\ ]*)(\d*)GB *\(((\d)x(\d*)GB)\) *(\d{4}MHz) *(CL\d{2}) *DDR4(.*)",
-                # pattern=r"(^[\w\.]*) ([\w\-\ ]*)(\d*)GB \(((\d)x(\d*)GB)\) (\d{4}\w{3}) (CL\d{2}) *DDR4(.*)",
-                pattern=r"(^[a-zA-Z\.]+) ([a-zA-Z\-\ ]*)(\d+)GB \(((\d)x(\d+)GB)\) (\d{4}[mhzMHZ]{3}) (CL\d{2}) +DDR4(.*)",
+                pattern=r"(^[a-zA-Z\.]+) ([a-zA-Z\-\ 5]*)(\d+)GB \(((\d)x(\d+)GB)\) (\d{4}[MHhz]{3}) (CL\d{2}) +DDR\d(.*)",
                 string=title,
             )
 
