@@ -352,7 +352,7 @@ class PCCG:
 
             if (not regex_result):
                 print(f"==> WARN: REGEX failed on title: '{title}'")
-                print(f"==> WARN: Skipping product")
+                # print(f"==> WARN: Skipping product")
                 continue
 
             ### Create dict from capture group results
