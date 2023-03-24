@@ -10,8 +10,10 @@ echo -e "\n==> Install apt packages"
 # sudo apt install -y selenium beautifulsoup4 firefox firefox-geckodriver
 sudo apt install -y firefox firefox-geckodriver python3-pip
 
-echo -e "\n==> Show python3/pip versions"
+echo -e "\n==> Show python3 versions"
 python3 --version
+
+echo -e "\n==> Show pip versions"
 python3 -m pip --version
 
 echo -e "\n==> Upgrade pip base packages"
