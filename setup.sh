@@ -18,4 +18,4 @@ echo -e "\n==> Upgrade pip base packages"
 python3 -m pip install -U pip setuptools wheel
 
 echo -e "\n==> Install pip requirements"
-python3 -m pip install -r reqs.txt
+python3 -m pip install -r ./misc/reqs.txt

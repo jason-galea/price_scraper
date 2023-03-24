@@ -1,0 +1,9 @@
+[Unit]
+Description=https://github.com/jason-galea/price_scraper
+
+[Service]
+#ExecStart=/root/price_scraper/run.py
+ExecStart=/bin/bash -c "git -C /root/price_scraper pull && /root/price_scraper/run.py"
+
+[Install]
+WantedBy=default.target
