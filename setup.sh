@@ -1,7 +1,10 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 echo -e "\n==> Update apt package lists"
 sudo apt update -y
+
+echo -e "\n==> Upgrade apt packages"
+sudo apt upgrade -y
 
 echo -e "\n==> Install apt packages"
 # sudo apt install -y selenium beautifulsoup4 firefox firefox-geckodriver
