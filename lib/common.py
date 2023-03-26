@@ -2,7 +2,6 @@ import os
 # import datetime
 # import enum
 import json
-
 # from selenium import webdriver
 from selenium.webdriver import Firefox, DesiredCapabilities
 from selenium.webdriver.firefox.options import Options

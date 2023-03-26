@@ -1,12 +1,11 @@
 import os
-import datetime
-import enum
+# import datetime
+# import enum
 import json
-
 from bs4 import BeautifulSoup as bs
 # from selenium import webdriver
-from selenium.webdriver import Firefox, DesiredCapabilities
-from selenium.webdriver.firefox.options import Options
+# from selenium.webdriver import Firefox, DesiredCapabilities
+# from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 

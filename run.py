@@ -8,6 +8,7 @@ import threading
 import pandas as pd
 from glob import glob
 from flask import Flask, render_template, request
+from selenium.common.exceptions import WebDriverException
 
 # import lib.Extract as Extract
 from lib.PCCG import PCCG
@@ -58,6 +59,16 @@ def scrape_start_extract_thread(website, category) -> None:
 
     print(f"\n==> INFO: Launching thread to scrape '{category}' data from '{website}'")
     scrape_thread.start()
+    # while True:
+    #     try:
+    #         scrape_thread.start()
+    #         break
+    #     except WebDriverException as e:
+    #         print(f"\n==> WARN: WebDriverException exception raised: '{e}'")
+    #         print(f"\n==> WARN: This was most likely caused by conflicting threads")
+    #         print(f"\n==> WARN: Restarting thread")
+    #         continue
+
 
 def table_get_template_vars(website, category) -> dict:
 
