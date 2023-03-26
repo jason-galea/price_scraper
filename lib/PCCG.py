@@ -75,7 +75,7 @@ class PCCG:
         export_json(extracted_data, output_dir, output_file)
 
         ### Cleanup
-        os.system('pkill firefox') ### Lol. Lmao
+        # os.system('pkill firefox') ### Lol. Lmao
 
     ### TODO: Move this into base class/common function
     def _extract(self, category, bs4_html_parser: BeautifulSoup) -> list:

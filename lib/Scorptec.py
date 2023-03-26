@@ -28,12 +28,12 @@ class Scorptec:
 
         ### Pagination fun!!!1!!!!
         ### 90 items per page
-        # select_dropdown = Select(driver.find_element(By.ID, "pagination-view-count"))
-        # select_dropdown.select_by_visible_text("90")
+        select_dropdown = Select(driver.find_element(By.ID, "pagination-view-count"))
+        select_dropdown.select_by_visible_text("90")
         
         ### Sort by price, low to high
-        # sort_dropdown = Select(driver.find_element(By.ID, "widget-sort"))
-        # sort_dropdown.select_by_visible_text("Price (low to high)")
+        sort_dropdown = Select(driver.find_element(By.ID, "widget-sort"))
+        sort_dropdown.select_by_visible_text("Price (low to high)")
 
         last_page = driver.find_element(By.ID, "total-page").text
         # print(f"last_page = {last_page}")
@@ -61,11 +61,18 @@ class Scorptec:
                     print(f"href = {href}")
 
             ### Go to next page (somehow)
-            if (current_page != last_page):
+            # if (current_page != last_page):
+            if (current_page < int(last_page) - 1):
                 # driver.find_element(By.CLASS_NAME, "pagination-next").click()
                 # driver.execute_script("showNextPage();return false;");
                 print(f"==> INFO: Attempting to load {self.CATEGORY_URLS[category]}?page={current_page + 1}")
-                driver.get(f"{self.CATEGORY_URLS[category]}?page={current_page + 1}")
+                
+                # driver = instantiate_ff_driver_and_download(self.CATEGORY_URLS[category])
+
+                # driver.quit()
+                driver.close()
+                # del driver
+                driver = instantiate_ff_driver_and_download(f"{self.CATEGORY_URLS[category]}?page={current_page + 1}")
             else:
                 break
             # break

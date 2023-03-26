@@ -75,7 +75,6 @@ def scrape_start_extract_thread(website, category) -> None:
     #         print(f"\n==> WARN: Restarting thread")
     #         continue
 
-
 def table_get_template_vars(website, category) -> dict:
 
     ### Filter to files containing the chosen website & category
