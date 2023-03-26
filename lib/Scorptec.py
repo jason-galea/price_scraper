@@ -128,8 +128,7 @@ class Scorptec:
     #     }
 
     # @staticmethod
-    # def _extract_ssd_data():
-    def _extract_hdd_data(self, bs4_html_parser_list: list) -> list:
+    def _extract_ssd_data(self, bs4_html_parser_list: list) -> list:
         results = []
 
         for bs4_html_parser in bs4_html_parser_list:
