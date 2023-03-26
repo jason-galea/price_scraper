@@ -1,7 +1,7 @@
-import os
+# import os
 import re
 import datetime
-import enum
+# import enum
 import json
 from bs4 import BeautifulSoup, PageElement
 # from selenium import webdriver
@@ -64,21 +64,15 @@ class PCCG:
             features="html.parser"
         )
 
-        ### Extract
         extracted_data = self._extract(category, bs4_html_parser)
 
-        ### Debug
         if (debug):
             print(json.dumps(extracted_data, indent=4))
 
-        ### Export
         export_json(extracted_data, output_dir, output_file)
 
-        ### Cleanup
-        # os.system('pkill firefox') ### Lol. Lmao
-
     ### TODO: Move this into base class/common function
-    def _extract(self, category, bs4_html_parser: BeautifulSoup) -> list:
+    def _extract(self, category: str, bs4_html_parser: BeautifulSoup) -> list:
         bs4_products = bs4_html_parser.find_all("div", class_="product-container")
 
         match category:
