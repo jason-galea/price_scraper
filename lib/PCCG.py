@@ -24,22 +24,23 @@ class PCCG:
 
     def __init__(self, category, output_dir, output_file, debug=False) -> None:
 
-        ### TODO: Move this block into base class/common function
-        #####################################################################
-        ### Options
-        ff_opts = Options()
-        ff_opts.add_argument('-headless')
-        ff_cap = DesiredCapabilities.FIREFOX
-        ff_cap["marionette"] = True
+        # ### TODO: Move this block into base class/common function
+        # #####################################################################
+        # ### Options
+        # ff_opts = Options()
+        # ff_opts.add_argument('-headless')
+        # ff_cap = DesiredCapabilities.FIREFOX
+        # # ff_cap["marionette"] = True
 
-        driver = Firefox(
-            options=ff_opts,
-            capabilities=ff_cap,
-        )
+        # driver = Firefox(
+        #     options=ff_opts,
+        #     capabilities=ff_cap,
+        # )
 
-        ### Request page
-        driver.get(self.CATEGORY_URLS[category])
-        #####################################################################
+        # ### Request page
+        # driver.get(self.CATEGORY_URLS[category])
+        # #####################################################################
+        driver = instantiate_ff_driver_and_download(self.CATEGORY_URLS[category])
 
 
         ### Create HTML parser
@@ -239,7 +240,7 @@ class PCCG:
                         break
 
                 if (d_categories not in result.keys()):
-                    print(f"{d_categories} not found in title: {title_split}")
+                    print(f"==> WARN: {d_categories} not found in title: {title_split}")
 
             ### "CapacityGB", "PricePerGB", "PricePerGB"
             capacity_dict = {
@@ -258,7 +259,7 @@ class PCCG:
                         })
                         break
             if ("CapacityGB" not in result.keys()):
-                print(f"CapacityGB not found in title: {title_split}")
+                print(f"==> WARN: CapacityGB not found in title: {title_split}")
             
             # ### Remove unneeded words
             # ### All remaining elements should be required for: ["Brand", "Series", "ModelNumber"]

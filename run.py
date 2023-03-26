@@ -50,7 +50,7 @@ def scrape_start_extract_thread(website, category) -> None:
         case "scorptec": website_class = Scorptec
         case "centrecom": website_class = CentreCom
 
-    # print(f"Scraping with website '{website}' and category '{category}'")
+    # print(f"\n==> INFO: Scraping with website '{website}' and category '{category}'")
     scrape_thread = threading.Thread(
         target=website_class,
         args=(category, JSON_OUTPUT_DIR, JSON_OUTPUT_FILE),
@@ -176,6 +176,6 @@ def routes(path='index'):
 
 if __name__ == '__main__':
     app.run(
-        debug=True,
+        # debug=True,
         host='0.0.0.0',
     )

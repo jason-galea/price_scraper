@@ -24,22 +24,23 @@ class Scorptec:
     def __init__(self, category, output_dir, output_file, debug=False) -> None:
 
 
-        ### TODO: Move this block into base class/common function
-        #####################################################################
-        ### Options
-        ff_opts = Options()
-        ff_opts.add_argument('-headless')
-        ff_cap = DesiredCapabilities.FIREFOX
-        ff_cap["marionette"] = True
+        # ### TODO: Move this block into base class/common function
+        # #####################################################################
+        # ### Options
+        # ff_opts = Options()
+        # ff_opts.add_argument('-headless')
+        # ff_cap = DesiredCapabilities.FIREFOX
+        # ff_cap["marionette"] = True
 
-        driver = Firefox(
-            options=ff_opts,
-            capabilities=ff_cap,
-        )
+        # driver = Firefox(
+        #     options=ff_opts,
+        #     capabilities=ff_cap,
+        # )
 
-        ### Request page
-        driver.get(self.CATEGORY_URLS[category])
-        #####################################################################
+        # ### Request page
+        # driver.get(self.CATEGORY_URLS[category])
+        # #####################################################################
+        driver = instantiate_ff_driver_and_download(self.CATEGORY_URLS[category])
 
 
         ### Pagination fun!!!1!!!!!
