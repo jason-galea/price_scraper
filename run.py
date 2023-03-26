@@ -43,6 +43,12 @@ def listContainsAllValues(haystack, needles) -> list:
 ###########################################################
 ### Route-specific functions
 def scrape_start_extract_thread(website, category) -> None:
+
+    ### TODO: Check if another thread is already running
+    # if (???):
+    #     print(f"\n==> ERROR: Another thread is already running, please wait a moment for it to finish")
+    #     return
+
     NOW = datetime.datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S')
     JSON_OUTPUT_FILE = f"{JSON_OUTPUT_DIR}/{NOW}_{website}_{category}.json"
 
