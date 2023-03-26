@@ -15,7 +15,7 @@ def instantiate_ff_driver_and_download(url: str):
     ff_opts = Options()
     ff_opts.add_argument('-headless')
     ff_cap = DesiredCapabilities.FIREFOX
-    # ff_cap["marionette"] = True
+    ff_cap["marionette"] = True
 
     driver = Firefox(
         options=ff_opts,

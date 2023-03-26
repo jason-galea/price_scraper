@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup as bs
 # from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from lib.common import *
 
@@ -21,54 +23,52 @@ class Scorptec:
     }
 
     def __init__(self, category, output_dir, output_file, debug=False) -> None:
-
-
-        # ### TODO: Move this block into base class/common function
-        # #####################################################################
-        # ### Options
-        # ff_opts = Options()
-        # ff_opts.add_argument('-headless')
-        # ff_cap = DesiredCapabilities.FIREFOX
-        # ff_cap["marionette"] = True
-
-        # driver = Firefox(
-        #     options=ff_opts,
-        #     capabilities=ff_cap,
-        # )
-
-        # ### Request page
-        # driver.get(self.CATEGORY_URLS[category])
-        # #####################################################################
+        ### Download URL
         driver = instantiate_ff_driver_and_download(self.CATEGORY_URLS[category])
 
-
-        ### Pagination fun!!!1!!!!!
-
+        ### Pagination fun!!!1!!!!
         ### 90 items per page
-        items_per_page_dropdown = Select(driver.find_element(By.ID, "pagination-view-count"))
-        items_per_page_dropdown.select_by_visible_text("90")
+        # select_dropdown = Select(driver.find_element(By.ID, "pagination-view-count"))
+        # select_dropdown.select_by_visible_text("90")
         
         ### Sort by price, low to high
-        sort_dropdown = Select(driver.find_element(By.ID, "widget-sort"))
-        sort_dropdown.select_by_visible_text("Price (low to high)")
+        # sort_dropdown = Select(driver.find_element(By.ID, "widget-sort"))
+        # sort_dropdown.select_by_visible_text("Price (low to high)")
 
         last_page = driver.find_element(By.ID, "total-page").text
-        print(f"last_page = {last_page}")
+        # print(f"last_page = {last_page}")
 
         while True:
-            for element in driver.find_elements(
-                By.XPATH,
-                "//div[@class='detail-product-title']/a",
-            ):
-                print(element.get_attribute("href"))
+            ### Find current page
+            print(f"==> INFO: Attempting to find current page")
+            # current_page = int(driver.find_element(By.ID, "current-page").text)
+            # current_page_element = WebDriverWait(driver, 30).until(
+            #     EC.presence_of_element_located((By.ID, "current-page"))
+            # )
+            current_page_element = WebDriverWait(driver, 10).until(
+                lambda x: x.find_element(By.ID, "current-page")
+            )
+            current_page = int(current_page_element.text)
+            print(f"==> INFO: Opened page {current_page}/{last_page}")
 
-            current_page = driver.find_element(By.ID, "current-page").text
-            print(f"current_page = {current_page}")
-            # if (current_page != last_page):
-            #     driver.find_element(By.CLASS_NAME, "pagination-next").click()
-            # else:
-            #     break
-            break
+            ### Print product URLs
+            for element in driver.find_elements(
+                by=By.XPATH,
+                value="//div[@class='detail-product-title']/a",
+            ):
+                href = element.get_attribute("href").strip()
+                if (href != ""):
+                    print(f"href = {href}")
+
+            ### Go to next page (somehow)
+            if (current_page != last_page):
+                # driver.find_element(By.CLASS_NAME, "pagination-next").click()
+                # driver.execute_script("showNextPage();return false;");
+                print(f"==> INFO: Attempting to load {self.CATEGORY_URLS[category]}?page={current_page + 1}")
+                driver.get(f"{self.CATEGORY_URLS[category]}?page={current_page + 1}")
+            else:
+                break
+            # break
 
         return
 
