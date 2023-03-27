@@ -96,11 +96,17 @@ class Scorptec:
         results = []
 
         for bs4_html_parser in bs4_html_parser_list:
-            for product in bs4_html_parser.find_all():
+            bs4_html_parser = BeautifulSoup()
+            for product in bs4_html_parser.find_all(
+                name="a",
+                attrs={
+                    "class":"inherit-class",
+                }
+            ):
                 # temp_result = self._get_common_data(product)
                 temp_result = {}
                 
-                # print(f"==> Extracting data from '{???}'")
+                print(f"==> Extracting data from '{product.text}'")
 
                 # ### Print product URLs
                 # count = 0
@@ -149,6 +155,7 @@ class Scorptec:
                 #     print(f"element.text = '{element.text}'")
 
 
-                results.append(temp_result)
+
+                # results.append(temp_result)
 
         return results
