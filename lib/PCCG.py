@@ -33,11 +33,13 @@ class PCCG:
         },
         "Protocol":{
             "SATA":     "SATA",
+            "2.5in":    "SATA",
             "2.5inch":  "SATA",
             "Gen4":     "NVMe Gen4",
             "Gen4x4":   "NVMe Gen4",
             "NVMe":     "NVMe Gen3", ### NOTE: Assume "NVMe" = PCIe Gen3, since we already found all Gen4 drives 
             "NVME":     "NVMe Gen3",
+            "Gen3x4":   "NVMe Gen3",
         },
         "Brand":{
             "ASUS":     "ASUS",
