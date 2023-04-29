@@ -63,7 +63,7 @@ def scrape_start_extract_thread(website, category) -> None:
         args=(category, JSON_OUTPUT_DIR, JSON_OUTPUT_FILE),
     )
 
-    print(f"\n==> INFO: Launching thread to scrape '{category}' data from '{website}'")
+    print(f"==> INFO: Launching thread to scrape '{category}' data from '{website}'")
     scrape_thread.start()
     # while True:
     #     try:
