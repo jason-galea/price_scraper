@@ -204,8 +204,8 @@ class PCCG:
         }
         for label, val in capacity_dict.items():
             for s in reversed(title_split):
-                if (label in s):
-                    capacity_gb = int(s.strip(label))*val
+                if (label in s) and (s != "RGB"):
+                    capacity_gb = int( s.strip(label) )*val
                     result.update({
                         "CapacityGB":capacity_gb,
                         "CapacityTB":round( capacity_gb/1000, 2 ),
