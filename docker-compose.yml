@@ -1,4 +1,8 @@
 version: '3.9'
 services:
-  scraper:
-    build: .
+  nginx:
+    image: nginx:latest
+  # scraper:
+  #   build:
+  #     context: ./
+  #     dockerfile: Dockerfile
