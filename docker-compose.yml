@@ -1,8 +1,10 @@
-version: '3.9'
+# version: '3.9'
+version: '3'
 services:
-  nginx:
-    image: docker.io/nginx:latest
-  # scraper:
-  #   build:
-  #     context: ./
-  #     dockerfile: Dockerfile
+  scraper:
+    # build: ./
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
