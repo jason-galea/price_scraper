@@ -1,10 +1,10 @@
 {
     "hdd": {
-        "display_cols": ["TitleLink", "Brand", "PriceAUD", "CapacityGB", "CapacityTB", "PricePerTB"],
+        "display_cols": ["TitleLink", "Brand", "PriceAUD", "CapacityTB", "PricePerTB"],
         "sort_col":     "PricePerTB"
     },
     "ssd": {
-        "display_cols": ["TitleLink", "Brand", "PriceAUD", "CapacityGB", "CapacityTB", "PricePerTB"],
+        "display_cols": ["TitleLink", "Brand", "PriceAUD", "Protocol", "CapacityTB", "PricePerTB"],
         "sort_col":     "PricePerTB"
     },
     "ddr4": {

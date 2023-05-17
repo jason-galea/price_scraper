@@ -33,11 +33,13 @@ class PCCG:
         },
         "Protocol":{
             "SATA":     "SATA",
+            "2.5in":    "SATA",
             "2.5inch":  "SATA",
             "Gen4":     "NVMe Gen4",
             "Gen4x4":   "NVMe Gen4",
             "NVMe":     "NVMe Gen3", ### NOTE: Assume "NVMe" = PCIe Gen3, since we already found all Gen4 drives 
             "NVME":     "NVMe Gen3",
+            "Gen3x4":   "NVMe Gen3",
         },
         "Brand":{
             "ASUS":     "ASUS",
@@ -204,8 +206,8 @@ class PCCG:
         }
         for label, val in capacity_dict.items():
             for s in reversed(title_split):
-                if (label in s):
-                    capacity_gb = int(s.strip(label))*val
+                if (label in s) and (s != "RGB"):
+                    capacity_gb = int( s.strip(label) )*val
                     result.update({
                         "CapacityGB":capacity_gb,
                         "CapacityTB":round( capacity_gb/1000, 2 ),

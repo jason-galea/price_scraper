@@ -44,7 +44,7 @@ def remove_multiple_strings_from_list(l: list, strings_to_remove: list) -> list:
     return [ s for s in l if (s not in strings_to_remove) ]
 
 def export_json(extracted_data: iter, dir: str, file: str) -> None:
-    print(f"\n==> INFO: Exporting data to '{file}'\n")
+    print(f"==> INFO: Exporting data to '{file}'")
 
     ### Check/Create dir
     if not os.path.exists(dir):
