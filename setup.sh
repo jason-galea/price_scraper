@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+REPO_DIR=$(dirname $0)
+
 echo -e "\n==> Update apt package lists"
 sudo apt update -y
 
@@ -20,4 +22,4 @@ echo -e "\n==> Upgrade pip base packages"
 python3 -m pip install -U pip setuptools wheel
 
 echo -e "\n==> Install pip requirements"
-python3 -m pip install -r ./misc/reqs.txt
+python3 -m pip install -r $REPO_DIR/reqs.txt

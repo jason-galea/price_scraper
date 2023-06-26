@@ -1,9 +1,9 @@
 # import os
-import datetime
+# import datetime
 # import enum
 import json
 from bs4 import BeautifulSoup
-# from selenium import webdriver
+from selenium import webdriver
 # from selenium.webdriver import Firefox, DesiredCapabilities
 # from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
@@ -34,7 +34,7 @@ class Scorptec:
 
         export_json(extracted_data, output_dir, output_file)
 
-    def _get_html_parser_list(self, driver: Firefox, base_url: str) -> list:
+    def _get_html_parser_list(self, driver: webdriver.Firefox, base_url: str) -> list:
 
         last_page = int(driver.find_element(By.ID, "total-page").text)
         result = []

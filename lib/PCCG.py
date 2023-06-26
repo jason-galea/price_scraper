@@ -12,7 +12,6 @@ from bs4 import BeautifulSoup, PageElement
 
 from lib.common import *
 
-
 class PCCG:
     CATEGORY_URLS = {
         "hdd": "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives",

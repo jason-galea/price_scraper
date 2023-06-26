@@ -7,8 +7,8 @@ import html
 import threading
 import pandas as pd
 from glob import glob
-from flask import Flask, render_template, request
-from selenium.common.exceptions import WebDriverException
+from flask import Flask, render_template, request, send_from_directory
+# from selenium.common.exceptions import WebDriverException
 
 # import lib.Extract as Extract
 from lib.PCCG import PCCG
@@ -187,6 +187,16 @@ def routes(path='index'):
     return render_template(
         **common_vars,
         **page_vars,
+    )
+
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, 'static'),
+        'favicon.ico',
+        mimetype='image/vnd.microsoft.icon'
     )
 
 
