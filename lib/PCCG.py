@@ -82,7 +82,9 @@ class PCCG:
             case "ssd":
                 return [ self._extract_ssd_data(product) for product in bs4_products ]
             case "ddr4" | "ddr5":
-                return [ self._extract_ram_data(product) for product in bs4_products ]
+                # return [ self._extract_ram_data(product) for product in bs4_products ]
+                ### https://stackoverflow.com/questions/48609891/efficiently-filtering-out-none-items-in-a-list-comprehension-in-which-a-functi
+                return [ d for product in bs4_products if (d := self._extract_ram_data(product)) is not None ] ### 1 call per item :o
 
     @staticmethod
     def _get_common_data(product: BeautifulSoup) -> dict:
@@ -226,14 +228,14 @@ class PCCG:
         #############################################################################################
         ### COMMON FIELDS
         temp_result = PCCG._get_common_data(product)
-        # temp_result = {}
+        
+        ### Handle REALLY specific errors        
+        if (temp_result["Title"] == 'Corsair Vengeance 48GB (2x24GB) 7000MHz C40 DDR5'): ### "C40"
+            temp_result["Title"] = 'Corsair Vengeance 48GB (2x24GB) 7000MHz CL40 DDR5'
+        if (temp_result["Title"] == 'Team T-Force Delta RGB 64GB (2x32GB) 5200MHz CL40 Black'): ### Missing "DDR5"
+            temp_result["Title"] = 'Team T-Force Delta RGB 64GB (2x32GB) 5200MHz CL40 DDR5 Black'
 
-        # temp_result.update({ "MemoryType": memory_type })
-
-        ### Split title
         title = temp_result["Title"]
-        # title_split = temp_result["Title"].split()
-        # print(f"\n==> INFO: title = '{title}'")
 
 
         #############################################################################################
@@ -246,8 +248,7 @@ class PCCG:
 
         if (not regex_result):
             print(f"==> WARN: REGEX failed on title: '{title}'")
-            # print(f"==> WARN: Skipping product")
-            return
+            return ### This "None" needs to be filtered out of the list comprehension in "_extract()"
 
         ### Create dict from capture group results
         ### NOTE: Need to associate keys & values before removing anything
@@ -261,7 +262,8 @@ class PCCG:
         regex_groups_dict = dict(zip( regex_groups_keys, regex_groups_vals ))
 
 
-        ### TODO: Handle wierd cases
+        ### TODO: Figure out if this is still needed?
+        # ### TODO: Handle wierd cases
         # if (regex_groups_dict["Misc"] == "White"):
         #     pass
         # if (regex_groups_dict["Model"] == ""):
@@ -276,10 +278,20 @@ class PCCG:
         temp_result.update({
             ### NOTE: Assumption based on PCCG UI, there are only two possible values
             ### NOTE: "Lighting" allows for other values from different retailers, such as "White"
-            "Lighting": "RGB" if ( re.search(r"RGB", title) != None ) else "None",
+            "Lighting": "RGB" if ( re.search(r"RGB", title) != None ) else "No lighting",
             "FormFactor": "SODIMM" if ( re.search(r"SODIMM", title) != None ) else "DIMM",
             "PricePerGB": round( temp_result["PriceAUD"] / temp_result["CapacityGB"], 2 ),
         })
+
+
+        ### DEBUGGING
+        # del temp_result["Misc"]
+        # del temp_result["Lighting"]
+
+        # if (temp_result == null):
+
+
+
 
 
         #############################################################################################
