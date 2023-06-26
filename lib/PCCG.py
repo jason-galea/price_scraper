@@ -52,6 +52,7 @@ class PCCG:
             "Western":  "Western Digital",
             "Gigabyte": "Gigabyte",
             "PNY":      "PNY",
+            "Seagate":  "Seagate",
         }
     }
 
@@ -80,11 +81,10 @@ class PCCG:
             case "hdd":
                 return self._extract_hdd_data(bs4_html_parser)
             case "ssd":
-                return [ self._extract_ssd_data(product) for product in bs4_products ]
+                # return [ self._extract_ssd_data(product) for product in bs4_products ]
+                return [ d for product in bs4_products if (d := self._extract_ssd_data(product)) is not None ]
             case "ddr4" | "ddr5":
-                # return [ self._extract_ram_data(product) for product in bs4_products ]
-                ### https://stackoverflow.com/questions/48609891/efficiently-filtering-out-none-items-in-a-list-comprehension-in-which-a-functi
-                return [ d for product in bs4_products if (d := self._extract_ram_data(product)) is not None ] ### 1 call per item :o
+                return [ d for product in bs4_products if (d := self._extract_ram_data(product)) is not None ]
 
     @staticmethod
     def _get_common_data(product: BeautifulSoup) -> dict:
@@ -182,7 +182,10 @@ class PCCG:
         # print(title_split)
 
         ### Discard unwanted items
-        if ("Upgrade" in title_split): return
+        if (
+            ("Upgrade" in title_split)
+            or ("Western Digital G-D" in result["Title"])
+        ): return
 
 
         #############################################################################################
