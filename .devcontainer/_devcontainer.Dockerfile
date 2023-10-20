@@ -9,4 +9,4 @@ RUN tar -xvzf geckodriver*
 RUN mv geckodriver /usr/local/bin
 
 RUN python3.11 -m pip install -U pip setuptools wheel
-RUN python3.11 -m pip install flask pandas selenium beautifulsoup4
+RUN python3.11 -m pip install flask pandas selenium beautifulsoup4 psycopg2
