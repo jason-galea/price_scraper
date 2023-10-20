@@ -2,9 +2,11 @@ import os
 # import datetime
 # import enum
 import json
-# from selenium import webdriver
-from selenium.webdriver import Firefox, DesiredCapabilities
-from selenium.webdriver.firefox.options import Options
+from selenium import webdriver
+from selenium.webdriver.firefox.service import Service
+# from selenium.webdriver.firefox.webdriver import WebDriver
+# from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import Select
 
@@ -12,14 +14,16 @@ from selenium.webdriver.firefox.options import Options
 ### COMMON FUNCTIONS
 def instantiate_ff_driver_and_download(url: str):
     ### Options
-    ff_opts = Options()
+    ff_opts = FirefoxOptions()
     ff_opts.add_argument('-headless')
-    ff_cap = DesiredCapabilities.FIREFOX
-    ff_cap["marionette"] = True
+    # ff_cap = DesiredCapabilities.FIREFOX
+    # ff_cap["marionette"] = True
+    # ff_opts.set_capability("marionette", True)
 
-    driver = Firefox(
+    driver = webdriver.Firefox(
+        service=Service(executable_path="/usr/local/bin/geckodriver"),
         options=ff_opts,
-        capabilities=ff_cap,
+        # capabilities=ff_cap,
     )
 
     ### Request page
