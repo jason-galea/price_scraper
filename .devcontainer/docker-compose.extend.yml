@@ -7,8 +7,9 @@ services:
       # - .:/workspace:cached
       # - ~/.ssh/:/root/.ssh/
       # - ${HOME}/.ssh/:/root/.ssh/
-      - /home/jg/.ssh/id_rsa:/root/.ssh/id_rsa
-      - /home/jg/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub
+      # - /home/jg/.ssh/id_rsa:/root/.ssh/id_rsa
+      # - /home/jg/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub
+      - /home/jg/.ssh/:/root/.ssh/
 
     # # [Optional] Required for ptrace-based debuggers like C++, Go, and Rust
     # cap_add:
