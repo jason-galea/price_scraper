@@ -1,0 +1,9 @@
+{% extends "form.html" %}
+{% block form_content %}
+
+{% if website and category %}
+    <p>Scraping {{ category }} data from {{ website }}...</p>
+    <p>(This will continue in the background, try checking the "Results" page)</p>
+{% endif %}
+
+{% endblock %}

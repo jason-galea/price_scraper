@@ -1,0 +1,15 @@
+{
+    "website":{
+        "pccg":         "PC Case Gear",
+        "scorptec":     "Scorptec",
+        "centrecom":    "Centre Com"
+    },
+    "category":{
+        "hdd":      "3.5\" Hard Drive",
+        "ssd":      "SSD",
+        "ddr4":     "DDR4",
+        "ddr5":     "DDR5",
+        "cpu":      "CPU",
+        "gpu":      "GPU"
+    }
+}

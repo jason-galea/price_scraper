@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p>The results directory currently contains the following files:</p>
+<br>
+
+{% if (results != None) %}
+    {% for line in results %}
+        {{ line }} <br>
+    {% endfor %}
+
+{% else %}
+    ERROR
+
+{% endif %}
+<br>
+
+{% endblock %}
