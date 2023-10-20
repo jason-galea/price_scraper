@@ -6,10 +6,10 @@ RUN apt update -y
 RUN apt install -y firefox-esr 
 RUN apt install -y wget libpq-dev gcc
 
-### be very very careful
-RUN apt install -y git gnupg2
-RUN mkdir /root/.ssh/
-RUN touch /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
+### dev container nonsense
+# RUN apt install -y git gnupg2
+# RUN mkdir /root/.ssh/
+# RUN touch /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
 
 RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
 RUN tar -xvzf geckodriver*
