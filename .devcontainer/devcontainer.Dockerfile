@@ -8,9 +8,10 @@ RUN tar -xvzf geckodriver*
 RUN mv geckodriver /usr/local/bin
 
 # WORKDIR /opt/price_scraper
-COPY ../reqs.txt /opt/price_scraper/reqs.txt
+# COPY ../reqs.txt /opt/price_scraper/reqs.txt
 
 RUN python3.11 -m pip install -U pip setuptools wheel
-RUN python3.11 -m pip install -r /opt/price_scraper/reqs.txt
+# RUN python3.11 -m pip install -r /opt/price_scraper/reqs.txt
+RUN python3.11 -m pip install flask pandas selenium beautifulsoup4
 
 # CMD ./run.py

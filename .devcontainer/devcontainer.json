@@ -2,16 +2,16 @@
     "name": "Price Scraper",
     "service": "scraper",
 	
-	// OPTION 1 - Reuse compose file
+	// // OPTION 1 - Reuse compose file
     // "dockerComposeFile": "../docker-compose.yml",
     // "workspaceFolder": "/opt/price_scraper",
 
-	// OPTION 2 - Extend compose file
+	// // OPTION 2 - Extend compose file
 	// // The order of the files is important since later files override previous ones
 	// "dockerComposeFile": ["../docker-compose.yml", "docker-compose.extend.yml"],
     // "workspaceFolder": "/workspace",
 
-	// OPTION 3 - Dedicated compose file
+	// // OPTION 3 - Dedicated compose file
     "dockerComposeFile": "devcontainer.docker-compose.yml",
     "workspaceFolder": "/workspace/",
 

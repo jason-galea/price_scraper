@@ -34,6 +34,7 @@ class PCCG:
             "SATA":     "SATA",
             "2.5in":    "SATA",
             "2.5inch":  "SATA",
+            "4.0":      "NVMe Gen4",
             "Gen4":     "NVMe Gen4",
             "Gen4x4":   "NVMe Gen4",
             "NVMe":     "NVMe Gen3", ### NOTE: Assume "NVMe" = PCIe Gen3, since we already found all Gen4 drives 

@@ -11,6 +11,6 @@ WORKDIR /opt/price_scraper
 COPY . .
 
 RUN python3.11 -m pip install -U pip setuptools wheel
-RUN python3.11 -m pip install -r reqs.txt
+RUN python3.11 -m pip install flask pandas selenium beautifulsoup4
 
 CMD ./run.py
