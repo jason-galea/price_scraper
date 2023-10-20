@@ -1,0 +1,24 @@
+{
+    "name": "Price Scraper",
+    "service": "scraper",
+	
+    // "dockerComposeFile": "../docker-compose.yml",
+    // "workspaceFolder": "/opt/price_scraper",
+
+	// The order of the files is important since later files override previous ones
+	"dockerComposeFile": ["../docker-compose.yml", "docker-compose.extend.yml"],
+    "workspaceFolder": "/workspace",
+
+	"shutdownAction": "stopCompose",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-docker",
+				"craigb85.custom-window-zoom",
+				"ms-python.python",
+				"ms-python.pylance",
+				"redhat.vscode-yaml"
+			]
+		}
+	}
+}
