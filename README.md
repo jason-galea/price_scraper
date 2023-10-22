@@ -10,11 +10,13 @@ Python 3.10 or higher.
 
 Run locally:
 
-    ./setup.sh
     cp db.conf.example db.conf
-    vi db.conf
+    <edit db.conf>
+    ./setup.sh
     ./run.py
 
 Run via docker:
 
+    cp db.conf.example db.conf
+    <edit db.conf>
     docker compose up -d
