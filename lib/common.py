@@ -2,6 +2,9 @@ import os
 # import datetime
 # import enum
 import json
+
+# from sqlalchemy import create_engine
+
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 # from selenium.webdriver.firefox.webdriver import WebDriver
@@ -31,6 +34,7 @@ def instantiate_ff_driver_and_download(url: str):
 
     return driver
 
+
 def concaternate_items_within_list(input_list: list, start_index: int, end_index: int) -> list:
     """
     Receives list & two indexes.\n
@@ -44,16 +48,23 @@ def concaternate_items_within_list(input_list: list, start_index: int, end_index
 
     return result_list
 
+
 def remove_multiple_strings_from_list(l: list, strings_to_remove: list) -> list:
     return [ s for s in l if (s not in strings_to_remove) ]
 
-def export_json(extracted_data: iter, dir: str, file: str) -> None:
-    print(f"==> INFO: Exporting data to '{file}'")
+# def export_json(extracted_data: iter, dir: str, file: str) -> None:
+#     print(f"==> INFO: Exporting data to '{file}'")
 
-    ### Check/Create dir
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+#     ### Check/Create dir
+#     if not os.path.exists(dir):
+#         os.makedirs(dir)
 
-    ### Write
-    with open(file, "w") as f:
-        f.write(json.dumps(extracted_data))
+#     ### Write
+#     with open(file, "w") as f:
+#         f.write(json.dumps(extracted_data))
+
+
+def export_to_db(extracted_data: list) -> None:
+    print(f"==> INFO: Exporting data to db")
+
+

@@ -1,27 +1,30 @@
 version: '3.9'
 services:
+
+  db:
+    container_name: db
+    image: postgres:latest
+    restart: unless-stopped
+    # environment:
+    #   POSTGRES_USER: postgres
+    #   POSTGRES_DB: postgres
+    #   POSTGRES_PASSWORD: postgres
+    env_file: db.conf
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
   scraper:
-    container_name: price_scraper
+    container_name: scraper
     build: .
-    pull_policy: build
+    pull_policy: build ### Compose rebuilds image, even if one already exists
+    restart: unless-stopped
     ports:
       - 5000:5000
     volumes:
       - .:/opt/price_scraper/
     command: /opt/price_scraper/run.py
-    restart: always
-
-  db:
-    image: postgres:latest
-    restart: unless-stopped
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres
-    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
 
 volumes:
   postgres-data:

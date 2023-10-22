@@ -6,6 +6,9 @@ import datetime
 import html
 import threading
 import pandas as pd
+import psycopg2
+import sqlalchemy
+
 from glob import glob
 from flask import Flask, render_template, request, send_from_directory
 # from selenium.common.exceptions import WebDriverException
@@ -22,7 +25,7 @@ app = Flask(__name__)
 ROOT = app.root_path
 
 CONF_DIR = f"{ROOT}/conf"
-JSON_OUTPUT_DIR = f"{ROOT}/out"
+# JSON_OUTPUT_DIR = f"{ROOT}/out"
 
 with open(f"{CONF_DIR}/page_info.json", "r") as f: PAGE_INFO = json.load(f)
 with open(f"{CONF_DIR}/form_labels.json", "r") as f: FORM_LABELS = json.load(f)
@@ -30,13 +33,15 @@ with open(f"{CONF_DIR}/table_cols.json", "r") as f: TABLE_COLS = json.load(f)
 
 FORM_COLS = ['website', 'category']
 
+POSTGRES_CONN_STR = "db+psycopg2://root:postgress@db:5432/bookstore"
+
 
 ###########################################################
 ### Generic functions
-def get_json_filenames() -> list:
-    return glob(f"{JSON_OUTPUT_DIR}/*.json")
+# def get_json_filenames() -> list:
+#     return glob(f"{JSON_OUTPUT_DIR}/*.json")
 
-def listContainsAllValues(haystack, needles) -> list:
+def listContainsAllValues(haystack, needles) -> bool:
     return all((n in haystack) for n in needles)
 
 
@@ -50,7 +55,7 @@ def scrape_start_extract_thread(website, category) -> None:
     #     return
 
     NOW = datetime.datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S')
-    JSON_OUTPUT_FILE = f"{JSON_OUTPUT_DIR}/{NOW}_{website}_{category}.json"
+    # JSON_OUTPUT_FILE = f"{JSON_OUTPUT_DIR}/{NOW}_{website}_{category}.json"
 
     match website:
         case "pccg": website_class = PCCG
@@ -60,7 +65,8 @@ def scrape_start_extract_thread(website, category) -> None:
     # print(f"\n==> INFO: Scraping with website '{website}' and category '{category}'")
     scrape_thread = threading.Thread(
         target=website_class,
-        args=(category, JSON_OUTPUT_DIR, JSON_OUTPUT_FILE),
+        # args=(category, JSON_OUTPUT_DIR, JSON_OUTPUT_FILE),
+        args=(category),
     )
 
     print(f"==> INFO: Launching thread to scrape '{category}' data from '{website}'")
@@ -75,28 +81,34 @@ def scrape_start_extract_thread(website, category) -> None:
     #         print(f"\n==> WARN: Restarting thread")
     #         continue
 
+
 def table_get_template_vars(website, category) -> dict:
 
-    ### Filter to files containing the chosen website & category
-    filtered_files = [ item
-        for item in get_json_filenames()
-        if (listContainsAllValues(item.split('.')[0].split("_"), [website, category]))
-    ]
-    # print(f"filtered_files = {filtered_files}")
-    latest_file = max(filtered_files, key=os.path.getctime)
-    latest_file_basename = os.path.basename(latest_file)
+    # ### Filter to files containing the chosen website & category
+    # filtered_files = [ item
+    #     for item in get_json_filenames()
+    #     if (listContainsAllValues(item.split('.')[0].split("_"), [website, category]))
+    # ]
+    # # print(f"filtered_files = {filtered_files}")
+    # latest_file = max(filtered_files, key=os.path.getctime)
+    # latest_file_basename = os.path.basename(latest_file)
 
     ### DEBUG
     # print(f"latest_file = {latest_file}")
     # print(f"latest_file_basename = {latest_file_basename}")
 
-    ### Read
-    df = pd.read_json(latest_file)
+    # ### Read JSON --> DataFrame
+    # df: pd.DataFrame = pd.read_json(latest_file)
 
-    ### Clean up Title col
+
+    ### TODO: Query DB for latest entry for website & category
+    utctime_for_latest_matching_data = "asd"
+    
+    ### TODO: Query DB for data matching above UTCtime
+    df = pd.read_sql_query()
+
+
     df['Title'] = df.apply(table_fix_title_col, axis=1)
-
-    ### Create col with embedded URL
     df['TitleLink'] = df.apply(
         lambda row: f"<a href={row['URL']}>{row['Title']}</a>",
         axis=1,
@@ -115,9 +127,10 @@ def table_get_template_vars(website, category) -> dict:
 
     return {
         # 'latest_file': latest_file,
-        'latest_file_basename': latest_file_basename, ### Signposting
+        # 'latest_file_basename': latest_file_basename, ### Signposting
         'table_html': df.to_html(escape=False)
     }
+
 
 def table_fix_title_col(row) -> str:
     match_replace_dict = {
@@ -172,8 +185,9 @@ def routes(path='index'):
             pass
 
         case "results":
-            results = [os.path.basename(s) for s in get_json_filenames()]
-            results.sort(reverse=True) ### Sort by reverse date, newest items on top
+            # results = [os.path.basename(s) for s in get_json_filenames()]
+            # results.sort(reverse=True) ### Sort by reverse date, newest items on top
+            results = ["no_json_files_anymore_teehee!!"]
 
             page_vars.update({ 'results': results })
 
@@ -190,7 +204,6 @@ def routes(path='index'):
     )
 
 
-
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(
@@ -201,7 +214,34 @@ def favicon():
 
 
 if __name__ == '__main__':
-    app.run(
-        # debug=True,
-        host='0.0.0.0',
-    )
+
+    ### hehehe
+    postgress_engine = sqlalchemy.create_engine(POSTGRES_CONN_STR)
+
+    def connect():
+        return psycopg2.connect(
+            host='db',
+            port=5432,
+            user='postgres',
+            password='postgres',
+            dbname='postgres',
+            # sslmode='require',
+        )
+
+    # engine = sqlalchemy.create_engine('redshift+psycopg2://', creator=connect)
+    engine = sqlalchemy.create_engine('postgresql://', creator=connect)
+    conn = engine.connect()
+    
+    statement = sqlalchemy.select([sqlalchemy.literal(1234)])
+    print(conn.execute(statement).fetchall())
+    
+    # global POSTGRESS_CONN
+    # POSTGRESS_CONN = postgress_engine.connect()
+
+    # res = POSTGRESS_CONN.execute("SELECT * FROM pg_catalog.pg_tables;")
+    # print(res)
+
+    # app.run(
+    #     # debug=True,
+    #     host='0.0.0.0',
+    # )

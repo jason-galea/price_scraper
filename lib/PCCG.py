@@ -57,7 +57,8 @@ class PCCG:
         }
     }
 
-    def __init__(self, category, output_dir, output_file, debug=False) -> None:
+    # def __init__(self, category, output_dir, output_file, debug=False) -> None:
+    def __init__(self, category, debug=False) -> None:
 
         driver = instantiate_ff_driver_and_download(self.CATEGORY_URLS[category])
 
@@ -72,7 +73,10 @@ class PCCG:
         if (debug):
             print(json.dumps(extracted_data, indent=4))
 
-        export_json(extracted_data, output_dir, output_file)
+        # export_json(extracted_data, output_dir, output_file)
+        # export_to_db(extracted_data, self.__class__.__name__, asd)
+        export_to_db(extracted_data)
+
 
     ### TODO: Move this into base class/common function
     def _extract(self, category: str, bs4_html_parser: BeautifulSoup) -> list:
@@ -87,6 +91,7 @@ class PCCG:
             case "ddr4" | "ddr5":
                 return [ d for product in bs4_products if (d := self._extract_ram_data(product)) is not None ]
 
+
     @staticmethod
     def _get_common_data(product: BeautifulSoup) -> dict:
         return {
@@ -96,6 +101,7 @@ class PCCG:
             "URL":          product.find_next("a", class_="product-title").attrs["href"],
             "PriceAUD":     int(product.find_next("div", class_="price").string.strip("$")),
         }
+
 
     @staticmethod
     def _extract_hdd_data(bs4_html_parser: BeautifulSoup) -> list:
@@ -171,6 +177,7 @@ class PCCG:
 
         return results
 
+
     @staticmethod
     def _extract_ssd_data(product: PageElement) -> dict:
 
@@ -225,6 +232,7 @@ class PCCG:
             print(f"==> WARN: CapacityGB not found in title: {title_split}")
         
         return result
+
 
     @staticmethod
     def _extract_ram_data(product: PageElement) -> dict:
@@ -295,13 +303,9 @@ class PCCG:
         # if (temp_result == null):
 
 
-
-
-
         #############################################################################################
         ### Add individual product data to results
         # print(f"==> INFO: temp_result = {json.dumps(temp_result, indent=4)}")
         # break
         # results.append(temp_result)
         return temp_result
-
