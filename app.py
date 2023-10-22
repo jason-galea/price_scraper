@@ -6,11 +6,13 @@ import datetime
 import html
 import threading
 import pandas as pd
-import psycopg2
-import sqlalchemy
+# import psycopg2
+# import sqlalchemy
 
-from glob import glob
 from flask import Flask, render_template, request, send_from_directory
+from flask_sqlalchemy import SQLAlchemy
+
+# from glob import glob
 # from selenium.common.exceptions import WebDriverException
 
 # import lib.Extract as Extract
@@ -22,26 +24,26 @@ from lib.CentreCom import CentreCom
 ###########################################################
 ### GLOBAL VARS
 app = Flask(__name__)
+
 ROOT = app.root_path
-
-CONF_DIR = f"{ROOT}/conf"
-# JSON_OUTPUT_DIR = f"{ROOT}/out"
-
-with open(f"{CONF_DIR}/page_info.json", "r") as f: PAGE_INFO = json.load(f)
-with open(f"{CONF_DIR}/form_labels.json", "r") as f: FORM_LABELS = json.load(f)
-with open(f"{CONF_DIR}/table_cols.json", "r") as f: TABLE_COLS = json.load(f)
+with open(f"{ROOT}/conf/page_info.json", "r") as f: PAGE_INFO = json.load(f)
+with open(f"{ROOT}/conf/form_labels.json", "r") as f: FORM_LABELS = json.load(f)
+with open(f"{ROOT}/conf/table_cols.json", "r") as f: TABLE_COLS = json.load(f)
 
 FORM_COLS = ['website', 'category']
 
+POSTGRES_HOST        = os.environ['POSTGRES_HOST']
+POSTGRES_PORT        = os.environ['POSTGRES_PORT']
+POSTGRES_USER        = os.environ['POSTGRES_USER']
+POSTGRES_PASSWORD    = os.environ['POSTGRES_PASSWORD']
+POSTGRES_DB          = os.environ['POSTGRES_DB']
 
-HOST        = os.environ['POSTGRES_HOST']
-PORT        = os.environ['POSTGRES_PORT']
-USER        = os.environ['POSTGRES_USER']
-PASSWORD    = os.environ['POSTGRES_PASSWORD']
-DB          = os.environ['POSTGRES_DB']
+# POSTGRES_DB_URI = "db+psycopg2://root:postgress@db:5432/bookstore"
+POSTGRES_DB_URI = f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
-# POSTGRES_CONN_STR = "db+psycopg2://root:postgress@db:5432/bookstore"
-POSTGRES_CONN_STR = f'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}'
+app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False
+db = SQLAlchemy(app)
 
 
 ###########################################################
@@ -156,9 +158,9 @@ def table_fix_title_col(row) -> str:
 def test_db():
 
     ### hehehe
-    # postgress_engine = sqlalchemy.create_engine(POSTGRES_CONN_STR)
+    # postgress_engine = sqlalchemy.create_engine(POSTGRES_DB_URI)
 
-    print(f"POSTGRES_CONN_STR = {POSTGRES_CONN_STR}")
+    print(f"==> DEBUG: POSTGRES_DB_URI = {POSTGRES_DB_URI}")
 
     # def connect():
     #     return psycopg2.connect(
@@ -226,6 +228,7 @@ def routes(path='index'):
             test_db() ### DEBUGGING
 
         case "results":
+
             # results = [os.path.basename(s) for s in get_json_filenames()]
             # results.sort(reverse=True) ### Sort by reverse date, newest items on top
             results = ["no_json_files_anymore_teehee!!"]
@@ -249,14 +252,14 @@ def routes(path='index'):
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(
-        os.path.join(app.root_path, 'static'),
-        'favicon.ico',
+        directory=os.path.join(app.root_path, 'static'),
+        path='favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )
 
 
-if __name__ == '__main__':
-    app.run(
-        # debug=True,
-        host='0.0.0.0',
-    )
+# if __name__ == '__main__':
+#     app.run(
+#         # debug=True,
+#         host='0.0.0.0',
+#     )

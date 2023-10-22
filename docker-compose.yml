@@ -3,12 +3,8 @@ services:
 
   db:
     container_name: db
-    image: postgres:latest
+    image: postgres:16
     restart: unless-stopped
-    # environment:
-    #   POSTGRES_USER: postgres
-    #   POSTGRES_DB: postgres
-    #   POSTGRES_PASSWORD: postgres
     env_file: db.conf
     # ports:
     #   - 5432:5432
@@ -23,13 +19,14 @@ services:
     env_file: db.conf
     environment:
       POSTGRES_HOST: db
-      # FLASK_APP: /opt/price_scraper/run.py
+      FLASK_APP: /scraper/app.py
     ports:
       - 5000:5000
     volumes:
-      - .:/opt/price_scraper/
-    command: /opt/price_scraper/run.py
-    # command: flask run
+      - .:/scraper/
+    command: flask run -h 0.0.0.0
+    depends_on:
+    - db
 
 volumes:
   postgres-data:
