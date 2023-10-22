@@ -1,64 +1,63 @@
 #!/usr/bin/env python3
 
+### https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/quickstart/
+
 import os
-import json
-import html
-import pandas as pd
+# import json
+# import html
+# import pandas as pd
 
 from flask import Flask, render_template, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+from src.config import PAGE_INFO, FORM_LABELS
 from src.generic_funcs import *
 from src.Pages.Scrape import Scrape
 from src.Pages.Table import Table
 
 
 ###########################################################
-### Create Flask app & db
-class Base(DeclarativeBase):
-    pass
-
-app = Flask(__name__)
-db = SQLAlchemy(model_class=Base)
-
-
-###########################################################
-### GLOBAL VARS
-ROOT = app.root_path
-
-with open(f"{ROOT}/conf/page_info.json", "r") as f: PAGE_INFO = json.load(f)
-with open(f"{ROOT}/conf/form_labels.json", "r") as f: FORM_LABELS = json.load(f)
-with open(f"{ROOT}/conf/table_cols.json", "r") as f: TABLE_COLS = json.load(f)
-
-FORM_COLS = ['website', 'category']
-
+### GLOBALS
 POSTGRES_HOST        = os.environ['POSTGRES_HOST']
 POSTGRES_PORT        = os.environ['POSTGRES_PORT']
 POSTGRES_USER        = os.environ['POSTGRES_USER']
 POSTGRES_PASSWORD    = os.environ['POSTGRES_PASSWORD']
 POSTGRES_DB          = os.environ['POSTGRES_DB']
 
-# POSTGRES_DB_URI = "db+psycopg2://root:postgress@db:5432/bookstore"
 POSTGRES_DB_URI = f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
 
 ###########################################################
-### Configure Flask app & initialise db
+### Init db
+class Base(DeclarativeBase):
+    pass
+
+db = SQLAlchemy(model_class=Base)
+
+
+###########################################################
+### Init Flask
+app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False
+# app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False
 
 db.init_app(app)
 
+
+###########################################################
+### Define models
 class User(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String)
 
+
+###########################################################
+### Create tables
 with app.app_context():
     db.create_all()
-
 
 
 ###########################################################
@@ -79,10 +78,13 @@ def routes(path='index'):
         **request.form,
     }
 
-    FORM_IS_VALID = listContainsAllValues(page_vars.keys(), FORM_COLS)
+    FORM_IS_VALID = list_contains_all_values(page_vars.keys(), ['website', 'category'])
     if FORM_IS_VALID:
         website = page_vars['website']
         category = page_vars['category']
+
+        print(f"==> DEBUG: website = {website}")
+        print(f"==> DEBUG: category = {category}")
 
     match path:
         case "index":

@@ -1,9 +1,13 @@
 import html
 import pandas as pd
 
+
+from src.config import TABLE_COLS
+
 class Table:
     
-    def get_template_vars(self, website, category) -> dict:
+    @staticmethod
+    def get_template_vars(website, category) -> dict:
 
         # ### Filter to files containing the chosen website & category
         # filtered_files = [ item
@@ -29,7 +33,7 @@ class Table:
         df = pd.read_sql_query()
 
 
-        df['Title'] = df.apply(self.fix_title_col, axis=1)
+        df['Title'] = df.apply(Table.fix_title_col, axis=1)
         df['TitleLink'] = df.apply(
             lambda row: f"<a href={row['URL']}>{row['Title']}</a>",
             axis=1,
@@ -53,7 +57,8 @@ class Table:
         }
 
 
-    def fix_title_col(self, row) -> str:
+    @staticmethod
+    def fix_title_col(row) -> str:
         match_replace_dict = {
             'Hard Drive': 'HDD',
             '3.5in ': '',

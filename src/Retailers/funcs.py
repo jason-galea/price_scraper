@@ -1,20 +1,8 @@
-import os
-# import datetime
-# import enum
-import json
-
-# from sqlalchemy import create_engine
-
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
-# from selenium.webdriver.firefox.webdriver import WebDriver
-# from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support.ui import Select
 
 
-### COMMON FUNCTIONS
 def instantiate_ff_driver_and_download(url: str):
     ### Options
     ff_opts = FirefoxOptions()
@@ -52,6 +40,7 @@ def concaternate_items_within_list(input_list: list, start_index: int, end_index
 def remove_multiple_strings_from_list(l: list, strings_to_remove: list) -> list:
     return [ s for s in l if (s not in strings_to_remove) ]
 
+
 # def export_json(extracted_data: iter, dir: str, file: str) -> None:
 #     print(f"==> INFO: Exporting data to '{file}'")
 
@@ -66,5 +55,3 @@ def remove_multiple_strings_from_list(l: list, strings_to_remove: list) -> list:
 
 def export_to_db(extracted_data: list) -> None:
     print(f"==> INFO: Exporting data to db")
-
-

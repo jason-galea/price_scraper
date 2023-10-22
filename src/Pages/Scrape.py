@@ -1,12 +1,18 @@
 import datetime
 import threading
 
-from src.PCCG import PCCG
-from src.Scorptec import Scorptec
-from src.CentreCom import CentreCom
+from src.Retailers.PCCG import PCCG
+from src.Retailers.Scorptec import Scorptec
+from src.Retailers.CentreCom import CentreCom
 
 class Scrape:
-    def start_extract_thread(self, website, category) -> None:
+    
+    @staticmethod
+    def start_extract_thread(website, category) -> None:
+
+        print(f"==> DEBUG: start_extract_thread(): website = {website}")
+        print(f"==> DEBUG: start_extract_thread(): category = {category}")
+
 
         ### TODO: Check if another thread is already running
         # if (???):

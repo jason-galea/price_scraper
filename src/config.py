@@ -1,4 +1,4 @@
-{
+PAGE_INFO = {
     "index":{
         "route":        "/",
         "template":     "children/index.html",
@@ -54,5 +54,48 @@
         "desc": [
             "TEST PAGE"
         ]
+    }
+}
+
+FORM_LABELS = {
+    "website":{
+        "pccg":         "PC Case Gear",
+        "scorptec":     "Scorptec",
+        "centrecom":    "Centre Com"
+    },
+    "category":{
+        "hdd":      "3.5\" Hard Drive",
+        "ssd":      "SSD",
+        "ddr4":     "DDR4",
+        "ddr5":     "DDR5",
+        "cpu":      "CPU",
+        "gpu":      "GPU"
+    }
+}
+
+TABLE_COLS = {
+    "hdd": {
+        "display_cols": ["TitleLink", "Brand", "PriceAUD", "CapacityTB", "PricePerTB"],
+        "sort_col":     "PricePerTB"
+    },
+    "ssd": {
+        "display_cols": ["TitleLink", "Brand", "PriceAUD", "Protocol", "CapacityTB", "PricePerTB"],
+        "sort_col":     "PricePerTB"
+    },
+    "ddr4": {
+        "display_cols": ["TitleLink", "Brand", "Model", "KitConfiguration", "CapacityGB", "PriceAUD", "PricePerGB"],
+        "sort_col":     "PricePerGB"
+    },
+    "ddr5": {
+        "display_cols": ["TitleLink", "Brand", "Model", "KitConfiguration", "CapacityGB", "PriceAUD", "PricePerGB"],
+        "sort_col":     "PricePerGB"
+    },
+    "cpu": {
+        "display_cols": ["TitleLink", "Brand", "PriceAUD"],
+        "sort_col":     "PricePerTB"
+    },
+    "gpu": {
+        "display_cols": ["TitleLink", "Brand", "PriceAUD"],
+        "sort_col":     "PricePerTB"
     }
 }
