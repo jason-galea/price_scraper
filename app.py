@@ -3,19 +3,23 @@
 ### https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/quickstart/
 
 import os
-# import json
-# import html
-# import pandas as pd
 
 from flask import Flask, render_template, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from src.config import PAGE_INFO, FORM_LABELS
 from src.generic_funcs import *
 from src.Pages.Scrape import Scrape
 from src.Pages.Table import Table
+
+
+# ### DEBUG
+# import debugpy
+# debugpy.listen(('0.0.0.0', 5678))
+# debugpy.wait_for_client()
+# debugpy.breakpoint()
 
 
 ###########################################################
@@ -34,12 +38,12 @@ POSTGRES_DB_URI = f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{P
 class Base(DeclarativeBase):
     pass
 
-db = SQLAlchemy(model_class=Base)
+db: SQLAlchemy = SQLAlchemy(model_class=Base)
 
 
 ###########################################################
 ### Init Flask
-app = Flask(__name__)
+app: Flask = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
 # app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False
 
@@ -78,8 +82,8 @@ def routes(path='index'):
         **request.form,
     }
 
-    FORM_IS_VALID = list_contains_all_values(page_vars.keys(), ['website', 'category'])
-    if FORM_IS_VALID:
+    form_is_valid = list_contains_all_values(page_vars.keys(), ['website', 'category'])
+    if form_is_valid:
         website = page_vars['website']
         category = page_vars['category']
 
@@ -91,12 +95,12 @@ def routes(path='index'):
             pass
 
         case "scrape":
-            if FORM_IS_VALID:
+            if form_is_valid:
                 # scrape_start_extract_thread(website, category)
-                Scrape.start_extract_thread(website, category)
+                Scrape.start_extract_thread(db, website, category)
 
         case "table":
-            if FORM_IS_VALID:
+            if form_is_valid:
                 # page_vars.update( table_get_template_vars(website, category) )
                 page_vars.update( Table.get_template_vars(website, category) )
 

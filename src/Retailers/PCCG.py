@@ -1,8 +1,9 @@
 # import os
 import re
-import datetime
+# import datetime
 # import enum
 import json
+
 from bs4 import BeautifulSoup, PageElement
 # from selenium import webdriver
 # from selenium.webdriver import Firefox, DesiredCapabilities
@@ -12,6 +13,7 @@ from bs4 import BeautifulSoup, PageElement
 
 # from src.common import *
 from src.Retailers.funcs import *
+# from src.Retailers.funcs import create_webdriver, export_to_db
 
 class PCCG:
     CATEGORY_URLS = {
@@ -60,8 +62,11 @@ class PCCG:
 
     # def __init__(self, category, output_dir, output_file, debug=False) -> None:
     def __init__(self, category, debug=False) -> None:
+        
+        base_url = self.CATEGORY_URLS[category]
 
-        driver = instantiate_ff_driver_and_download(self.CATEGORY_URLS[category])
+        driver = create_webdriver()
+        driver.get(base_url)
 
         ### Create HTML parser
         bs4_html_parser = BeautifulSoup(
@@ -71,12 +76,14 @@ class PCCG:
 
         extracted_data = self._extract(category, bs4_html_parser)
 
-        if (debug):
+        if debug:
             print(json.dumps(extracted_data, indent=4))
 
         # export_json(extracted_data, output_dir, output_file)
         # export_to_db(extracted_data, self.__class__.__name__, asd)
         export_to_db(extracted_data)
+
+        driver.quit()
 
 
     ### TODO: Move this into base class/common function
@@ -88,15 +95,21 @@ class PCCG:
                 return self._extract_hdd_data(bs4_html_parser)
             case "ssd":
                 # return [ self._extract_ssd_data(product) for product in bs4_products ]
-                return [ d for product in bs4_products if (d := self._extract_ssd_data(product)) is not None ]
+                return [
+                    d for product in bs4_products
+                    if (d := self._extract_ssd_data(product)) is not None
+                ]
             case "ddr4" | "ddr5":
-                return [ d for product in bs4_products if (d := self._extract_ram_data(product)) is not None ]
+                return [
+                    d for product in bs4_products
+                    if (d := self._extract_ram_data(product)) is not None
+                ]
 
 
     @staticmethod
     def _get_common_data(product: BeautifulSoup) -> dict:
         return {
-            "UTCTime":      datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S"),
+            "UTCTime":      get_utcnow_iso_8601(),
             "Retailer":     "PCCG",
             "Title":        product.find_next("a", class_="product-title").string,
             "URL":          product.find_next("a", class_="product-title").attrs["href"],
@@ -106,13 +119,13 @@ class PCCG:
 
     @staticmethod
     def _extract_hdd_data(bs4_html_parser: BeautifulSoup) -> list:
-    
+
         results = []
 
         for product in bs4_html_parser.find_all("div", class_="product-container"):
 
 
-            #############################################################################################
+            ########################################################################################
             ### NON-WEBSITE, NON-CATEGORY SPECIFIC DATA
             ### TODO: Move these into a common function
 
@@ -138,10 +151,11 @@ class PCCG:
 
 
             ### Discard unwanted items
-            if ("Upgrade" in title_split): continue
+            if "Upgrade" in title_split:
+                continue
 
 
-            #############################################################################################
+            ########################################################################################
             ### WEBSITE & CATEGORY SPECIFIC DATA
             
             ### Remove unneeded words
@@ -172,7 +186,7 @@ class PCCG:
                 "PricePerTB": round(result["PriceAUD"]/capacity_tb, 2),
             })
 
-            #############################################################################################
+            ########################################################################################
 
             results.append(result)
 
@@ -182,7 +196,7 @@ class PCCG:
     @staticmethod
     def _extract_ssd_data(product: PageElement) -> dict:
 
-        #############################################################################################
+        ############################################################################################
         ### NON-WEBSITE, NON-CATEGORY SPECIFIC DATA
         result = PCCG._get_common_data(product)
 
@@ -197,7 +211,7 @@ class PCCG:
         ): return
 
 
-        #############################################################################################
+        ############################################################################################
         ### WEBSITE & CATEGORY SPECIFIC DATA
 
         ### Common 1:1 matches
@@ -238,7 +252,7 @@ class PCCG:
     @staticmethod
     def _extract_ram_data(product: PageElement) -> dict:
 
-        #############################################################################################
+        ############################################################################################
         ### COMMON FIELDS
         temp_result = PCCG._get_common_data(product)
         
@@ -251,7 +265,7 @@ class PCCG:
         title = temp_result["Title"]
 
 
-        #############################################################################################
+        ############################################################################################
         ### STATIC FIELDS
 
         regex_result = re.search(
@@ -259,15 +273,18 @@ class PCCG:
             string=title,
         )
 
-        if (not regex_result):
+        if not regex_result:
             print(f"==> WARN: REGEX failed on title: '{title}'")
-            return ### This "None" needs to be filtered out of the list comprehension in "_extract()"
+            return ### This "None" must be removed from list comprehension in "_extract()"
 
         ### Create dict from capture group results
         ### NOTE: Need to associate keys & values before removing anything
-        regex_groups_keys = ["Brand", "Model", "CapacityGB", "KitConfiguration", "SticksPerKit", "CapacityPerStick", "Clock", "CASPrimary", "MemoryType", "Misc"]
-        regex_groups_vals = [ val.strip() for val in regex_result.groups() ] ### Strip spaces
-        regex_groups_vals = [ (int(s) if (s.isdigit()) else s) for s in regex_groups_vals ] ### Convert ints to ints
+        regex_groups_keys = ["Brand", "Model", "CapacityGB", "KitConfiguration", "SticksPerKit",
+                             "CapacityPerStick", "Clock", "CASPrimary", "MemoryType", "Misc"]
+        ### Strip spaces
+        regex_groups_vals = [ val.strip() for val in regex_result.groups() ]
+        ### Convert ints to ints
+        regex_groups_vals = [ (int(s) if (s.isdigit()) else s) for s in regex_groups_vals ]
         
         # print(f"==> INFO: regex_groups_keys = {regex_groups_keys}")
         # print(f"==> INFO: regex_groups_vals = {regex_groups_vals}")
@@ -286,13 +303,13 @@ class PCCG:
         temp_result.update(regex_groups_dict)
 
         
-        #############################################################################################
+        ############################################################################################
         ### CALCULATED FIELDS
         temp_result.update({
             ### NOTE: Assumption based on PCCG UI, there are only two possible values
             ### NOTE: "Lighting" allows for other values from different retailers, such as "White"
-            "Lighting": "RGB" if ( re.search(r"RGB", title) != None ) else "No lighting",
-            "FormFactor": "SODIMM" if ( re.search(r"SODIMM", title) != None ) else "DIMM",
+            "Lighting": "RGB" if ( re.search(r"RGB", title) is not None ) else "No lighting",
+            "FormFactor": "SODIMM" if ( re.search(r"SODIMM", title) is not None ) else "DIMM",
             "PricePerGB": round( temp_result["PriceAUD"] / temp_result["CapacityGB"], 2 ),
         })
 
@@ -304,7 +321,7 @@ class PCCG:
         # if (temp_result == null):
 
 
-        #############################################################################################
+        ############################################################################################
         ### Add individual product data to results
         # print(f"==> INFO: temp_result = {json.dumps(temp_result, indent=4)}")
         # break
