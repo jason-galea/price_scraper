@@ -216,24 +216,33 @@ def favicon():
 if __name__ == '__main__':
 
     ### hehehe
-    postgress_engine = sqlalchemy.create_engine(POSTGRES_CONN_STR)
+    # postgress_engine = sqlalchemy.create_engine(POSTGRES_CONN_STR)
 
-    def connect():
-        return psycopg2.connect(
-            host='db',
-            port=5432,
-            user='postgres',
-            password='postgres',
-            dbname='postgres',
-            # sslmode='require',
-        )
+    host        = os.environ['POSTGRES_HOST']
+    port        = os.environ['POSTGRES_PORT']
+    user        = os.environ['POSTGRES_USER']
+    password    = os.environ['POSTGRES_PASSWORD']
+    db          = os.environ['POSTGRES_DB']
 
-    # engine = sqlalchemy.create_engine('redshift+psycopg2://', creator=connect)
-    engine = sqlalchemy.create_engine('postgresql://', creator=connect)
-    conn = engine.connect()
+    DB_CONN_URI = f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{db}'
+    print(f"DB_CONN_URI = {DB_CONN_URI}")
+
+    # def connect():
+    #     return psycopg2.connect(
+    #         host=host,
+    #         port=port,
+    #         user=user,
+    #         password=password,
+    #         dbname=db,
+    #         # sslmode='require',
+    #     )
+
+    # # engine = sqlalchemy.create_engine('redshift+psycopg2://', creator=connect)
+    # engine = sqlalchemy.create_engine('postgresql://', creator=connect)
+    # conn = engine.connect()
     
-    statement = sqlalchemy.select([sqlalchemy.literal(1234)])
-    print(conn.execute(statement).fetchall())
+    # statement = sqlalchemy.select([sqlalchemy.literal(1234)])
+    # print(conn.execute(statement).fetchall())
     
     # global POSTGRESS_CONN
     # POSTGRESS_CONN = postgress_engine.connect()

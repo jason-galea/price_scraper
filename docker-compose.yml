@@ -20,11 +20,16 @@ services:
     build: .
     pull_policy: build ### Compose rebuilds image, even if one already exists
     restart: unless-stopped
+    env_file: db.conf
+    environment:
+      POSTGRES_HOST: db
+      FLASK_APP: /opt/price_scraper/run.py
     ports:
       - 5000:5000
     volumes:
       - .:/opt/price_scraper/
-    command: /opt/price_scraper/run.py
+    # command: /opt/price_scraper/run.py
+    command: flask run
 
 volumes:
   postgres-data:
