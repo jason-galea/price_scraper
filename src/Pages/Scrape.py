@@ -2,18 +2,28 @@
 import threading
 # import debugpy
 
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
 from src.Retailers.PCCG import PCCG
 from src.Retailers.Scorptec import Scorptec
 from src.Retailers.CentreCom import CentreCom
 
 class Scrape:
-    
+
     @staticmethod
-    def start_extract_thread(db, website, category) -> None:
+    def start_extract_thread(app: Flask, db: SQLAlchemy, website: str, category: str) -> None:
+        """
+        Starts a new thread to avoid the page "freezing" when submitting forms.
 
-        print(f"==> DEBUG: start_extract_thread(): website = {website}")
-        print(f"==> DEBUG: start_extract_thread(): category = {category}")
+        Each thread will:
+        - Download web page
+        - Extract useful data
+        - Save data to database
+        """
 
+        # print(f"==> DEBUG: start_extract_thread(): website = {website}")
+        # print(f"==> DEBUG: start_extract_thread(): category = {category}")
 
         match website:
             case "pccg": website_class = PCCG
@@ -23,7 +33,7 @@ class Scrape:
         print(f"\n==> INFO: Scraping with website '{website}' and category '{category}'")
         scrape_thread = threading.Thread(
             target=website_class,
-            args=(db, category,), ### NOTE: COMMA IS REQUIRED LOL
+            args=(app, db, category,), ### NOTE: COMMA IS REQUIRED LOL
         )
 
         # debugpy.breakpoint()

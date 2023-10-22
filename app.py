@@ -10,7 +10,7 @@ from sqlalchemy import Integer, String, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from src.config import PAGE_INFO, FORM_LABELS
-from src.generic_funcs import *
+from src.generic_funcs import list_contains_all_values
 from src.Pages.Scrape import Scrape
 from src.Pages.Table import Table
 
@@ -24,13 +24,13 @@ from src.Pages.Table import Table
 
 ###########################################################
 ### GLOBALS
-POSTGRES_HOST        = os.environ['POSTGRES_HOST']
-POSTGRES_PORT        = os.environ['POSTGRES_PORT']
-POSTGRES_USER        = os.environ['POSTGRES_USER']
-POSTGRES_PASSWORD    = os.environ['POSTGRES_PASSWORD']
-POSTGRES_DB          = os.environ['POSTGRES_DB']
+host        = os.environ['POSTGRES_HOST']
+port        = os.environ['POSTGRES_PORT']
+user        = os.environ['POSTGRES_USER']
+password    = os.environ['POSTGRES_PASSWORD']
+db_name     = os.environ['POSTGRES_DB']
 
-POSTGRES_DB_URI = f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
+POSTGRES_DB_URI = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_name}"
 
 
 ###########################################################
@@ -52,10 +52,16 @@ db.init_app(app)
 
 ###########################################################
 ### Define models
-class User(db.Model):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    email: Mapped[str] = mapped_column(String)
+class Product(db.Model):
+    """
+    SQLAlchemy model, specifying the schema for table "products"
+    """
+    __tablename__ = "products"
+
+    id: Mapped[int]             = mapped_column(Integer, primary_key=True, unique=True)
+    utctime: Mapped[DateTime]   = mapped_column(DateTime, nullable=False)
+    retailer: Mapped[String]    = mapped_column(String, nullable=False)
+
 
 
 ###########################################################
@@ -75,6 +81,7 @@ def routes(path='index'):
         'PAGE_INFO': PAGE_INFO,
         'key': path,
         'template_name_or_list': PAGE_INFO[path]['template'],
+        # 'template_name_or_list': f"{CWD}/templates/{PAGE_INFO[path]['template']}",
         'desc': PAGE_INFO[path]['desc'],
     }
     page_vars = {
@@ -87,8 +94,8 @@ def routes(path='index'):
         website = page_vars['website']
         category = page_vars['category']
 
-        print(f"==> DEBUG: website = {website}")
-        print(f"==> DEBUG: category = {category}")
+        # print(f"==> DEBUG: website = {website}")
+        # print(f"==> DEBUG: category = {category}")
 
     match path:
         case "index":
@@ -97,7 +104,7 @@ def routes(path='index'):
         case "scrape":
             if form_is_valid:
                 # scrape_start_extract_thread(website, category)
-                Scrape.start_extract_thread(db, website, category)
+                Scrape.start_extract_thread(app, db, website, category)
 
         case "table":
             if form_is_valid:
@@ -117,8 +124,9 @@ def routes(path='index'):
             page_vars.update({ 'results': results })
 
         case "test":
+            pass
 
-            print(f"==> DEBUG: POSTGRES_DB_URI = {POSTGRES_DB_URI}")
+            # print(f"==> DEBUG: POSTGRES_DB_URI = {POSTGRES_DB_URI}")
 
             # def connect():
             #     return psycopg2.connect(
@@ -161,6 +169,7 @@ def routes(path='index'):
 def favicon():
     return send_from_directory(
         directory=os.path.join(app.root_path, 'static'),
+        # directory=f"{CWD}/static/",
         path='favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )

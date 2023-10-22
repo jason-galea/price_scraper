@@ -2,8 +2,10 @@
 import re
 # import datetime
 # import enum
-import json
+# import json
 
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from bs4 import BeautifulSoup, PageElement
 # from selenium import webdriver
 # from selenium.webdriver import Firefox, DesiredCapabilities
@@ -16,6 +18,10 @@ from src.Retailers.funcs import *
 # from src.Retailers.funcs import create_webdriver, export_to_db
 
 class PCCG:
+    """
+    TODO: docstring
+    """
+
     CATEGORY_URLS = {
         "hdd": "https://www.pccasegear.com/category/210_344/hard-drives-ssds/3-5-hard-drives",
         "ssd": "https://www.pccasegear.com/category/210_902/hard-drives-ssds/solid-state-drives-ssd",
@@ -60,8 +66,7 @@ class PCCG:
         }
     }
 
-    # def __init__(self, category, output_dir, output_file, debug=False) -> None:
-    def __init__(self, category, debug=False) -> None:
+    def __init__(self, app: Flask, db: SQLAlchemy, category: str, debug=False) -> None:
         
         base_url = self.CATEGORY_URLS[category]
 
@@ -74,14 +79,13 @@ class PCCG:
             features="html.parser"
         )
 
-        extracted_data = self._extract(category, bs4_html_parser)
+        extracted_data: list = self._extract(category, bs4_html_parser)
 
-        if debug:
-            print(json.dumps(extracted_data, indent=4))
+        # if debug:
+        #     print(json.dumps(extracted_data, indent=4))
 
-        # export_json(extracted_data, output_dir, output_file)
-        # export_to_db(extracted_data, self.__class__.__name__, asd)
-        export_to_db(extracted_data)
+        with app.app_context():
+            export_to_db(db, extracted_data)
 
         driver.quit()
 
@@ -159,14 +163,14 @@ class PCCG:
             ### WEBSITE & CATEGORY SPECIFIC DATA
             
             ### Remove unneeded words
-            title_split = remove_multiple_strings_from_list(title_split, ["WD"])
+            title_split = remove_strings_from_list(title_split, ["WD"])
             
             ### Make array consistent to Brand/Series/Model
             if title_split[0] == "Western": # ["Western", "Digital", "WD"] --> ["Western Digital"]
-                title_split = concaternate_items_within_list(title_split, 0, 1)
+                title_split = concat_items_in_list(title_split, 0, 1)
 
                 if (title_split[1] == "Red") and (title_split[2] in ["Plus", "Pro"]):
-                    title_split = concaternate_items_within_list(title_split, 1, 2)
+                    title_split = concat_items_in_list(title_split, 1, 2)
 
             # print(title_split)
 
