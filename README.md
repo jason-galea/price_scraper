@@ -11,7 +11,7 @@ Python 3.10 or higher.
 Run locally:
 
     ./setup.sh
-    ./run.sh
+    ./run.py
 
 Run via docker:
 
