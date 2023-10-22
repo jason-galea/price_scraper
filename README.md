@@ -1,22 +1,27 @@
 # price_scraper
 
-A Flask-based webserver which extracts PC component data from a few Australian retailers.
+A Flask-based webserver which extracts PC component data from Australian retailers.
 
 ## Requirements
 
-Python 3.10 or higher.
+- Python 3.10+
 
-## Instructions
+## Configure
+
+    cp db.conf.example db.conf
+    vi db.conf
+
+## Launch
 
 Run locally:
 
-    cp db.conf.example db.conf
-    <edit db.conf>
     ./setup.sh
     ./run.py
 
 Run via docker:
 
-    cp db.conf.example db.conf
-    <edit db.conf>
     docker compose up -d
+    
+## Connect
+
+After launching, the website should be available at http://localhost:5000

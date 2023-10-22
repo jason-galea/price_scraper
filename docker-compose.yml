@@ -23,13 +23,13 @@ services:
     env_file: db.conf
     environment:
       POSTGRES_HOST: db
-      FLASK_APP: /opt/price_scraper/run.py
+      # FLASK_APP: /opt/price_scraper/run.py
     ports:
       - 5000:5000
     volumes:
       - .:/opt/price_scraper/
-    # command: /opt/price_scraper/run.py
-    command: flask run
+    command: /opt/price_scraper/run.py
+    # command: flask run
 
 volumes:
   postgres-data:

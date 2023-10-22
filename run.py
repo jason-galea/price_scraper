@@ -33,7 +33,15 @@ with open(f"{CONF_DIR}/table_cols.json", "r") as f: TABLE_COLS = json.load(f)
 
 FORM_COLS = ['website', 'category']
 
-POSTGRES_CONN_STR = "db+psycopg2://root:postgress@db:5432/bookstore"
+
+HOST        = os.environ['POSTGRES_HOST']
+PORT        = os.environ['POSTGRES_PORT']
+USER        = os.environ['POSTGRES_USER']
+PASSWORD    = os.environ['POSTGRES_PASSWORD']
+DB          = os.environ['POSTGRES_DB']
+
+# POSTGRES_CONN_STR = "db+psycopg2://root:postgress@db:5432/bookstore"
+POSTGRES_CONN_STR = f'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}'
 
 
 ###########################################################
@@ -145,6 +153,38 @@ def table_fix_title_col(row) -> str:
 
     return result
 
+def test_db():
+
+    ### hehehe
+    # postgress_engine = sqlalchemy.create_engine(POSTGRES_CONN_STR)
+
+    print(f"POSTGRES_CONN_STR = {POSTGRES_CONN_STR}")
+
+    # def connect():
+    #     return psycopg2.connect(
+    #         host=host,
+    #         port=port,
+    #         user=user,
+    #         password=password,
+    #         dbname=db,
+    #         # sslmode='require',
+    #     )
+
+    # # engine = sqlalchemy.create_engine('redshift+psycopg2://', creator=connect)
+    # engine = sqlalchemy.create_engine('postgresql://', creator=connect)
+    # conn = engine.connect()
+    
+    # statement = sqlalchemy.select([sqlalchemy.literal(1234)])
+    # print(conn.execute(statement).fetchall())
+    
+    # global POSTGRESS_CONN
+    # POSTGRESS_CONN = postgress_engine.connect()
+
+    # res = POSTGRESS_CONN.execute("SELECT * FROM pg_catalog.pg_tables;")
+    # print(res)
+
+
+
 
 ###########################################################
 ### Flask routes
@@ -183,6 +223,7 @@ def routes(path='index'):
 
         case "graph":
             pass
+            test_db() ### DEBUGGING
 
         case "results":
             # results = [os.path.basename(s) for s in get_json_filenames()]
@@ -190,6 +231,7 @@ def routes(path='index'):
             results = ["no_json_files_anymore_teehee!!"]
 
             page_vars.update({ 'results': results })
+
 
 
     ### DEBUG
@@ -214,43 +256,7 @@ def favicon():
 
 
 if __name__ == '__main__':
-
-    ### hehehe
-    # postgress_engine = sqlalchemy.create_engine(POSTGRES_CONN_STR)
-
-    host        = os.environ['POSTGRES_HOST']
-    port        = os.environ['POSTGRES_PORT']
-    user        = os.environ['POSTGRES_USER']
-    password    = os.environ['POSTGRES_PASSWORD']
-    db          = os.environ['POSTGRES_DB']
-
-    DB_CONN_URI = f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{db}'
-    print(f"DB_CONN_URI = {DB_CONN_URI}")
-
-    # def connect():
-    #     return psycopg2.connect(
-    #         host=host,
-    #         port=port,
-    #         user=user,
-    #         password=password,
-    #         dbname=db,
-    #         # sslmode='require',
-    #     )
-
-    # # engine = sqlalchemy.create_engine('redshift+psycopg2://', creator=connect)
-    # engine = sqlalchemy.create_engine('postgresql://', creator=connect)
-    # conn = engine.connect()
-    
-    # statement = sqlalchemy.select([sqlalchemy.literal(1234)])
-    # print(conn.execute(statement).fetchall())
-    
-    # global POSTGRESS_CONN
-    # POSTGRESS_CONN = postgress_engine.connect()
-
-    # res = POSTGRESS_CONN.execute("SELECT * FROM pg_catalog.pg_tables;")
-    # print(res)
-
-    # app.run(
-    #     # debug=True,
-    #     host='0.0.0.0',
-    # )
+    app.run(
+        # debug=True,
+        host='0.0.0.0',
+    )
