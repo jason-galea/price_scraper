@@ -16,7 +16,7 @@ A Flask-based webserver which extracts PC component data from Australian retaile
 Run locally:
 
     ./setup.sh
-    ./run.py
+    ./app.py
 
 Run via docker:
 
