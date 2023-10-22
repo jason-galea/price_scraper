@@ -10,7 +10,8 @@ from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
-from lib.common import *
+# from src.common import *
+from src.Retailers.funcs import *
 
 
 class Scorptec:

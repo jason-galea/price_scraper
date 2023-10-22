@@ -10,7 +10,8 @@ from bs4 import BeautifulSoup, PageElement
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import Select
 
-from lib.common import *
+# from src.common import *
+from src.Retailers.funcs import *
 
 class PCCG:
     CATEGORY_URLS = {

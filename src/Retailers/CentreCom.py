@@ -12,7 +12,8 @@ class CentreCom:
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import Select
 
-# from common import *
+# # from src.common import *
+# from src.Retailers.funcs import *
 
 
 # class CentreCom:
