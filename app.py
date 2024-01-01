@@ -1,18 +1,25 @@
 #!/usr/bin/env python3
 
+"""
+A Flask-based webserver which extracts PC component data from Australian retailers.
+"""
+
 ### https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/quickstart/
 
 import os
 
 from flask import Flask, render_template, request, send_from_directory
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, DateTime
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+# from flask_sqlalchemy import SQLAlchemy
+# from sqlalchemy import Integer, String, DateTime
+# from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from flask_migrate import Migrate
 
 from src.config import PAGE_INFO, FORM_LABELS
 from src.generic_funcs import list_contains_all_values
 from src.Pages.Scrape import Scrape
 from src.Pages.Table import Table
+from src.Database.db import db
+# from src.Database.Product import Product
 
 
 # ### DEBUG
@@ -24,6 +31,8 @@ from src.Pages.Table import Table
 
 ###########################################################
 ### GLOBALS
+# app: Flask = Flask(__name__) ### Avoid "from app import app"
+
 host        = os.environ['POSTGRES_HOST']
 port        = os.environ['POSTGRES_PORT']
 user        = os.environ['POSTGRES_USER']
@@ -34,44 +43,40 @@ POSTGRES_DB_URI = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_na
 
 
 ###########################################################
-### Init db
-class Base(DeclarativeBase):
-    pass
-
-db: SQLAlchemy = SQLAlchemy(model_class=Base)
-
-
-###########################################################
 ### Init Flask
+### TODO: Move this to a function
 app: Flask = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
 # app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False
 
 db.init_app(app)
+from src.Database.Product import Product
+migrate = Migrate(app, db)
 
-
-###########################################################
-### Define models
-class Product(db.Model):
-    """
-    SQLAlchemy model, specifying the schema for table "products"
-    """
-    __tablename__ = "products"
-
-    id: Mapped[int]             = mapped_column(Integer, primary_key=True, unique=True)
-    utctime: Mapped[DateTime]   = mapped_column(DateTime, nullable=False)
-    retailer: Mapped[String]    = mapped_column(String, nullable=False)
-
-
-
-###########################################################
-### Create tables
 with app.app_context():
     db.create_all()
 
 
-###########################################################
-### Flask routes
+# def run_app():
+#     """
+#     App entrypoint, used to configure DB and launch flask
+#     """
+
+#     app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
+
+#     ### DB stuff
+#     db.init_app(app)
+#     # from src.Database.Product import Product
+#     _migrate = Migrate(app, db)
+
+#     with app.app_context():
+#         db.create_all()
+
+#     # return app
+#     # app.run(debug=True, host="0.0.0.0", port=5000)
+#     app.run(host="0.0.0.0")
+
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def routes(path='index'):
@@ -141,10 +146,10 @@ def routes(path='index'):
             # # engine = sqlalchemy.create_engine('redshift+psycopg2://', creator=connect)
             # engine = sqlalchemy.create_engine('postgresql://', creator=connect)
             # conn = engine.connect()
-            
+
             # statement = sqlalchemy.select([sqlalchemy.literal(1234)])
             # print(conn.execute(statement).fetchall())
-            
+
             # global POSTGRESS_CONN
             # POSTGRESS_CONN = postgress_engine.connect()
 

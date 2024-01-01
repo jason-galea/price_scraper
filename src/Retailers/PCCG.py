@@ -13,9 +13,13 @@ from bs4 import BeautifulSoup, PageElement
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import Select
 
-# from src.common import *
-from src.Retailers.funcs import *
-# from src.Retailers.funcs import create_webdriver, export_to_db
+from src.Retailers.funcs import (
+    create_webdriver,
+    export_to_db,
+    get_utcnow_iso_8601,
+    remove_strings_from_list,
+    concat_items_in_list,
+)
 
 class PCCG:
     """
@@ -46,7 +50,7 @@ class PCCG:
             "4.0":      "NVMe Gen4",
             "Gen4":     "NVMe Gen4",
             "Gen4x4":   "NVMe Gen4",
-            "NVMe":     "NVMe Gen3", ### NOTE: Assume "NVMe" = PCIe Gen3, since we already found all Gen4 drives 
+            "NVMe":     "NVMe Gen3", ### NOTE: Assume "NVMe" = PCIe Gen3, since we already found all Gen4 drives
             "NVME":     "NVMe Gen3",
             "Gen3x4":   "NVMe Gen3",
         },
@@ -66,8 +70,8 @@ class PCCG:
         }
     }
 
-    def __init__(self, app: Flask, db: SQLAlchemy, category: str, debug=False) -> None:
-        
+    def __init__(self, app: Flask, db: SQLAlchemy, category: str, _debug=False) -> None:
+
         base_url = self.CATEGORY_URLS[category]
 
         driver = create_webdriver()
@@ -135,6 +139,7 @@ class PCCG:
 
             ### Setup & data common to PCCG
             result = PCCG._get_common_data(product)
+            result.update({"Category": "HDD"})
 
             ### TODO: Fetch full description from current products "url"
             # description_soup = Web.get_bs4_html_parser_from_URL(result["URL"])
@@ -161,10 +166,10 @@ class PCCG:
 
             ########################################################################################
             ### WEBSITE & CATEGORY SPECIFIC DATA
-            
+
             ### Remove unneeded words
             title_split = remove_strings_from_list(title_split, ["WD"])
-            
+
             ### Make array consistent to Brand/Series/Model
             if title_split[0] == "Western": # ["Western", "Digital", "WD"] --> ["Western Digital"]
                 title_split = concat_items_in_list(title_split, 0, 1)
@@ -249,7 +254,7 @@ class PCCG:
 
         if ("CapacityGB" not in result.keys()):
             print(f"==> WARN: CapacityGB not found in title: {title_split}")
-        
+
         return result
 
 
@@ -259,8 +264,8 @@ class PCCG:
         ############################################################################################
         ### COMMON FIELDS
         temp_result = PCCG._get_common_data(product)
-        
-        ### Handle REALLY specific errors        
+
+        ### Handle REALLY specific errors
         if (temp_result["Title"] == 'Corsair Vengeance 48GB (2x24GB) 7000MHz C40 DDR5'): ### "C40"
             temp_result["Title"] = 'Corsair Vengeance 48GB (2x24GB) 7000MHz CL40 DDR5'
         if (temp_result["Title"] == 'Team T-Force Delta RGB 64GB (2x32GB) 5200MHz CL40 Black'): ### Missing "DDR5"
@@ -289,7 +294,7 @@ class PCCG:
         regex_groups_vals = [ val.strip() for val in regex_result.groups() ]
         ### Convert ints to ints
         regex_groups_vals = [ (int(s) if (s.isdigit()) else s) for s in regex_groups_vals ]
-        
+
         # print(f"==> INFO: regex_groups_keys = {regex_groups_keys}")
         # print(f"==> INFO: regex_groups_vals = {regex_groups_vals}")
         # break
@@ -306,7 +311,7 @@ class PCCG:
         # print(f"==> INFO: regex_groups_dict = {json.dumps(regex_groups_dict, indent=4)}")
         temp_result.update(regex_groups_dict)
 
-        
+
         ############################################################################################
         ### CALCULATED FIELDS
         temp_result.update({

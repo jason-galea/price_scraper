@@ -30,7 +30,7 @@ class Scrape:
             case "scorptec": website_class = Scorptec
             case "centrecom": website_class = CentreCom
 
-        print(f"\n==> INFO: Scraping with website '{website}' and category '{category}'")
+        # print(f"\n==> INFO: Scraping with website '{website}' and category '{category}'")
         scrape_thread = threading.Thread(
             target=website_class,
             args=(app, db, category,), ### NOTE: COMMA IS REQUIRED LOL

@@ -20,7 +20,7 @@ RUN mv geckodriver /usr/local/bin
 ADD reqs.txt .
 RUN python3.11 -m pip install -U pip setuptools wheel
 RUN python3.11 -m pip install -r reqs.txt
-RUN python3.11 -m pip install debugpy
+# RUN python3.11 -m pip install debugpy
 
 # ### .devcontainer nonsense
 # RUN apt install -y git gnupg2

@@ -9,7 +9,7 @@ services:
     # ports:
     #   - 5432:5432
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
 
   scraper:
     container_name: scraper
@@ -22,12 +22,13 @@ services:
       FLASK_APP: /scraper/app.py
     ports:
       - 5000:5000
-      - 5678:5678 ### debugpy
+      # - 5678:5678 ### debugpy
     volumes:
       - .:/scraper/
     command: flask run -h 0.0.0.0
+    # command: python3 app.py run_app
     depends_on:
     - db
 
 volumes:
-  postgres-data:
+  db:

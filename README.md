@@ -6,10 +6,10 @@ A Flask-based webserver which extracts PC component data from Australian retaile
 
 - Python 3.10+
 
-## Configure
+<!-- ## Configure
 
     cp db.conf.example db.conf
-    vi db.conf
+    vi db.conf -->
 
 ## Launch
 
@@ -21,7 +21,7 @@ Run locally:
 Run via docker:
 
     docker compose up -d
-    
+
 ## Connect
 
 After launching, the website should be available at http://localhost:5000
