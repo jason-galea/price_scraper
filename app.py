@@ -10,6 +10,7 @@ import os
 
 from flask import Flask, render_template, request, send_from_directory
 # from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy.query import Query
 # from sqlalchemy import Integer, String, DateTime
 # from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from flask_migrate import Migrate
@@ -19,7 +20,7 @@ from src.generic_funcs import list_contains_all_values
 from src.Pages.Scrape import Scrape
 from src.Pages.Table import Table
 from src.Database.db import db
-# from src.Database.Product import Product
+from src.Database.Product import Product
 
 
 # ### DEBUG
@@ -50,7 +51,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
 # app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False
 
 db.init_app(app)
-from src.Database.Product import Product
+# from src.Database.Product import Product
 migrate = Migrate(app, db)
 
 with app.app_context():
@@ -129,7 +130,10 @@ def routes(path='index'):
             page_vars.update({ 'results': results })
 
         case "test":
-            pass
+            all_pccg_ssds: Query = Product.get_most_recent("PCCG", "ssd")
+
+            print(f"==> DEBUG: all_pccg_ssds = {all_pccg_ssds}")
+            # print(f"==> DEBUG: all_pccg_ssds.__dict__ = {all_pccg_ssds.__dict__}")
 
             # print(f"==> DEBUG: POSTGRES_DB_URI = {POSTGRES_DB_URI}")
 

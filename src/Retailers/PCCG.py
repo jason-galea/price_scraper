@@ -110,7 +110,7 @@ class PCCG:
             case "ddr4" | "ddr5":
                 return [
                     d for product in bs4_products
-                    if (d := self._extract_ram_data(product)) is not None
+                    if (d := self._extract_ram_data(product, category)) is not None
                 ]
 
 
@@ -139,7 +139,7 @@ class PCCG:
 
             ### Setup & data common to PCCG
             result = PCCG._get_common_data(product)
-            result.update({"Category": "HDD"})
+            result.update({"Category": "hdd"})
 
             ### TODO: Fetch full description from current products "url"
             # description_soup = Web.get_bs4_html_parser_from_URL(result["URL"])
@@ -208,6 +208,7 @@ class PCCG:
         ############################################################################################
         ### NON-WEBSITE, NON-CATEGORY SPECIFIC DATA
         result = PCCG._get_common_data(product)
+        result.update({"Category": "ssd"})
 
         title_split = result["Title"].split()
         # print(["Brand", "Series", "ModelNumber", "FormFactor", "Protocol", "Capacity"])
@@ -259,11 +260,12 @@ class PCCG:
 
 
     @staticmethod
-    def _extract_ram_data(product: PageElement) -> dict:
+    def _extract_ram_data(product: PageElement, category: str) -> dict:
 
         ############################################################################################
         ### COMMON FIELDS
         temp_result = PCCG._get_common_data(product)
+        temp_result.update({"Category": category})
 
         ### Handle REALLY specific errors
         if (temp_result["Title"] == 'Corsair Vengeance 48GB (2x24GB) 7000MHz C40 DDR5'): ### "C40"
