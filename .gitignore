@@ -1,6 +1,3 @@
 .vscode/
-out/
 __pycache__
 geckodriver.log
-scrape_result
-db.conf

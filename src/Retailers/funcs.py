@@ -34,9 +34,3 @@ def concat_items_in_list(input_list: list, start_index: int, end_index: int) -> 
         del result_list[start_index + 1]
 
     return result_list
-
-
-# def remove_strings_from_list(l: list, strings_to_remove: list) -> list:
-#     """
-#     """
-#     return [ s for s in l if (s not in strings_to_remove) ]

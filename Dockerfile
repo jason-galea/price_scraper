@@ -1,4 +1,5 @@
-FROM python:3.11.3-slim-bullseye
+# FROM python:3.11.3-slim-bullseye
+FROM python:3.12.1-slim-bullseye
 
 ### https://testdriven.io/blog/dockerizing-flask-with-postgres-gunicorn-and-nginx/
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -18,16 +19,11 @@ RUN mv geckodriver /usr/local/bin
 
 ### Python modules
 ADD reqs.txt .
-RUN python3.11 -m pip install -U pip setuptools wheel
-RUN python3.11 -m pip install -r reqs.txt
-# RUN python3.11 -m pip install debugpy
-
-# ### .devcontainer nonsense
-# RUN apt install -y git gnupg2
-# RUN mkdir /root/.ssh/
-# RUN touch /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
+RUN python3.12 -m pip install -U pip setuptools wheel
+RUN python3.12 -m pip install -r reqs.txt
 
 ### Cleanup
-RUN apt remove -y gcc
+RUN apt remove -y wget gcc
+RUN apt autoremove -y
 RUN rm -rf geckodriver*
 RUN rm reqs.txt

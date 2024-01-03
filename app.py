@@ -99,7 +99,7 @@ def routes(path='index'):
 
         case "scrape":
             if form_is_valid:
-                Scrape.start_extract_thread(app, db, website, category)
+                Scrape.start_extract_thread(app, website, category)
 
         case "table":
             if form_is_valid:

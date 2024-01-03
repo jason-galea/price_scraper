@@ -5,16 +5,19 @@ services:
     container_name: db
     image: postgres:16.1-alpine3.19
     restart: unless-stopped
-    env_file: db.conf
+    env_file: ./compose/db.env
     volumes:
       - db:/var/lib/postgresql/data
+      ### https://stackoverflow.com/questions/75746179/template-database-template1-has-a-collation-version-but-no-actual-collation-v
+      ### https://medium.com/@aedemirsen/execute-sql-commands-at-postgresql-db-startup-with-docker-2be0abadec48
+      - ./compose/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   scraper:
     container_name: scraper
     build: .
-    pull_policy: build ### Compose rebuilds image, even if one already exists
+    pull_policy: build ### Rebuild image, even if one already exists
     restart: unless-stopped
-    env_file: db.conf
+    env_file: ./compose/db.env
     environment:
       FLASK_APP: /scraper/app.py
     ports:

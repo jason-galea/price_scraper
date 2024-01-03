@@ -41,14 +41,17 @@ class Table:
         ]].apply( html.escape, axis=1 )
 
         return {
-            # 'latest_file': latest_file,
-            # 'latest_file_basename': latest_file_basename, ### Signposting
             'table_html': df.to_html(escape=False)
         }
 
 
     @staticmethod
     def fix_title_col(row) -> str:
+        """
+        Removes unwanted strings from "Title" column.\n
+        Only split out to a function to work nicely with "df.apply()"
+        """
+
         match_replace_dict = {
             'Hard Drive': 'HDD',
             '3.5in ': '',

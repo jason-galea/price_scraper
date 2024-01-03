@@ -92,6 +92,7 @@ class SSD(Product):
         utctime, retailer, title, url, priceaud, brand,
         formfactor, protocol, capacitytb, capacitygb, pricepertb, pricepergb
     ):
+        # pylint: disable=invalid-name
         self.UTCTime = utctime
         self.Retailer = retailer
         self.Title = title
@@ -106,34 +107,17 @@ class SSD(Product):
         self.PricePerTB = pricepertb
         self.PricePerGB = pricepergb
 
+
     @staticmethod
     def export_to_db(products: list) -> None:
-        print("==> DEBUG: Entered 'export_to_db()'")
+        # print("==> DEBUG: Entered 'export_to_db()'")
         # print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
-
-        # scraper  | ==> DEBUG: extracted_data[0] = {
-        # scraper  |     "UTCTime": "2024-01-01T08:55:56.648311",
-        # scraper  |     "Retailer": "PCCG",
-        # scraper  |     "Title": "Samsung 870 EVO 2.5in SATA SSD 1TB",
-        # scraper  |     "URL": "https://www.pccasegear.com/products/53095/samsung-870-evo-2-5in-sata-ssd-1tb",
-        # scraper  |     "PriceAUD": 165,
-        # scraper  |     "Category": "ssd",
-
-        # scraper  |     "FormFactor": "2.5in",
-        # scraper  |     "Protocol": "SATA",
-        # scraper  |     "Brand": "Samsung",
-        # scraper  |     "CapacityGB": 1000,
-        # scraper  |     "CapacityTB": 1.0,
-        # scraper  |     "PricePerGB": 0.17,
-        # scraper  |     "PricePerTB": 165.0
-        # scraper  | }
 
         for product in products:
             # print(f"==> DEBUG: product = {json.dumps(product, indent=4)}")
             temp_product = SSD(
                 utctime=product["UTCTime"],
                 retailer=product["Retailer"],
-                # category=product["Category"],
                 title=product["Title"],
                 url=product["URL"],
                 priceaud=product["PriceAUD"],
@@ -151,10 +135,10 @@ class SSD(Product):
             db.session.add(temp_product)
 
         ### Flush DB queue
-        print("==> DEBUG: Flushing DB queue")
+        print("==> INFO: Flushing DB queue")
         db.session.commit()
 
-        print("==> DEBUG: Exiting 'export_to_db()' successfully?? :oooo")
+        # print("==> DEBUG: Exiting 'export_to_db()' successfully?? :oooo")
 
 
 CATEGORY_CLASS_DICT = {

@@ -11,7 +11,6 @@ from src.generic_funcs import (
 )
 from src.Retailers.funcs import (
     create_webdriver,
-    remove_strings_from_list,
     concat_items_in_list,
 )
 
@@ -64,7 +63,7 @@ class PCCG:
         }
     }
 
-    def __init__(self, app: Flask, db: SQLAlchemy, category: str, _debug=False) -> None:
+    def __init__(self, app: Flask, category: str, _debug=False) -> None:
 
         base_url = self.CATEGORY_URLS[category]
 
@@ -101,7 +100,7 @@ class PCCG:
         ### Write to DB
         with app.app_context():
             # export_to_db(db, extracted_data)
-            CATEGORY_CLASS_DICT[category].export_to_db(db, extracted_data)
+            CATEGORY_CLASS_DICT[category].export_to_db(extracted_data)
 
         driver.quit()
 
@@ -146,7 +145,7 @@ class PCCG:
             ### Lots of caveats, as desciption varies enormously
             # description_a = description.split()
 
-            title_split = result["Title"].split()
+            title_split: list = result["Title"].split()
             # print(["Brand", "Series", "ModelNumber", "FormFactor", "Protocol", "Capacity"])
             # print(title_split)
 
@@ -160,12 +159,8 @@ class PCCG:
             ### WEBSITE & CATEGORY SPECIFIC DATA
 
             ### Remove unneeded words
-            # title_split = remove_strings_from_list(title_split, ["WD"])
-            # title_split = [
-            #     s for s in title_split
-            #     if (s not in strings_to_remove)
-            # ]
-            title_split.pop("WD")
+            if "WD" in title_split:
+                title_split.remove("WD")
 
             ### Make array consistent to Brand/Series/Model
             if title_split[0] == "Western": # ["Western", "Digital", "WD"] --> ["Western Digital"]
@@ -314,8 +309,8 @@ class PCCG:
         temp_result.update({
             ### NOTE: Assumption based on PCCG UI, there are only two possible values
             ### NOTE: "Lighting" allows for other values from different retailers, such as "White"
-            "Lighting": "RGB" if ( re.search(r"RGB", title) is not None ) else "No lighting",
-            "FormFactor": "SODIMM" if ( re.search(r"SODIMM", title) is not None ) else "DIMM",
+            "Lighting": "RGB" if re.search(r"RGB", title) else "No lighting",
+            "FormFactor": "SODIMM" if re.search(r"SODIMM", title) else "DIMM",
             "PricePerGB": round( temp_result["PriceAUD"] / temp_result["CapacityGB"], 2 ),
         })
 
