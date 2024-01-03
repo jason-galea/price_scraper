@@ -97,27 +97,27 @@ class PCCG:
     ### TODO: Move this into base class/common function
     def _extract(self, category: str, bs4_html_parser: BeautifulSoup) -> list:
         bs4_products = bs4_html_parser.find_all("div", class_="product-container")
+        current_utctime = get_utcnow_iso_8601()
 
         match category:
             case "hdd":
-                return self._extract_hdd_data(bs4_html_parser)
+                return self._extract_hdd_data(bs4_html_parser, current_utctime)
             case "ssd":
-                # return [ self._extract_ssd_data(product) for product in bs4_products ]
                 return [
                     d for product in bs4_products
-                    if (d := self._extract_ssd_data(product)) is not None
+                    if (d := self._extract_ssd_data(product, current_utctime))
                 ]
             case "ddr4" | "ddr5":
                 return [
                     d for product in bs4_products
-                    if (d := self._extract_ram_data(product, category)) is not None
+                    if (d := self._extract_ram_data(product, category, current_utctime))
                 ]
 
 
     @staticmethod
-    def _get_common_data(product: BeautifulSoup) -> dict:
+    def _get_common_data(product: BeautifulSoup, current_utctime: str) -> dict:
         return {
-            "UTCTime":      get_utcnow_iso_8601(),
+            "UTCTime":      current_utctime,
             "Retailer":     "PCCG",
             "Title":        product.find_next("a", class_="product-title").string,
             "URL":          product.find_next("a", class_="product-title").attrs["href"],
@@ -126,7 +126,7 @@ class PCCG:
 
 
     @staticmethod
-    def _extract_hdd_data(bs4_html_parser: BeautifulSoup) -> list:
+    def _extract_hdd_data(bs4_html_parser: BeautifulSoup, current_utctime: str) -> list:
 
         results = []
 
@@ -138,7 +138,7 @@ class PCCG:
             ### TODO: Move these into a common function
 
             ### Setup & data common to PCCG
-            result = PCCG._get_common_data(product)
+            result = PCCG._get_common_data(product, current_utctime)
             result.update({"Category": "hdd"})
 
             ### TODO: Fetch full description from current products "url"
@@ -203,11 +203,11 @@ class PCCG:
 
 
     @staticmethod
-    def _extract_ssd_data(product: PageElement) -> dict:
+    def _extract_ssd_data(product: PageElement, current_utctime: str) -> dict:
 
         ############################################################################################
         ### NON-WEBSITE, NON-CATEGORY SPECIFIC DATA
-        result = PCCG._get_common_data(product)
+        result = PCCG._get_common_data(product, current_utctime)
         result.update({"Category": "ssd"})
 
         title_split = result["Title"].split()
@@ -260,11 +260,11 @@ class PCCG:
 
 
     @staticmethod
-    def _extract_ram_data(product: PageElement, category: str) -> dict:
+    def _extract_ram_data(product: PageElement, category: str, current_utctime: str) -> dict:
 
         ############################################################################################
         ### COMMON FIELDS
-        temp_result = PCCG._get_common_data(product)
+        temp_result = PCCG._get_common_data(product, current_utctime)
         temp_result.update({"Category": category})
 
         ### Handle REALLY specific errors

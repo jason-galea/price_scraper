@@ -130,9 +130,19 @@ def routes(path='index'):
             page_vars.update({ 'results': results })
 
         case "test":
-            all_pccg_ssds: Query = Product.get_most_recent("PCCG", "ssd")
 
-            print(f"==> DEBUG: all_pccg_ssds = {all_pccg_ssds}")
+            # latest_utctime = Product.get_latest_utctime()
+            # print(f"==> DEBUG: {latest_utctime=}")
+
+            all_pccg_ssds = Product.get_most_recent("PCCG", "ssd")
+            print(f"==> DEBUG: {all_pccg_ssds=}")
+            for ssd in all_pccg_ssds:
+                print(f"==> DEBUG: {ssd.title=}")
+                # print(f"==> DEBUG: {ssd.utctime=}")
+
+            # import pandas as pd
+            # all_pccg_ssds_df = pd.read_sql(all_pccg_ssds_q)
+
             # print(f"==> DEBUG: all_pccg_ssds.__dict__ = {all_pccg_ssds.__dict__}")
 
             # print(f"==> DEBUG: POSTGRES_DB_URI = {POSTGRES_DB_URI}")

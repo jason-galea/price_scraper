@@ -48,15 +48,22 @@ class Product(db.Model):
     #     return True
 
 
-    # def get_by_title(title) -> Query:
-    #     return Product.query.filter(Product.title == title).first()
-
-
+    @staticmethod
+    # def get_most_recent(retailer, category) -> list:
     def get_most_recent(retailer, category) -> Query:
+        """
+        Each "batch" of products in the table shares a UTC timestamp.
+
+        This can be used to only fetch products from the latest batch.
+        """
+        latest_utctime = Product.query.order_by(Product.id.desc()).first().utctime
+
         return Product.query.filter(
             Product.retailer == retailer,
             Product.category == category,
-        ).all()
+            Product.utctime == latest_utctime,
+        # ).order_by(Product.id.desc()).all() ### Convert to list
+        ).order_by(Product.id.desc()) ### Leave as Query
 
 
     def __repr__(self):

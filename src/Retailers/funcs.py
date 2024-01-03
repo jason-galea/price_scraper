@@ -62,26 +62,26 @@ def remove_strings_from_list(l: list, strings_to_remove: list) -> list:
 
 def export_to_db(db: SQLAlchemy, extracted_data: list) -> None:
     print("==> DEBUG: Entered 'export_to_db()'")
-    # print(f"==> DEBUG: extracted_data[0] = {extracted_data[0]}")
-    print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
+    # print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
+
+    # scraper  | ==> DEBUG: extracted_data[0] = {
+    # scraper  |     "UTCTime": "2024-01-01T08:55:56.648311",
+    # scraper  |     "Retailer": "PCCG",
+    # scraper  |     "Title": "Samsung 870 EVO 2.5in SATA SSD 1TB",
+    # scraper  |     "URL": "https://www.pccasegear.com/products/53095/samsung-870-evo-2-5in-sata-ssd-1tb",
+    # scraper  |     "PriceAUD": 165,
+    # scraper  |     "Category": "ssd",
+    # scraper  |     "FormFactor": "2.5in",
+    # scraper  |     "Protocol": "SATA",
+    # scraper  |     "Brand": "Samsung",
+    # scraper  |     "CapacityGB": 1000,
+    # scraper  |     "CapacityTB": 1.0,
+    # scraper  |     "PricePerGB": 0.17,
+    # scraper  |     "PricePerTB": 165.0
+    # scraper  | }
 
     for product_data in extracted_data:
-
-        # scraper  | ==> DEBUG: extracted_data[0] = {
-        # scraper  |     "UTCTime": "2024-01-01T08:55:56.648311",
-        # scraper  |     "Retailer": "PCCG",
-        # scraper  |     "Title": "Samsung 870 EVO 2.5in SATA SSD 1TB",
-        # scraper  |     "URL": "https://www.pccasegear.com/products/53095/samsung-870-evo-2-5in-sata-ssd-1tb",
-        # scraper  |     "PriceAUD": 165,
-        # scraper  |     "Category": "ssd",
-        # scraper  |     "FormFactor": "2.5in",
-        # scraper  |     "Protocol": "SATA",
-        # scraper  |     "Brand": "Samsung",
-        # scraper  |     "CapacityGB": 1000,
-        # scraper  |     "CapacityTB": 1.0,
-        # scraper  |     "PricePerGB": 0.17,
-        # scraper  |     "PricePerTB": 165.0
-        # scraper  | }
+        print(f"==> DEBUG: product_data = {json.dumps(product_data, indent=4)}")
 
         temp_product = Product(
             title=product_data["Title"],
