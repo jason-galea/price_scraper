@@ -3,10 +3,12 @@ import pandas as pd
 import json
 
 # from app import POSTGRES_DB_URI
-from src.config import TABLE_COLS
-# from src.generic_funcs import convert_datetime_to_iso_8601
-# from src.Database.db import db
-from src.Database.Product import Product
+from src.config import TABLE_COLS, CATEGORY_CLASS_DICT
+# from src.generic_funcs import get_iso_8601_time
+# from src.Database import db
+# from src.Database.Product import Product
+# from src.Database import SSD
+
 
 class Table:
     """
@@ -16,9 +18,10 @@ class Table:
     @staticmethod
     def get_template_vars(website, category) -> dict:
 
-        products: list = Product.get_most_recent(website, category)
+        # products: list = Product.get_most_recent(website, category)
+        products: list = CATEGORY_CLASS_DICT[category].get_most_recent()
 
-        print(f"==> DEBUG: products = {products}")
+        # print(f"==> DEBUG: products = {products}")
         print(f"==> DEBUG: products[0] = {products[0]}")
         # print(f"==> DEBUG: products[0].__dict__ = {products[0].__dict__}")
 
@@ -26,12 +29,12 @@ class Table:
         #     print(f"==> DEBUG: product = {json.dumps(p, indent=4)}")
 
         df: pd.DataFrame = pd.DataFrame(products)
-        df = df.set_index('utctime')
+        df = df.set_index('UTCTime')
         print(f"==> DEBUG: df = {df}")
 
 
-        # df['Title'] = df.apply(Table.fix_title_col, axis=1)
-        df['Title'] = df["Title"].apply(Table.fix_title_col, axis=1)
+        df['Title'] = df.apply(Table.fix_title_col, axis=1)
+        # df['Title'] = df["Title"].apply(Table.fix_title_col, axis=1)
         df['TitleLink'] = df.apply(
             lambda row: f"<a href={row['URL']}>{row['Title']}</a>",
             axis=1,

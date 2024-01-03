@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup, PageElement
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import Select
 
+from src.config import CATEGORY_CLASS_DICT
 from src.generic_funcs import (
     get_utcnow_iso_8601,
 )
@@ -85,35 +86,32 @@ class PCCG:
             features="html.parser"
         )
 
-        extracted_data: list = self._extract(category, bs4_html_parser)
-
-        # if debug:
-        #     print(json.dumps(extracted_data, indent=4))
-
-        with app.app_context():
-            export_to_db(db, extracted_data)
-
-        driver.quit()
-
-
-    ### TODO: Move this into base class/common function
-    def _extract(self, category: str, bs4_html_parser: BeautifulSoup) -> list:
         bs4_products = bs4_html_parser.find_all("div", class_="product-container")
         current_utctime = get_utcnow_iso_8601()
 
         match category:
             case "hdd":
-                return self._extract_hdd_data(bs4_html_parser, current_utctime)
+                extracted_data = self._extract_hdd_data(bs4_html_parser, current_utctime)
             case "ssd":
-                return [
+                extracted_data = [
                     d for product in bs4_products
                     if (d := self._extract_ssd_data(product, current_utctime))
                 ]
             case "ddr4" | "ddr5":
-                return [
+                extracted_data = [
                     d for product in bs4_products
                     if (d := self._extract_ram_data(product, category, current_utctime))
                 ]
+
+        # if debug:
+        #     print(json.dumps(extracted_data, indent=4))
+
+        ### Write to DB
+        with app.app_context():
+            # export_to_db(db, extracted_data)
+            CATEGORY_CLASS_DICT[category].export_to_db(db, extracted_data)
+
+        driver.quit()
 
 
     @staticmethod
@@ -141,7 +139,7 @@ class PCCG:
 
             ### Setup & data common to PCCG
             result = PCCG._get_common_data(product, current_utctime)
-            result.update({"Category": "hdd"})
+            # result.update({"Category": "hdd"})
 
             ### TODO: Fetch full description from current products "url"
             # description_soup = Web.get_bs4_html_parser_from_URL(result["URL"])
@@ -210,7 +208,7 @@ class PCCG:
         ############################################################################################
         ### NON-WEBSITE, NON-CATEGORY SPECIFIC DATA
         result = PCCG._get_common_data(product, current_utctime)
-        result.update({"Category": "ssd"})
+        # result.update({"Category": "ssd"})
 
         title_split = result["Title"].split()
         # print(["Brand", "Series", "ModelNumber", "FormFactor", "Protocol", "Capacity"])
@@ -262,12 +260,12 @@ class PCCG:
 
 
     @staticmethod
-    def _extract_ram_data(product: PageElement, category: str, current_utctime: str) -> dict:
+    def _extract_ram_data(product: PageElement, current_utctime: str) -> dict:
 
         ############################################################################################
         ### COMMON FIELDS
         temp_result = PCCG._get_common_data(product, current_utctime)
-        temp_result.update({"Category": category})
+        # temp_result.update({"Category": category})
 
         ### Handle REALLY specific errors
         if (temp_result["Title"] == 'Corsair Vengeance 48GB (2x24GB) 7000MHz C40 DDR5'): ### "C40"

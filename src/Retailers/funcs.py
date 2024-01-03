@@ -8,7 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 # from app import Product ### Circular import?
 # import app
-from src.Database.Product import Product
+# from src.Database.Product import Product
+from src.config import CATEGORY_CLASS_DICT
 
 
 ### TODO: Start FF globally, reuse class to avoid MEM spikes
@@ -60,41 +61,45 @@ def remove_strings_from_list(l: list, strings_to_remove: list) -> list:
 #         f.write(json.dumps(extracted_data))
 
 
-def export_to_db(db: SQLAlchemy, extracted_data: list) -> None:
-    print("==> DEBUG: Entered 'export_to_db()'")
-    # print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
+# def export_to_db(db: SQLAlchemy, extracted_data: list) -> None:
+#     print("==> DEBUG: Entered 'export_to_db()'")
+#     # print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
 
-    # scraper  | ==> DEBUG: extracted_data[0] = {
-    # scraper  |     "UTCTime": "2024-01-01T08:55:56.648311",
-    # scraper  |     "Retailer": "PCCG",
-    # scraper  |     "Title": "Samsung 870 EVO 2.5in SATA SSD 1TB",
-    # scraper  |     "URL": "https://www.pccasegear.com/products/53095/samsung-870-evo-2-5in-sata-ssd-1tb",
-    # scraper  |     "PriceAUD": 165,
-    # scraper  |     "Category": "ssd",
-    # scraper  |     "FormFactor": "2.5in",
-    # scraper  |     "Protocol": "SATA",
-    # scraper  |     "Brand": "Samsung",
-    # scraper  |     "CapacityGB": 1000,
-    # scraper  |     "CapacityTB": 1.0,
-    # scraper  |     "PricePerGB": 0.17,
-    # scraper  |     "PricePerTB": 165.0
-    # scraper  | }
+#     # scraper  | ==> DEBUG: extracted_data[0] = {
+#     # scraper  |     "UTCTime": "2024-01-01T08:55:56.648311",
+#     # scraper  |     "Retailer": "PCCG",
+#     # scraper  |     "Title": "Samsung 870 EVO 2.5in SATA SSD 1TB",
+#     # scraper  |     "URL": "https://www.pccasegear.com/products/53095/samsung-870-evo-2-5in-sata-ssd-1tb",
+#     # scraper  |     "PriceAUD": 165,
+#     # scraper  |     "Category": "ssd",
 
-    for product_data in extracted_data:
-        # print(f"==> DEBUG: product_data = {json.dumps(product_data, indent=4)}")
+#     # scraper  |     "FormFactor": "2.5in",
+#     # scraper  |     "Protocol": "SATA",
+#     # scraper  |     "Brand": "Samsung",
+#     # scraper  |     "CapacityGB": 1000,
+#     # scraper  |     "CapacityTB": 1.0,
+#     # scraper  |     "PricePerGB": 0.17,
+#     # scraper  |     "PricePerTB": 165.0
+#     # scraper  | }
 
-        temp_product = Product(
-            title=product_data["Title"],
-            retailer=product_data["Retailer"],
-            utctime=product_data["UTCTime"],
-            category=product_data["Category"],
-        )
+#     # category_class = CATEGORY_CLASS_DICT[category]
+#     # category_class = Product
 
-        ### Write entry to DB queue
-        db.session.add(temp_product)
+#     for product_data in extracted_data:
+#         # print(f"==> DEBUG: product_data = {json.dumps(product_data, indent=4)}")
 
-    ### Flush DB queue
-    print("==> DEBUG: Flushing DB queue")
-    db.session.commit()
+#         temp_product = category_class(
+#             title=product_data["Title"],
+#             retailer=product_data["Retailer"],
+#             utctime=product_data["UTCTime"],
+#             # category=product_data["Category"],
+#         )
 
-    print("==> DEBUG: Exiting 'export_to_db()' successfully?? :oooo")
+#         ### Write entry to DB queue
+#         db.session.add(temp_product)
+
+#     ### Flush DB queue
+#     print("==> DEBUG: Flushing DB queue")
+#     db.session.commit()
+
+#     print("==> DEBUG: Exiting 'export_to_db()' successfully?? :oooo")

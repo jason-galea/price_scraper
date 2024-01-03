@@ -10,7 +10,7 @@ import os
 
 from flask import Flask, render_template, request, send_from_directory
 # from flask_sqlalchemy import SQLAlchemy
-from flask_sqlalchemy.query import Query
+# from flask_sqlalchemy.query import Query
 # from sqlalchemy import Integer, String, DateTime
 # from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from flask_migrate import Migrate
@@ -19,8 +19,8 @@ from src.config import PAGE_INFO, FORM_LABELS
 from src.generic_funcs import list_contains_all_values
 from src.Pages.Scrape import Scrape
 from src.Pages.Table import Table
-from src.Database.db import db
-from src.Database.Product import Product
+from src.Database import db, SSD
+# from src.Database.Product import Product
 
 
 # ### DEBUG
@@ -134,7 +134,7 @@ def routes(path='index'):
             most_recent_products: list = Product.get_most_recent("pccg", "ssd")
             print(f"==> DEBUG: {most_recent_products=}")
             for ssd in most_recent_products:
-                print(f"==> DEBUG: {ssd.title=}")
+                print(f"==> DEBUG: {ssd.Title=}")
                 # print(f"==> DEBUG: {ssd.utctime=}")
 
     ### DEBUG

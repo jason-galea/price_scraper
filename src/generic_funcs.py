@@ -11,9 +11,9 @@ def get_utcnow_iso_8601() -> str:
     """
     Get current UTC time in ISO 8601 standard format
     """
-    return convert_datetime_to_iso_8601(datetime.datetime.utcnow())
+    return get_iso_8601_time(datetime.datetime.utcnow())
 
-def convert_datetime_to_iso_8601(dt: datetime.datetime):
+def get_iso_8601_time(dt: datetime.datetime):
     """
     Convert any datetime object to ISO 8601 standard format
     """
