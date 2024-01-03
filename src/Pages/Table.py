@@ -19,7 +19,8 @@ class Table:
     def get_template_vars(website, category) -> dict:
 
         # products: list = Product.get_most_recent(website, category)
-        products: list = CATEGORY_CLASS_DICT[category].get_most_recent(website)
+        # products: list = CATEGORY_CLASS_DICT[category].get_most_recent(website)
+        products: list = CATEGORY_CLASS_DICT[category].get_most_recent(website, category)
 
         # print(f"==> DEBUG: products = {products}")
         print(f"==> DEBUG: products[0] = {products[0]}")

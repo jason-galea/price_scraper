@@ -1,17 +1,9 @@
-# import os
 import re
-# import datetime
-# import enum
-# import json
+import json
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from bs4 import BeautifulSoup, PageElement
-# from selenium import webdriver
-# from selenium.webdriver import Firefox, DesiredCapabilities
-# from selenium.webdriver.firefox.options import Options
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support.ui import Select
 
 from src.Database import CATEGORY_CLASS_DICT
 from src.generic_funcs import (
@@ -104,6 +96,7 @@ class PCCG:
 
         # if debug:
         #     print(json.dumps(extracted_data, indent=4))
+        print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
 
         ### Write to DB
         with app.app_context():

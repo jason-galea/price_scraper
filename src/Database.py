@@ -37,20 +37,50 @@ class Product(db.Model):
         return f"<{self.__class__.__name__} {self.Title}>"
 
 
-    @staticmethod
-    def get_most_recent(retailer) -> list:
+    # @staticmethod
+    # def get_most_recent(retailer) -> list:
+    #     """
+    #     Each "batch" of products in the table shares a UTC timestamp.\n
+    #     This can be used to only fetch products from the latest batch.\n
+    #     Returns a list of dictionaries.
+    #     """
+    #     # category_class = CATEGORY_CLASS_DICT[category]
+
+    #     latest_product: Product = self.query.order_by(Product.id.desc()).first()
+
+    #     products_list_of_tuples = Product.query.filter(
+    #         Product.Retailer == retailer,
+    #         # Product.Category == category,
+    #         Product.UTCTime == latest_product.UTCTime,
+    #     ).order_by(Product.id.desc()).all() ### Convert to list of KeyedTuples
+
+    #     result = []
+    #     for p in products_list_of_tuples:
+    #         p_converted: dict = p.__dict__
+    #         del p_converted["_sa_instance_state"]
+    #         p_converted["UTCTime"] = get_iso_8601_time(p_converted["UTCTime"])
+
+    #         result.append(p_converted)
+
+    #     return result
+
+
+    # @staticmethod
+    def get_most_recent(self, retailer) -> list:
         """
         Each "batch" of products in the table shares a UTC timestamp.\n
         This can be used to only fetch products from the latest batch.\n
         Returns a list of dictionaries.
         """
-        latest_product: Product = Product.query.order_by(Product.id.desc()).first()
+        # category_class = CATEGORY_CLASS_DICT[category]
 
-        products_list_of_tuples = Product.query.filter(
-            Product.Retailer == retailer,
-            # Product.Category == category,
-            Product.UTCTime == latest_product.UTCTime,
-        ).order_by(Product.id.desc()).all() ### Convert to list of KeyedTuples
+        latest_product = self.query.order_by(self.id.desc()).first()
+
+        products_list_of_tuples = self.query.filter(
+            self.Retailer == retailer,
+            # self.Category == category,
+            self.UTCTime == latest_product.UTCTime,
+        ).order_by(self.id.desc()).all() ### Convert to list of KeyedTuples
 
         result = []
         for p in products_list_of_tuples:

@@ -7,6 +7,7 @@ A Flask-based webserver which extracts PC component data from Australian retaile
 ### https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/quickstart/
 
 import os
+import json
 
 from flask import Flask, render_template, request, send_from_directory
 # from flask_sqlalchemy import SQLAlchemy
@@ -131,11 +132,12 @@ def routes(path='index'):
 
         case "test":
 
-            most_recent_products: list = Product.get_most_recent("pccg", "ssd")
-            print(f"==> DEBUG: {most_recent_products=}")
-            for ssd in most_recent_products:
-                print(f"==> DEBUG: {ssd.Title=}")
-                # print(f"==> DEBUG: {ssd.utctime=}")
+            products: list = SSD.get_most_recent("pccg")
+            # print(f"==> DEBUG: {most_recent_products=}")
+            # for ssd in most_recent_products:
+            #     print(f"==> DEBUG: {ssd["Title"]=}")
+            #     # print(f"==> DEBUG: {ssd.utctime=}")
+            print(f"==> DEBUG: products[0] = {json.dumps(products[0], indent=4)}")
 
     ### DEBUG
     # print(f"\npage_vars: \n{json.dumps(page_vars, indent=2)}\n")
