@@ -10,6 +10,9 @@ from src.Retailers.Scorptec import Scorptec
 from src.Retailers.CentreCom import CentreCom
 
 class Scrape:
+    """
+    Container class for methods related to the "Scrape" page
+    """
 
     @staticmethod
     def start_extract_thread(app: Flask, db: SQLAlchemy, website: str, category: str) -> None:

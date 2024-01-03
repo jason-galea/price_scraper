@@ -131,46 +131,11 @@ def routes(path='index'):
 
         case "test":
 
-            # latest_utctime = Product.get_latest_utctime()
-            # print(f"==> DEBUG: {latest_utctime=}")
-
-            all_pccg_ssds = Product.get_most_recent("PCCG", "ssd")
-            print(f"==> DEBUG: {all_pccg_ssds=}")
-            for ssd in all_pccg_ssds:
+            most_recent_products: list = Product.get_most_recent("pccg", "ssd")
+            print(f"==> DEBUG: {most_recent_products=}")
+            for ssd in most_recent_products:
                 print(f"==> DEBUG: {ssd.title=}")
                 # print(f"==> DEBUG: {ssd.utctime=}")
-
-            # import pandas as pd
-            # all_pccg_ssds_df = pd.read_sql(all_pccg_ssds_q)
-
-            # print(f"==> DEBUG: all_pccg_ssds.__dict__ = {all_pccg_ssds.__dict__}")
-
-            # print(f"==> DEBUG: POSTGRES_DB_URI = {POSTGRES_DB_URI}")
-
-            # def connect():
-            #     return psycopg2.connect(
-            #         host=host,
-            #         port=port,
-            #         user=user,
-            #         password=password,
-            #         dbname=db,
-            #         # sslmode='require',
-            #     )
-
-            # # engine = sqlalchemy.create_engine('redshift+psycopg2://', creator=connect)
-            # engine = sqlalchemy.create_engine('postgresql://', creator=connect)
-            # conn = engine.connect()
-
-            # statement = sqlalchemy.select([sqlalchemy.literal(1234)])
-            # print(conn.execute(statement).fetchall())
-
-            # global POSTGRESS_CONN
-            # POSTGRESS_CONN = postgress_engine.connect()
-
-            # res = POSTGRESS_CONN.execute("SELECT * FROM pg_catalog.pg_tables;")
-            # print(res)
-
-
 
     ### DEBUG
     # print(f"\npage_vars: \n{json.dumps(page_vars, indent=2)}\n")

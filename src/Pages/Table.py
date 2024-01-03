@@ -1,28 +1,34 @@
 import html
 import pandas as pd
 
-
 # from app import POSTGRES_DB_URI
 from src.config import TABLE_COLS
-from src.Database.db import db
+# from src.Database.db import db
 from src.Database.Product import Product
 
 class Table:
+    """
+    Container class for methods related to the "Table" page
+    """
 
     @staticmethod
     def get_template_vars(website, category) -> dict:
 
         # df = pd.read_sql(Product.get_most_recent(website, category), db)
-        df = pd.read_sql_query(Product.get_most_recent(website, category), db.engine)
+        # df = pd.read_sql_query(Product.get_most_recent(website, category), db.engine)
         # df = pd.read
 
-        # raw_query_results: list = Product.get_most_recent(website, category)
+        print(website)
+        print(category)
+        most_recent_products: list = Product.get_most_recent(website, category)
+        print(f"==> DEBUG: most_recent_products = {most_recent_products}")
 
-        # df: pd.DataFrame = pd.DataFrame(raw_query_results)
+        df: pd.DataFrame = pd.DataFrame(most_recent_products)
+        print(f"==> DEBUG: df = {df}")
 
 
-
-        df['Title'] = df.apply(Table.fix_title_col, axis=1)
+        # df['Title'] = df.apply(Table.fix_title_col, axis=1)
+        df['Title'] = df["Title"].apply(Table.fix_title_col, axis=1)
         df['TitleLink'] = df.apply(
             lambda row: f"<a href={row['URL']}>{row['Title']}</a>",
             axis=1,

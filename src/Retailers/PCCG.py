@@ -118,7 +118,7 @@ class PCCG:
     def _get_common_data(product: BeautifulSoup, current_utctime: str) -> dict:
         return {
             "UTCTime":      current_utctime,
-            "Retailer":     "PCCG",
+            "Retailer":     "pccg", ### Must match `config.py`
             "Title":        product.find_next("a", class_="product-title").string,
             "URL":          product.find_next("a", class_="product-title").attrs["href"],
             "PriceAUD":     int(product.find_next("div", class_="price").string.strip("$")),

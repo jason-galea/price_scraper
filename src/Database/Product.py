@@ -1,5 +1,4 @@
-# from sqlalchemy import Integer, String, DateTime
-# from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+# from flask_sqlalchemy import select
 from flask_sqlalchemy.query import Query
 
 from src.Database.db import db
@@ -19,7 +18,7 @@ class Product(db.Model):
     __table_args__ = (
         ### Only allow certain values for retailer
         db.CheckConstraint(
-            retailer.in_(['PCCG', 'Scorptec', 'CentreCom']),
+            retailer.in_(['pccg', 'scorptec', 'centrecom']),
             name='retailer_types'
         ),
     )
@@ -49,8 +48,8 @@ class Product(db.Model):
 
 
     @staticmethod
-    # def get_most_recent(retailer, category) -> list:
-    def get_most_recent(retailer, category) -> Query:
+    def get_most_recent(retailer, category) -> list:
+    # def get_most_recent(retailer, category) -> Query:
         """
         Each "batch" of products in the table shares a UTC timestamp.
 
@@ -62,8 +61,19 @@ class Product(db.Model):
             Product.retailer == retailer,
             Product.category == category,
             Product.utctime == latest_utctime,
-        # ).order_by(Product.id.desc()).all() ### Convert to list
-        ).order_by(Product.id.desc()) ### Leave as Query
+        ).order_by(Product.id.desc()).all() ### Convert to list
+        # ).order_by(Product.id.desc()) ### Leave as Query
+
+
+    # @staticmethod
+    # def get_most_recent_select(retailer, category) -> list:
+    #     latest_utctime = Product.query.order_by(Product.id.desc()).first().utctime
+
+    #     return select.filter_by(
+    #         Product.retailer == retailer,
+    #         Product.category == category,
+    #         Product.utctime == latest_utctime,
+    #     ).order_by(Product.id.desc()).all() ### Convert to list
 
 
     def __repr__(self):

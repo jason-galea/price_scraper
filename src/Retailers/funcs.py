@@ -81,7 +81,7 @@ def export_to_db(db: SQLAlchemy, extracted_data: list) -> None:
     # scraper  | }
 
     for product_data in extracted_data:
-        print(f"==> DEBUG: product_data = {json.dumps(product_data, indent=4)}")
+        # print(f"==> DEBUG: product_data = {json.dumps(product_data, indent=4)}")
 
         temp_product = Product(
             title=product_data["Title"],
