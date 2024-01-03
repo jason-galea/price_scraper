@@ -20,21 +20,12 @@ from src.config import PAGE_INFO, FORM_LABELS
 from src.generic_funcs import list_contains_all_values
 from src.Pages.Scrape import Scrape
 from src.Pages.Table import Table
+### NOTE: My hope is that by not importing "Product", the table won't be created
 from src.Database import db, SSD
-# from src.Database.Product import Product
-
-
-# ### DEBUG
-# import debugpy
-# debugpy.listen(('0.0.0.0', 5678))
-# debugpy.wait_for_client()
-# debugpy.breakpoint()
 
 
 ###########################################################
 ### GLOBALS
-# app: Flask = Flask(__name__) ### Avoid "from app import app"
-
 host        = os.environ['POSTGRES_HOST']
 port        = os.environ['POSTGRES_PORT']
 user        = os.environ['POSTGRES_USER']
@@ -52,7 +43,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
 # app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False
 
 db.init_app(app)
-# from src.Database.Product import Product
 migrate = Migrate(app, db)
 
 with app.app_context():
@@ -88,7 +78,6 @@ def routes(path='index'):
         'PAGE_INFO': PAGE_INFO,
         'key': path,
         'template_name_or_list': PAGE_INFO[path]['template'],
-        # 'template_name_or_list': f"{CWD}/templates/{PAGE_INFO[path]['template']}",
         'desc': PAGE_INFO[path]['desc'],
     }
     page_vars = {
@@ -121,17 +110,18 @@ def routes(path='index'):
         case "graph":
             pass
 
-        ### TODO: Delete this page?
-        case "results":
+        # ### TODO: Delete this page?
+        # case "results":
 
-            # results = [os.path.basename(s) for s in get_json_filenames()]
-            # results.sort(reverse=True) ### Sort by reverse date, newest items on top
-            results = ["no_json_files_anymore_teehee!!"]
+        #     # results = [os.path.basename(s) for s in get_json_filenames()]
+        #     # results.sort(reverse=True) ### Sort by reverse date, newest items on top
+        #     results = ["no_json_files_anymore_teehee!!"]
 
-            page_vars.update({ 'results': results })
+        #     page_vars.update({ 'results': results })
 
         case "test":
 
+            # products: list = SSD.get_most_recent(SSD, "pccg")
             products: list = SSD.get_most_recent("pccg")
             # print(f"==> DEBUG: {most_recent_products=}")
             # for ssd in most_recent_products:
@@ -155,7 +145,6 @@ def routes(path='index'):
 def favicon():
     return send_from_directory(
         directory=os.path.join(app.root_path, 'static'),
-        # directory=f"{CWD}/static/",
         path='favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )

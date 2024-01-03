@@ -15,7 +15,6 @@ class Product(db.Model):
 
     UTCTime     = db.Column(db.DateTime, nullable=False)
     Retailer    = db.Column(db.String, nullable=False)
-    # Category    = db.Column(db.String, nullable=False)
     Title       = db.Column(db.String, nullable=False)
     URL         = db.Column(db.String, nullable=False)
     PriceAUD    = db.Column(db.Float, nullable=False)
@@ -37,50 +36,23 @@ class Product(db.Model):
         return f"<{self.__class__.__name__} {self.Title}>"
 
 
-    # @staticmethod
-    # def get_most_recent(retailer) -> list:
-    #     """
-    #     Each "batch" of products in the table shares a UTC timestamp.\n
-    #     This can be used to only fetch products from the latest batch.\n
-    #     Returns a list of dictionaries.
-    #     """
-    #     # category_class = CATEGORY_CLASS_DICT[category]
-
-    #     latest_product: Product = self.query.order_by(Product.id.desc()).first()
-
-    #     products_list_of_tuples = Product.query.filter(
-    #         Product.Retailer == retailer,
-    #         # Product.Category == category,
-    #         Product.UTCTime == latest_product.UTCTime,
-    #     ).order_by(Product.id.desc()).all() ### Convert to list of KeyedTuples
-
-    #     result = []
-    #     for p in products_list_of_tuples:
-    #         p_converted: dict = p.__dict__
-    #         del p_converted["_sa_instance_state"]
-    #         p_converted["UTCTime"] = get_iso_8601_time(p_converted["UTCTime"])
-
-    #         result.append(p_converted)
-
-    #     return result
-
-
-    # @staticmethod
-    def get_most_recent(self, retailer) -> list:
+    @classmethod
+    def get_most_recent(cls, retailer) -> list:
         """
         Each "batch" of products in the table shares a UTC timestamp.\n
         This can be used to only fetch products from the latest batch.\n
         Returns a list of dictionaries.
         """
         # category_class = CATEGORY_CLASS_DICT[category]
+        # category_class = __class__
 
-        latest_product = self.query.order_by(self.id.desc()).first()
+        latest_product = cls.query.order_by(cls.id.desc()).first()
 
-        products_list_of_tuples = self.query.filter(
-            self.Retailer == retailer,
-            # self.Category == category,
-            self.UTCTime == latest_product.UTCTime,
-        ).order_by(self.id.desc()).all() ### Convert to list of KeyedTuples
+        products_list_of_tuples = cls.query.filter(
+            cls.Retailer == retailer,
+            # cls.Category == category,
+            cls.UTCTime == latest_product.UTCTime,
+        ).order_by(cls.id.desc()).all() ### Convert to list of KeyedTuples
 
         result = []
         for p in products_list_of_tuples:
@@ -94,10 +66,8 @@ class Product(db.Model):
 
 
     @staticmethod
-    def export_to_db(db: SQLAlchemy, products: list):
+    def export_to_db():
         raise NotImplementedError
-
-
 
 
 class SSD(Product):
