@@ -21,7 +21,7 @@ from src.generic_funcs import list_contains_all_values
 from src.Pages.Scrape import Scrape
 from src.Pages.Table import Table
 ### NOTE: My hope is that by not importing "Product", the table won't be created
-from src.Database import db, SSD
+from src.Database import db, SSD, HDD
 
 
 ###########################################################
