@@ -40,7 +40,7 @@ POSTGRES_DB_URI = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_na
 ### TODO: Move this to a function
 app: Flask = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
-# app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False ### Silence warning
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -99,12 +99,10 @@ def routes(path='index'):
 
         case "scrape":
             if form_is_valid:
-                # scrape_start_extract_thread(website, category)
                 Scrape.start_extract_thread(app, db, website, category)
 
         case "table":
             if form_is_valid:
-                # page_vars.update( table_get_template_vars(website, category) )
                 page_vars.update( Table.get_template_vars(website, category) )
 
         case "graph":

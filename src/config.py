@@ -38,15 +38,15 @@ PAGE_INFO = {
             "Make a selection and press 'Submit' to continue."
         ]
     },
-    "results":{
-        "route":        "/results",
-        "template":     "children/results.html",
-        "title":        "Results",
-        "desc": [
-            "This page shows all previously collected result files.",
-            "In case of any error, collecting some more data in the 'Scrape' page"
-        ]
-    },
+    # "results":{
+    #     "route":        "/results",
+    #     "template":     "children/results.html",
+    #     "title":        "Results",
+    #     "desc": [
+    #         "This page shows all previously collected result files.",
+    #         "In case of any error, collecting some more data in the 'Scrape' page"
+    #     ]
+    # },
     "test":{
         "route":        "/test",
         "template":     "children/test.html",

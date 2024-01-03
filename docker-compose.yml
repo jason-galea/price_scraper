@@ -3,11 +3,9 @@ services:
 
   db:
     container_name: db
-    image: postgres:16
+    image: postgres:16.1-alpine3.19
     restart: unless-stopped
     env_file: db.conf
-    # ports:
-    #   - 5432:5432
     volumes:
       - db:/var/lib/postgresql/data
 
@@ -18,15 +16,13 @@ services:
     restart: unless-stopped
     env_file: db.conf
     environment:
-      POSTGRES_HOST: db
       FLASK_APP: /scraper/app.py
     ports:
       - 5000:5000
-      # - 5678:5678 ### debugpy
     volumes:
       - .:/scraper/
     command: flask run -h 0.0.0.0
-    # command: python3 app.py run_app
+    # command: python3 app.py run_app ### Moving init to function "run_app()"
     depends_on:
     - db
 

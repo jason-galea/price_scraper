@@ -7,9 +7,13 @@ db = SQLAlchemy()
 
 
 class Product(db.Model):
+    """
+    Defines common SQLAlchemy database tables variables & functions
+    """
+
     __tablename__ = "Please do not create this table 🥺🥺🥺"
 
-    ### Schema
+    ### Schema (Common fields only)
     ### NOTE: Any change requires DB reinitialisation
     id          = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
@@ -43,16 +47,17 @@ class Product(db.Model):
         This can be used to only fetch products from the latest batch.\n
         Returns a list of dictionaries.
         """
-        # category_class = CATEGORY_CLASS_DICT[category]
-        # category_class = __class__
 
         latest_product = cls.query.order_by(cls.id.desc()).first()
 
-        products_list_of_tuples = cls.query.filter(
-            cls.Retailer == retailer,
-            # cls.Category == category,
-            cls.UTCTime == latest_product.UTCTime,
-        ).order_by(cls.id.desc()).all() ### Convert to list of KeyedTuples
+        products_list_of_tuples = (
+            cls.query.filter(
+                cls.Retailer == retailer,
+                cls.UTCTime == latest_product.UTCTime,
+            )
+            .order_by(cls.id.desc())
+            .all()
+        )
 
         result = []
         for p in products_list_of_tuples:
@@ -66,14 +71,14 @@ class Product(db.Model):
 
 
     @staticmethod
-    def export_to_db():
+    def export_to_db(products: list):
         raise NotImplementedError
 
 
 class SSD(Product):
     __tablename__ = "ssds"
 
-    ### Schema
+    ### Schema (Additional fields only)
     ### NOTE: Any change requires DB reinitialisation
     FormFactor  = db.Column(db.String, nullable=False)
     Protocol    = db.Column(db.String, nullable=False)
@@ -101,8 +106,8 @@ class SSD(Product):
         self.PricePerTB = pricepertb
         self.PricePerGB = pricepergb
 
-
-    def export_to_db(db: SQLAlchemy, products: list) -> None:
+    @staticmethod
+    def export_to_db(products: list) -> None:
         print("==> DEBUG: Entered 'export_to_db()'")
         # print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
 
