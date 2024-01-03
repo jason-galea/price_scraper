@@ -1,12 +1,3 @@
-from src.Database import SSD
-
-CATEGORY_CLASS_DICT = {
-    # "hdd":      HDD,
-    "ssd":      SSD,
-    # "ddr4":     RAM,
-    # "ddr5":     RAM,
-}
-
 PAGE_INFO = {
     "index":{
         "route":        "/",

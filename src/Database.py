@@ -1,12 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 
-
-# from flask_sqlalchemy import select
-# from flask_sqlalchemy.query import Query
-
 from src.generic_funcs import get_iso_8601_time
-# from src.Database import db
-from src.config import CATEGORY_CLASS_DICT
 
 
 db = SQLAlchemy()
@@ -70,7 +64,7 @@ class Product(db.Model):
 
 
     @staticmethod
-    def export_to_db(db: SQLAlchemy, extracted_data: list):
+    def export_to_db(db: SQLAlchemy, products: list):
         raise NotImplementedError
 
 
@@ -82,6 +76,7 @@ class SSD(Product):
     ### Schema
     ### NOTE: Any change requires DB reinitialisation
     FormFactor  = db.Column(db.String, nullable=False)
+    Protocol    = db.Column(db.String, nullable=False)
     CapacityTB  = db.Column(db.Float, nullable=False)
     CapacityGB  = db.Column(db.Float, nullable=False)
     PricePerTB  = db.Column(db.Float, nullable=False)
@@ -89,25 +84,25 @@ class SSD(Product):
 
 
     def __init__(self,
-        utctime, retailer, _category, title, url, priceaud, brand,
-        formfactor, capacitytb, capacitygb, pricepertb, pricepergb
+        utctime, retailer, title, url, priceaud, brand,
+        formfactor, protocol, capacitytb, capacitygb, pricepertb, pricepergb
     ):
         self.UTCTime = utctime
         self.Retailer = retailer
-        # self.Category = category
         self.Title = title
         self.URL = url
         self.PriceAUD = priceaud
         self.Brand = brand
 
         self.FormFactor = formfactor
+        self.Protocol = protocol
         self.CapacityTB = capacitytb
         self.CapacityGB = capacitygb
         self.PricePerTB = pricepertb
         self.PricePerGB = pricepergb
 
 
-    def export_to_db(db: SQLAlchemy, extracted_data: list) -> None:
+    def export_to_db(db: SQLAlchemy, products: list) -> None:
         print("==> DEBUG: Entered 'export_to_db()'")
         # print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
 
@@ -128,20 +123,26 @@ class SSD(Product):
         # scraper  |     "PricePerTB": 165.0
         # scraper  | }
 
-        # category_class = CATEGORY_CLASS_DICT[category]
-        # category_class = Product
-
-        for product_data in extracted_data:
-            # print(f"==> DEBUG: product_data = {json.dumps(product_data, indent=4)}")
-
+        for product in products:
+            # print(f"==> DEBUG: product = {json.dumps(product, indent=4)}")
             temp_product = SSD(
-                title=product_data["Title"],
-                retailer=product_data["Retailer"],
-                utctime=product_data["UTCTime"],
-                # category=product_data["Category"],
+                utctime=product["UTCTime"],
+                retailer=product["Retailer"],
+                # category=product["Category"],
+                title=product["Title"],
+                url=product["URL"],
+                priceaud=product["PriceAUD"],
+                brand=product["Brand"],
+
+                formfactor=product["FormFactor"],
+                protocol=product["Protocol"],
+                capacitytb=product["CapacityTB"],
+                capacitygb=product["CapacityGB"],
+                pricepertb=product["PricePerTB"],
+                pricepergb=product["PricePerGB"],
             )
 
-            ### Write entry to DB queue
+            ### Add to DB queue
             db.session.add(temp_product)
 
         ### Flush DB queue
@@ -149,3 +150,11 @@ class SSD(Product):
         db.session.commit()
 
         print("==> DEBUG: Exiting 'export_to_db()' successfully?? :oooo")
+
+
+CATEGORY_CLASS_DICT = {
+    # "hdd":      HDD,
+    "ssd":      SSD,
+    # "ddr4":     RAM,
+    # "ddr5":     RAM,
+}

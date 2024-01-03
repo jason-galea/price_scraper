@@ -9,7 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 # from app import Product ### Circular import?
 # import app
 # from src.Database.Product import Product
-from src.config import CATEGORY_CLASS_DICT
+# from src.config import CATEGORY_CLASS_DICT
+from src.Database import CATEGORY_CLASS_DICT
 
 
 ### TODO: Start FF globally, reuse class to avoid MEM spikes

@@ -13,13 +13,12 @@ from bs4 import BeautifulSoup, PageElement
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import Select
 
-from src.config import CATEGORY_CLASS_DICT
+from src.Database import CATEGORY_CLASS_DICT
 from src.generic_funcs import (
     get_utcnow_iso_8601,
 )
 from src.Retailers.funcs import (
     create_webdriver,
-    export_to_db,
     remove_strings_from_list,
     concat_items_in_list,
 )
@@ -100,7 +99,7 @@ class PCCG:
             case "ddr4" | "ddr5":
                 extracted_data = [
                     d for product in bs4_products
-                    if (d := self._extract_ram_data(product, category, current_utctime))
+                    if (d := self._extract_ram_data(product, current_utctime))
                 ]
 
         # if debug:
