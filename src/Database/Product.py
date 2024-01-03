@@ -1,6 +1,7 @@
 # from flask_sqlalchemy import select
-from flask_sqlalchemy.query import Query
+# from flask_sqlalchemy.query import Query
 
+from src.generic_funcs import convert_datetime_to_iso_8601
 from src.Database.db import db
 
 class Product(db.Model):
@@ -10,15 +11,15 @@ class Product(db.Model):
     ### NOTE: Any changes require "db" docker volume to be recreated
     id          = db.Column(db.Integer, primary_key=True, autoincrement=True)
     # title       = db.Column(db.String, unique=True, nullable=False)
-    title       = db.Column(db.String, nullable=False)
-    retailer    = db.Column(db.String, nullable=False)
-    category    = db.Column(db.String, nullable=False)
-    utctime     = db.Column(db.DateTime, nullable=False)
+    Title       = db.Column(db.String, nullable=False)
+    Retailer    = db.Column(db.String, nullable=False)
+    Category    = db.Column(db.String, nullable=False)
+    UTCTime     = db.Column(db.DateTime, nullable=False)
 
     __table_args__ = (
         ### Only allow certain values for retailer
         db.CheckConstraint(
-            retailer.in_(['pccg', 'scorptec', 'centrecom']),
+            Retailer.in_(['pccg', 'scorptec', 'centrecom']),
             name='retailer_types'
         ),
     )
@@ -31,14 +32,14 @@ class Product(db.Model):
         category,
         utctime,
     ):
-        self.title = title
-        self.retailer = retailer
-        self.category = category
-        self.utctime = utctime
+        self.Title = title
+        self.Retailer = retailer
+        self.Category = category
+        self.UTCTime = utctime
 
 
     # def register_product_if_not_exist(self):
-    #     db_product = Product.query.filter(Product.title == self.title).all()
+    #     db_product = Product.query.filter(Product.title == self.Title).all()
 
     #     if not db_product:
     #         db.session.add(self)
@@ -49,32 +50,29 @@ class Product(db.Model):
 
     @staticmethod
     def get_most_recent(retailer, category) -> list:
-    # def get_most_recent(retailer, category) -> Query:
         """
-        Each "batch" of products in the table shares a UTC timestamp.
-
-        This can be used to only fetch products from the latest batch.
+        Each "batch" of products in the table shares a UTC timestamp.\n
+        This can be used to only fetch products from the latest batch.\n
+        Returns a list of dictionaries.
         """
         latest_utctime = Product.query.order_by(Product.id.desc()).first().utctime
 
-        return Product.query.filter(
-            Product.retailer == retailer,
-            Product.category == category,
-            Product.utctime == latest_utctime,
-        ).order_by(Product.id.desc()).all() ### Convert to list
-        # ).order_by(Product.id.desc()) ### Leave as Query
+        products_list_of_tuples = Product.query.filter(
+            Product.Retailer == retailer,
+            Product.Category == category,
+            Product.UTCTime == latest_utctime,
+        ).order_by(Product.id.desc()).all() ### Convert to list of KeyedTuples
 
+        result = []
+        for p in products_list_of_tuples:
+            p_converted: dict = p.__dict__
+            del p_converted["_sa_instance_state"]
+            p_converted["utctime"] = convert_datetime_to_iso_8601(p_converted["utctime"])
 
-    # @staticmethod
-    # def get_most_recent_select(retailer, category) -> list:
-    #     latest_utctime = Product.query.order_by(Product.id.desc()).first().utctime
+            result.append(p_converted)
 
-    #     return select.filter_by(
-    #         Product.retailer == retailer,
-    #         Product.category == category,
-    #         Product.utctime == latest_utctime,
-    #     ).order_by(Product.id.desc()).all() ### Convert to list
+        return result
 
 
     def __repr__(self):
-        return f"<Product {self.title}>"
+        return f"<Product {self.Title}>"

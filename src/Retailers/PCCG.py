@@ -13,10 +13,12 @@ from bs4 import BeautifulSoup, PageElement
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import Select
 
+from src.generic_funcs import (
+    get_utcnow_iso_8601,
+)
 from src.Retailers.funcs import (
     create_webdriver,
     export_to_db,
-    get_utcnow_iso_8601,
     remove_strings_from_list,
     concat_items_in_list,
 )

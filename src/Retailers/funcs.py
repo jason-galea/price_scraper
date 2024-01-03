@@ -1,5 +1,5 @@
-import datetime
-import json
+# import datetime
+# import json
 
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
@@ -98,10 +98,3 @@ def export_to_db(db: SQLAlchemy, extracted_data: list) -> None:
     db.session.commit()
 
     print("==> DEBUG: Exiting 'export_to_db()' successfully?? :oooo")
-
-
-def get_utcnow_iso_8601() -> str:
-    """
-    Get current UTC time in ISO 8601 standard format
-    """
-    return datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f%z')

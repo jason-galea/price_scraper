@@ -1,8 +1,10 @@
 import html
 import pandas as pd
+import json
 
 # from app import POSTGRES_DB_URI
 from src.config import TABLE_COLS
+# from src.generic_funcs import convert_datetime_to_iso_8601
 # from src.Database.db import db
 from src.Database.Product import Product
 
@@ -14,16 +16,17 @@ class Table:
     @staticmethod
     def get_template_vars(website, category) -> dict:
 
-        # df = pd.read_sql(Product.get_most_recent(website, category), db)
-        # df = pd.read_sql_query(Product.get_most_recent(website, category), db.engine)
-        # df = pd.read
+        products: list = Product.get_most_recent(website, category)
 
-        print(website)
-        print(category)
-        most_recent_products: list = Product.get_most_recent(website, category)
-        print(f"==> DEBUG: most_recent_products = {most_recent_products}")
+        print(f"==> DEBUG: products = {products}")
+        print(f"==> DEBUG: products[0] = {products[0]}")
+        # print(f"==> DEBUG: products[0].__dict__ = {products[0].__dict__}")
 
-        df: pd.DataFrame = pd.DataFrame(most_recent_products)
+        # for p in products:
+        #     print(f"==> DEBUG: product = {json.dumps(p, indent=4)}")
+
+        df: pd.DataFrame = pd.DataFrame(products)
+        df = df.set_index('utctime')
         print(f"==> DEBUG: df = {df}")
 
 
