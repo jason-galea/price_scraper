@@ -160,7 +160,12 @@ class PCCG:
             ### WEBSITE & CATEGORY SPECIFIC DATA
 
             ### Remove unneeded words
-            title_split = remove_strings_from_list(title_split, ["WD"])
+            # title_split = remove_strings_from_list(title_split, ["WD"])
+            # title_split = [
+            #     s for s in title_split
+            #     if (s not in strings_to_remove)
+            # ]
+            title_split.pop("WD")
 
             ### Make array consistent to Brand/Series/Model
             if title_split[0] == "Western": # ["Western", "Digital", "WD"] --> ["Western Digital"]
@@ -180,7 +185,6 @@ class PCCG:
                 "Brand": title_split[0],
                 "Series": title_split[1],
                 "Model": title_split[3],
-                # "CapacityRaw": title_split[2],
                 "CapacityGB": capacity_gb,
                 "PricePerGB": round(result["PriceAUD"]/capacity_gb, 2),
                 "CapacityTB": capacity_tb,
@@ -200,7 +204,6 @@ class PCCG:
         ############################################################################################
         ### NON-WEBSITE, NON-CATEGORY SPECIFIC DATA
         result = PCCG._get_common_data(product, current_utctime)
-        # result.update({"Category": "ssd"})
 
         title_split = result["Title"].split()
         # print(["Brand", "Series", "ModelNumber", "FormFactor", "Protocol", "Capacity"])
