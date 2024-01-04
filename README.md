@@ -2,9 +2,9 @@
 
 A Flask-based webserver which extracts PC component data from Australian retailers.
 
-## Requirements
+<!-- ## Requirements
 
-- Python 3.10+
+- Python 3.10+ -->
 
 <!-- ## Configure
 
@@ -13,10 +13,10 @@ A Flask-based webserver which extracts PC component data from Australian retaile
 
 ## Launch
 
-Run locally:
+<!-- Run locally:
 
     ./setup.sh
-    ./app.py
+    ./app.py -->
 
 Run via docker:
 
