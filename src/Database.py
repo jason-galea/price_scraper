@@ -1,3 +1,4 @@
+from datetime import datetime
 from dataclasses import dataclass
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -24,7 +25,7 @@ class Product(db.Model):
     id: Mapped[int]             = mapped_column(Integer, primary_key=True, autoincrement=True)
     type: Mapped[str]           = mapped_column(String) ### Allow inheritance
 
-    UTCTime: Mapped[DateTime]   = mapped_column(DateTime)
+    UTCTime: Mapped[datetime]   = mapped_column(DateTime)
     Retailer: Mapped[str]       = mapped_column(String)
     Title: Mapped[str]          = mapped_column(String)
     URL: Mapped[str]            = mapped_column(String)
@@ -97,6 +98,8 @@ class Product(db.Model):
 class Drive(Product): # pylint: disable=abstract-method
     """Parent Model for drives, or products that have some capacity"""
 
+    __tablename__ = "drive"
+
     CapacityTB: Mapped[float]   = mapped_column(Float, nullable=True)
     CapacityGB: Mapped[float]   = mapped_column(Float, nullable=True)
     PricePerTB: Mapped[float]   = mapped_column(Float, nullable=True)
@@ -106,12 +109,23 @@ class Drive(Product): # pylint: disable=abstract-method
     __mapper_args__ = { "polymorphic_abstract": True }
 
 
+# class HasCapacity(): # pylint: disable=abstract-method
+#     """Parent Model for drives, or products that have some capacity"""
+
+#     CapacityTB: Mapped[float]   = mapped_column(Float, nullable=True, use_existing_column=True)
+#     CapacityGB: Mapped[float]   = mapped_column(Float, nullable=True, use_existing_column=True)
+#     PricePerTB: Mapped[float]   = mapped_column(Float, nullable=True, use_existing_column=True)
+#     PricePerGB: Mapped[float]   = mapped_column(Float, nullable=True, use_existing_column=True)
+
+
 @dataclass
 class SSD(Drive):
+# class SSD(HasCapacity, Product):
     """Model for SSDs"""
 
     __tablename__ = "ssd"
 
+    # pylint: disable=invalid-name
     FormFactor: Mapped[str]     = mapped_column(String, nullable=True)
     Protocol: Mapped[str]       = mapped_column(String, nullable=True)
 
@@ -122,19 +136,61 @@ class SSD(Drive):
 
 @dataclass
 class HDD(Drive):
+# class HDD(HasCapacity, Product):
     """Model for HDDs"""
 
     __tablename__ = "hdd"
 
+    # pylint: disable=invalid-name
     Series: Mapped[str]         = mapped_column(String, nullable=True)
-    Model: Mapped[str]          = mapped_column(String, nullable=True)
+    HDDModel: Mapped[str]       = mapped_column(String, nullable=True)
 
     __mapper_args__ = { "polymorphic_identity": "hdd" }
+
+
+@dataclass
+class RAM(Product):
+# class RAM(HasCapacity, Product):
+    """Parent Model for RAM"""
+
+    __tablename__ = "ram"
+
+    # pylint: disable=invalid-name
+    RAMModel: Mapped[str]           = mapped_column(String, nullable=True)
+    RAMCapacityGB: Mapped[float]       = mapped_column(Float, nullable=True)
+    KitConfiguration: Mapped[str]   = mapped_column(String, nullable=True)
+    SticksPerKit: Mapped[int]       = mapped_column(Integer, nullable=True)
+    CapacityPerStick: Mapped[int]   = mapped_column(Integer, nullable=True)
+    Clock: Mapped[str]              = mapped_column(String, nullable=True)
+    CASPrimary: Mapped[str]         = mapped_column(String, nullable=True)
+    Misc: Mapped[str]               = mapped_column(String, nullable=True)
+    Lighting: Mapped[str]           = mapped_column(String, nullable=True)
+    RAMFormFactor: Mapped[str]         = mapped_column(String, nullable=True)
+    RAMPricePerGB: Mapped[float]       = mapped_column(Float, nullable=True)
+
+    ### Allow nested inheritance
+    __mapper_args__ = { "polymorphic_abstract": True }
+
+
+@dataclass
+class DDR4(RAM):
+    """Model for DDR4"""
+
+    __tablename__ = "ddr4"
+    __mapper_args__ = { "polymorphic_identity": "ddr4" }
+
+
+@dataclass
+class DDR5(RAM):
+    """Model for DDR5"""
+
+    __tablename__ = "ddr5"
+    __mapper_args__ = { "polymorphic_identity": "ddr5" }
 
 
 CATEGORY_CLASS_DICT = {
     "ssd":      SSD,
     "hdd":      HDD,
-    # "ddr4":     RAM,
-    # "ddr5":     RAM,
+    "ddr4":     DDR4,
+    "ddr5":     DDR5,
 }

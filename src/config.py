@@ -64,8 +64,8 @@ FORM_LABELS = {
         "centrecom":    "Centre Com"
     },
     "category":{
-        "hdd":      "3.5\" Hard Drive",
         "ssd":      "SSD",
+        "hdd":      "3.5\" Hard Drive",
         "ddr4":     "DDR4",
         "ddr5":     "DDR5",
         "cpu":      "CPU",
@@ -83,19 +83,19 @@ TABLE_COLS = {
         "sort_col":     "PricePerTB"
     },
     "ddr4": {
-        "display_cols": ["TitleLink", "Brand", "Model", "KitConfiguration", "CapacityGB", "PriceAUD", "PricePerGB"],
-        "sort_col":     "PricePerGB"
+        "display_cols": ["TitleLink", "Brand", "RAMModel", "KitConfiguration", "RAMCapacityGB", "PriceAUD", "RAMPricePerGB"],
+        "sort_col":     "RAMPricePerGB"
     },
     "ddr5": {
-        "display_cols": ["TitleLink", "Brand", "Model", "KitConfiguration", "CapacityGB", "PriceAUD", "PricePerGB"],
-        "sort_col":     "PricePerGB"
+        "display_cols": ["TitleLink", "Brand", "RAMModel", "KitConfiguration", "RAMCapacityGB", "PriceAUD", "RAMPricePerGB"],
+        "sort_col":     "RAMPricePerGB"
     },
     "cpu": {
         "display_cols": ["TitleLink", "Brand", "PriceAUD"],
-        "sort_col":     "PricePerTB"
+        "sort_col":     "PriceAUD"
     },
     "gpu": {
         "display_cols": ["TitleLink", "Brand", "PriceAUD"],
-        "sort_col":     "PricePerTB"
+        "sort_col":     "PriceAUD"
     }
 }

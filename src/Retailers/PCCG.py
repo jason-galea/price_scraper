@@ -58,7 +58,8 @@ class PCCG:
             "Seagate":  "Seagate",
         }
     }
-
+    # RAM_REGEX_PATTERN = r"(^[a-zA-Z\.]+) ([a-zA-Z\-\ 5]*)(\d+)GB \(((\d)x(\d+)GB)\) (\d{4}[MHhz]{3}) (CL\d{2}) +(DDR\d)(.*)"
+    RAM_REGEX_PATTERN = r"(^[a-zA-Z\.]+) ([a-zA-Z\-\ 5]*)(\d+)GB \(((\d)x(\d+)GB)\) (\d{4}[MHhz]{3}) (CL\d{2}) +DDR\d(.*)"
 
     def __init__(self, app: Flask, category: str, _debug=False) -> None:
 
@@ -176,7 +177,7 @@ class PCCG:
             result.update({
                 "Brand": title_split[0],
                 "Series": title_split[1],
-                "Model": title_split[3],
+                "HDDModel": title_split[3],
                 "CapacityGB": float(capacity_gb),
                 "PricePerGB": float(round(result["PriceAUD"]/capacity_gb, 2)),
                 "CapacityTB": float(capacity_tb),
@@ -266,7 +267,7 @@ class PCCG:
         ### STATIC FIELDS
 
         regex_result = re.search(
-            pattern=r"(^[a-zA-Z\.]+) ([a-zA-Z\-\ 5]*)(\d+)GB \(((\d)x(\d+)GB)\) (\d{4}[MHhz]{3}) (CL\d{2}) +(DDR\d)(.*)",
+            pattern=PCCG.RAM_REGEX_PATTERN,
             string=title,
         )
 
@@ -276,8 +277,12 @@ class PCCG:
 
         ### Create dict from capture group results
         ### NOTE: Need to associate keys & values before removing anything
-        regex_groups_keys = ["Brand", "Model", "CapacityGB", "KitConfiguration", "SticksPerKit",
-                             "CapacityPerStick", "Clock", "CASPrimary", "MemoryType", "Misc"]
+        # regex_groups_keys = ["Brand", "RAMModel", "RAMCapacityGB", "KitConfiguration", "SticksPerKit",
+        #                      "CapacityPerStick", "Clock", "CASPrimary", "MemoryType", "Misc"]
+        regex_groups_keys = [
+            "Brand", "RAMModel", "RAMCapacityGB", "KitConfiguration",
+            "SticksPerKit", "CapacityPerStick", "Clock", "CASPrimary", "Misc"
+        ]
         ### Strip spaces
         regex_groups_vals = [ val.strip() for val in regex_result.groups() ]
         ### Convert ints to ints
@@ -287,13 +292,14 @@ class PCCG:
         # print(f"==> INFO: regex_groups_vals = {regex_groups_vals}")
         # break
         regex_groups_dict = dict(zip( regex_groups_keys, regex_groups_vals ))
+        # del regex_groups_dict["MemoryType"] ### Not needed
 
 
         ### TODO: Figure out if this is still needed?
         # ### TODO: Handle wierd cases
         # if (regex_groups_dict["Misc"] == "White"):
         #     pass
-        # if (regex_groups_dict["Model"] == ""):
+        # if (regex_groups_dict["RAMModel"] == ""):
         #     pass
 
         # print(f"==> INFO: regex_groups_dict = {json.dumps(regex_groups_dict, indent=4)}")
@@ -306,8 +312,8 @@ class PCCG:
             ### NOTE: Assumption based on PCCG UI, there are only two possible values
             ### NOTE: "Lighting" allows for other values from different retailers, such as "White"
             "Lighting": "RGB" if re.search(r"RGB", title) else "No lighting",
-            "FormFactor": "SODIMM" if re.search(r"SODIMM", title) else "DIMM",
-            "PricePerGB": round( temp_result["PriceAUD"] / temp_result["CapacityGB"], 2 ),
+            "RAMFormFactor": "SODIMM" if re.search(r"SODIMM", title) else "DIMM",
+            "RAMPricePerGB": round( temp_result["PriceAUD"] / temp_result["RAMCapacityGB"], 2 ),
         })
 
 

@@ -17,7 +17,7 @@ from src.Pages.Table import Table
 from src.Database import db
 
 ### BD Models/Tables to create
-from src.Database import SSD, HDD
+from src.Database import SSD, HDD, DDR4, DDR5
 
 
 ###########################################################
@@ -119,6 +119,7 @@ def routes(path='index'):
 
 @app.route('/favicon.ico')
 def favicon():
+    """Favicon route"""
     return send_from_directory(
         directory=os.path.join(app.root_path, 'static'),
         path='favicon.ico',
