@@ -14,7 +14,7 @@ services:
 
   scraper:
     container_name: scraper
-    build: .
+    build: ./compose/
     pull_policy: build ### Rebuild image, even if one already exists
     restart: unless-stopped
     env_file: ./compose/db.env
