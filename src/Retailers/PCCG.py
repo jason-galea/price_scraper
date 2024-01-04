@@ -277,8 +277,6 @@ class PCCG:
 
         ### Create dict from capture group results
         ### NOTE: Need to associate keys & values before removing anything
-        # regex_groups_keys = ["Brand", "RAMModel", "RAMCapacityGB", "KitConfiguration", "SticksPerKit",
-        #                      "CapacityPerStick", "Clock", "CASPrimary", "MemoryType", "Misc"]
         regex_groups_keys = [
             "Brand", "RAMModel", "RAMCapacityGB", "KitConfiguration",
             "SticksPerKit", "CapacityPerStick", "Clock", "CASPrimary", "Misc"
@@ -292,7 +290,6 @@ class PCCG:
         # print(f"==> INFO: regex_groups_vals = {regex_groups_vals}")
         # break
         regex_groups_dict = dict(zip( regex_groups_keys, regex_groups_vals ))
-        # del regex_groups_dict["MemoryType"] ### Not needed
 
 
         ### TODO: Figure out if this is still needed?
