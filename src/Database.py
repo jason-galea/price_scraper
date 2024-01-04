@@ -20,8 +20,6 @@ class Product(db.Model):
 
     __tablename__ = "product"
 
-    ### Schema
-    ### NOTE: Any change requires DB reinitialisation
     id: Mapped[int]             = mapped_column(Integer, primary_key=True, autoincrement=True)
     type: Mapped[str]           = mapped_column(String) ### Allow inheritance
 
@@ -35,7 +33,7 @@ class Product(db.Model):
     __table_args__ = (
         db.CheckConstraint(
             Retailer.in_(['pccg', 'scorptec', 'centrecom']),
-            name='retailer_types'
+            name='Retailer_types'
         ),
     )
 
@@ -64,6 +62,9 @@ class Product(db.Model):
 
         latest_product = cls.query.order_by(cls.id.desc()).first()
 
+        if not latest_product:
+            return
+
         products_list_of_tuples = (
             cls.query.filter(
                 cls.Retailer == retailer,
@@ -84,38 +85,35 @@ class Product(db.Model):
         return result
 
 
-    @staticmethod
-    def export_to_db(products: list):
-        raise NotImplementedError
+    @classmethod
+    def export_to_db(cls, products: list) -> None:
+        """Export products (a list of dictionaries) to PostgreSQL DB"""
+        # print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
+
+        for product in products:
+            db.session.add(cls(**product)) ### Add to DB queue
+
+        db.session.commit() ### Flush DB queue
+        print("==> INFO: Successfully flushed DB queue")
 
 
-class Drive(Product):
-    # __tablename__ = "drive"
-
-    ### Schema
-    ### NOTE: Any change requires DB reinitialisation
-    # drive_type: Mapped[str]     = mapped_column(String) ### Allow inheritance
+class Drive(Product): # pylint: disable=abstract-method
+    """Parent Model for drives, or products that have some capacity"""
 
     CapacityTB: Mapped[float]   = mapped_column(Float, nullable=True)
     CapacityGB: Mapped[float]   = mapped_column(Float, nullable=True)
     PricePerTB: Mapped[float]   = mapped_column(Float, nullable=True)
     PricePerGB: Mapped[float]   = mapped_column(Float, nullable=True)
 
-    ### Allow inheritance
-    # __mapper_args__ = {
-    #     "polymorphic_identity": "drive",
-    #     "polymorphic_on": "drive_type",
-    # }
-
     ### Allow nested inheritance
     __mapper_args__ = { "polymorphic_abstract": True }
 
 
 class SSD(Drive):
+    """Model for SSDs"""
+
     __tablename__ = "ssd"
 
-    ### Schema
-    ### NOTE: Any change requires DB reinitialisation
     FormFactor: Mapped[str]     = mapped_column(String, nullable=True)
     Protocol: Mapped[str]       = mapped_column(String, nullable=True)
 
@@ -123,118 +121,58 @@ class SSD(Drive):
         "polymorphic_identity": "ssd",
     }
 
-
     def __init__(self,
-        utctime, retailer, title, url, priceaud, brand, ### Product
-        capacitytb, capacitygb, pricepertb, pricepergb, ### Drive
-        formfactor, protocol ### SSD
+        UTCTime, Retailer, Title, URL, PriceAUD, Brand, ### Product
+        CapacityTB, CapacityGB, PricePerTB, PricePerGB, ### Drive
+        FormFactor, Protocol ### SSD
     ):
         # pylint: disable=invalid-name
-        self.UTCTime = utctime
-        self.Retailer = retailer
-        self.Title = title
-        self.URL = url
-        self.PriceAUD = priceaud
-        self.Brand = brand
+        self.UTCTime = UTCTime
+        self.Retailer = Retailer
+        self.Title = Title
+        self.URL = URL
+        self.PriceAUD = PriceAUD
+        self.Brand = Brand
 
-        self.CapacityTB = capacitytb
-        self.CapacityGB = capacitygb
-        self.PricePerTB = pricepertb
-        self.PricePerGB = pricepergb
+        self.CapacityTB = CapacityTB
+        self.CapacityGB = CapacityGB
+        self.PricePerTB = PricePerTB
+        self.PricePerGB = PricePerGB
 
-        self.FormFactor = formfactor
-        self.Protocol = protocol
-
-
-    ### TODO: Convert to dict kwargs, move into "Product" class
-    @classmethod
-    def export_to_db(cls, products: list) -> None:
-        # print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
-        for product in products:
-            temp_product = cls(
-                utctime=product["UTCTime"],
-                retailer=product["Retailer"],
-                title=product["Title"],
-                url=product["URL"],
-                priceaud=product["PriceAUD"],
-                brand=product["Brand"],
-
-                capacitytb=product["CapacityTB"],
-                capacitygb=product["CapacityGB"],
-                pricepertb=product["PricePerTB"],
-                pricepergb=product["PricePerGB"],
-
-                formfactor=product["FormFactor"],
-                protocol=product["Protocol"],
-            )
-
-            db.session.add(temp_product) ### Add to DB queue
-
-        print("==> INFO: Flushing DB queue")
-        db.session.commit() ### Flush DB queue
+        self.FormFactor = FormFactor
+        self.Protocol = Protocol
 
 
 class HDD(Drive):
+    """Model for HDDs"""
+
     __tablename__ = "hdd"
 
-    ### Schema
-    ### NOTE: Any change requires DB reinitialisation
     Series: Mapped[str]         = mapped_column(String, nullable=True)
     Model: Mapped[str]          = mapped_column(String, nullable=True)
 
-    __mapper_args__ = {
-        "polymorphic_identity": "hdd",
-    }
-
+    __mapper_args__ = { "polymorphic_identity": "hdd" }
 
     def __init__(self,
-        utctime, retailer, title, url, priceaud, brand, ### Product
-        capacitytb, capacitygb, pricepertb, pricepergb, ### Drive
-        series, model, ### HDD
+        UTCTime, Retailer, Title, URL, PriceAUD, Brand, ### Product
+        CapacityTB, CapacityGB, PricePerTB, PricePerGB, ### Drive
+        Series, Model, ### HDD
     ):
         # pylint: disable=invalid-name
-        self.UTCTime = utctime
-        self.Retailer = retailer
-        self.Title = title
-        self.URL = url
-        self.PriceAUD = priceaud
-        self.Brand = brand
+        self.UTCTime = UTCTime
+        self.Retailer = Retailer
+        self.Title = Title
+        self.URL = URL
+        self.PriceAUD = PriceAUD
+        self.Brand = Brand
 
-        self.CapacityTB = capacitytb
-        self.CapacityGB = capacitygb
-        self.PricePerTB = pricepertb
-        self.PricePerGB = pricepergb
+        self.CapacityTB = CapacityTB
+        self.CapacityGB = CapacityGB
+        self.PricePerTB = PricePerTB
+        self.PricePerGB = PricePerGB
 
-        self.Series = series
-        self.Model = model
-
-
-    ### TODO: Convert to dict kwargs, move into "Product" class
-    @classmethod
-    def export_to_db(cls, products: list) -> None:
-        # print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
-        for product in products:
-            temp_product = cls(
-                utctime=product["UTCTime"],
-                retailer=product["Retailer"],
-                title=product["Title"],
-                url=product["URL"],
-                priceaud=product["PriceAUD"],
-                brand=product["Brand"],
-
-                capacitytb=product["CapacityTB"],
-                capacitygb=product["CapacityGB"],
-                pricepertb=product["PricePerTB"],
-                pricepergb=product["PricePerGB"],
-                
-                series=product["Series"],
-                model=product["Model"],
-            )
-
-            db.session.add(temp_product) ### Add to DB queue
-
-        print("==> INFO: Flushing DB queue")
-        db.session.commit() ### Flush DB queue
+        self.Series = Series
+        self.Model = Model
 
 
 CATEGORY_CLASS_DICT = {
