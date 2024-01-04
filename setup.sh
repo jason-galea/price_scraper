@@ -10,7 +10,7 @@ sudo apt upgrade -y
 
 echo -e "\n==> Install apt packages"
 # sudo apt install -y selenium beautifulsoup4 firefox firefox-geckodriver
-sudo apt install -y firefox firefox-geckodriver python3-pip
+sudo apt install -y firefox firefox-geckodriver python3-pip libpq-dev
 
 echo -e "\n==> Show python3 versions"
 python3 --version

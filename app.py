@@ -4,24 +4,20 @@
 A Flask-based webserver which extracts PC component data from Australian retailers.
 """
 
-### https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/quickstart/
-
 import os
 import json
 
 from flask import Flask, render_template, request, send_from_directory
-# from flask_sqlalchemy import SQLAlchemy
-# from flask_sqlalchemy.query import Query
-# from sqlalchemy import Integer, String, DateTime
-# from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from flask_migrate import Migrate
 
 from src.config import PAGE_INFO, FORM_LABELS
 from src.generic_funcs import list_contains_all_values
 from src.Pages.Scrape import Scrape
 from src.Pages.Table import Table
-### NOTE: My hope is that by not importing "Product", the table won't be created
-from src.Database import db, SSD, HDD
+from src.Database import db
+
+### BD Models/Tables to create
+from src.Database import SSD, HDD
 
 
 ###########################################################
@@ -36,8 +32,7 @@ POSTGRES_DB_URI = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_na
 
 
 ###########################################################
-### Init Flask
-### TODO: Move this to a function
+### Init Flask & DB
 app: Flask = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False ### Silence warning
@@ -45,30 +40,13 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False ### Silence warning
 db.init_app(app)
 migrate = Migrate(app, db)
 
+### Create models & tables
 with app.app_context():
     db.create_all()
 
 
-# def run_app():
-#     """
-#     App entrypoint, used to configure DB and launch flask
-#     """
-
-#     app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
-
-#     ### DB stuff
-#     db.init_app(app)
-#     # from src.Database.Product import Product
-#     _migrate = Migrate(app, db)
-
-#     with app.app_context():
-#         db.create_all()
-
-#     # return app
-#     # app.run(debug=True, host="0.0.0.0", port=5000)
-#     app.run(host="0.0.0.0")
-
-
+###########################################################
+### Flask Routes
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def routes(path='index'):

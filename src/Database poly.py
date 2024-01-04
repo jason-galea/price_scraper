@@ -39,10 +39,9 @@ class Product(db.Model):
         ),
     )
 
-    ### Allow inheritance
     __mapper_args__ = {
         "polymorphic_identity": "product",
-        "polymorphic_on": "type",
+        "polymorphic_on": "type", ### Allow inheritance
     }
 
 
@@ -90,25 +89,21 @@ class Product(db.Model):
 
 
 class Drive(Product):
-    # __tablename__ = "drive"
+    __tablename__ = "drive"
 
     ### Schema
     ### NOTE: Any change requires DB reinitialisation
-    # drive_type: Mapped[str]     = mapped_column(String) ### Allow inheritance
+    drive_type: Mapped[str]     = mapped_column(String) ### Allow inheritance
 
-    CapacityTB: Mapped[float]   = mapped_column(Float, nullable=True)
-    CapacityGB: Mapped[float]   = mapped_column(Float, nullable=True)
-    PricePerTB: Mapped[float]   = mapped_column(Float, nullable=True)
-    PricePerGB: Mapped[float]   = mapped_column(Float, nullable=True)
+    CapacityTB: Mapped[float]   = mapped_column(Float)
+    CapacityGB: Mapped[float]   = mapped_column(Float)
+    PricePerTB: Mapped[float]   = mapped_column(Float)
+    PricePerGB: Mapped[float]   = mapped_column(Float)
 
-    ### Allow inheritance
-    # __mapper_args__ = {
-    #     "polymorphic_identity": "drive",
-    #     "polymorphic_on": "drive_type",
-    # }
-
-    ### Allow nested inheritance
-    __mapper_args__ = { "polymorphic_abstract": True }
+    __mapper_args__ = {
+        "polymorphic_identity": "drive",
+        "polymorphic_on": "drive_type", ### Allow inheritance
+    }
 
 
 class SSD(Drive):
@@ -116,8 +111,8 @@ class SSD(Drive):
 
     ### Schema
     ### NOTE: Any change requires DB reinitialisation
-    FormFactor: Mapped[str]     = mapped_column(String, nullable=True)
-    Protocol: Mapped[str]       = mapped_column(String, nullable=True)
+    FormFactor: Mapped[str]     = mapped_column(String)
+    Protocol: Mapped[str]       = mapped_column(String)
 
     __mapper_args__ = {
         "polymorphic_identity": "ssd",
@@ -179,8 +174,8 @@ class HDD(Drive):
 
     ### Schema
     ### NOTE: Any change requires DB reinitialisation
-    Series: Mapped[str]         = mapped_column(String, nullable=True)
-    Model: Mapped[str]          = mapped_column(String, nullable=True)
+    Series: Mapped[str]         = mapped_column(String)
+    Model: Mapped[str]          = mapped_column(String)
 
     __mapper_args__ = {
         "polymorphic_identity": "hdd",

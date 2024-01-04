@@ -2,17 +2,13 @@ import re
 import json
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 from bs4 import BeautifulSoup, PageElement
 
 from src.Database import CATEGORY_CLASS_DICT
-from src.generic_funcs import (
-    get_utcnow_iso_8601,
-)
-from src.Retailers.funcs import (
-    create_webdriver,
-    concat_items_in_list,
-)
+from src.generic_funcs import get_utcnow_iso_8601
+from src.Retailers.funcs import create_webdriver, concat_items_in_list
+
 
 class PCCG:
     """
@@ -62,6 +58,7 @@ class PCCG:
             "Seagate":  "Seagate",
         }
     }
+
 
     def __init__(self, app: Flask, category: str, _debug=False) -> None:
 
@@ -180,10 +177,10 @@ class PCCG:
                 "Brand": title_split[0],
                 "Series": title_split[1],
                 "Model": title_split[3],
-                "CapacityGB": capacity_gb,
-                "PricePerGB": round(result["PriceAUD"]/capacity_gb, 2),
-                "CapacityTB": capacity_tb,
-                "PricePerTB": round(result["PriceAUD"]/capacity_tb, 2),
+                "CapacityGB": float(capacity_gb),
+                "PricePerGB": float(round(result["PriceAUD"]/capacity_gb, 2)),
+                "CapacityTB": float(capacity_tb),
+                "PricePerTB": float(round(result["PriceAUD"]/capacity_tb, 2)),
             })
 
             ########################################################################################
@@ -233,15 +230,14 @@ class PCCG:
         }
         for label, val in capacity_dict.items():
             for s in reversed(title_split):
-                if (label in s) and (s != "RGB"):
-                    capacity_gb = int( s.strip(label) )*val
+                if (label in s) and (s != "RGB"): ### E.G: "TB" in "10TB"
+                    capacity_gb = int( s.strip(label) )*val ### E.G: 10*1000
                     result.update({
-                        "CapacityGB":capacity_gb,
-                        "CapacityTB":round( capacity_gb/1000, 2 ),
-                        "PricePerGB":round( result["PriceAUD"]/capacity_gb, 2 ),
-                        "PricePerTB":round( result["PriceAUD"]/(capacity_gb/1000), 2 ),
+                        "CapacityGB": float(capacity_gb),
+                        "CapacityTB": float(round( capacity_gb/1000, 2 )),
+                        "PricePerGB": float(round( result["PriceAUD"]/capacity_gb, 2 )),
+                        "PricePerTB": float(round( result["PriceAUD"]/(capacity_gb/1000), 2 )),
                     })
-                    break
 
         if ("CapacityGB" not in result.keys()):
             print(f"==> WARN: CapacityGB not found in title: {title_split}")
