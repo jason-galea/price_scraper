@@ -1,14 +1,11 @@
 # price_scraper
 
-A Flask-based webserver, which extracts PC component data from a few Australian retailers.
+A Flask-based webserver which extracts PC component data from Australian retailers.
 
-## Requirements
+## Launch
 
-Python 3.10 or higher.
+Start docker containers with:
 
-## Instructions
+    docker compose up -d
 
-    git clone https://github.com/jason-galea/price_scraper.git
-    cd price_scraper
-    ./setup.sh
-    ./run.py
+The website should be available at http://localhost:5000

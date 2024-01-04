@@ -1,4 +1,7 @@
 flask
+flask_sqlalchemy
+flask_migrate
 pandas
 selenium
 beautifulsoup4
+psycopg2
