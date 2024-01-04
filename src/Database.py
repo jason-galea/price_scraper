@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import String, Integer, Float, DateTime
@@ -44,8 +45,8 @@ class Product(db.Model):
     }
 
 
-    def __init__(self):
-        raise NotImplementedError
+    # def __init__(self):
+    #     raise NotImplementedError
 
 
     def __repr__(self):
@@ -109,6 +110,7 @@ class Drive(Product): # pylint: disable=abstract-method
     __mapper_args__ = { "polymorphic_abstract": True }
 
 
+@dataclass
 class SSD(Drive):
     """Model for SSDs"""
 
@@ -121,28 +123,8 @@ class SSD(Drive):
         "polymorphic_identity": "ssd",
     }
 
-    def __init__(self,
-        UTCTime, Retailer, Title, URL, PriceAUD, Brand, ### Product
-        CapacityTB, CapacityGB, PricePerTB, PricePerGB, ### Drive
-        FormFactor, Protocol ### SSD
-    ):
-        # pylint: disable=invalid-name
-        self.UTCTime = UTCTime
-        self.Retailer = Retailer
-        self.Title = Title
-        self.URL = URL
-        self.PriceAUD = PriceAUD
-        self.Brand = Brand
 
-        self.CapacityTB = CapacityTB
-        self.CapacityGB = CapacityGB
-        self.PricePerTB = PricePerTB
-        self.PricePerGB = PricePerGB
-
-        self.FormFactor = FormFactor
-        self.Protocol = Protocol
-
-
+@dataclass
 class HDD(Drive):
     """Model for HDDs"""
 
@@ -152,27 +134,6 @@ class HDD(Drive):
     Model: Mapped[str]          = mapped_column(String, nullable=True)
 
     __mapper_args__ = { "polymorphic_identity": "hdd" }
-
-    def __init__(self,
-        UTCTime, Retailer, Title, URL, PriceAUD, Brand, ### Product
-        CapacityTB, CapacityGB, PricePerTB, PricePerGB, ### Drive
-        Series, Model, ### HDD
-    ):
-        # pylint: disable=invalid-name
-        self.UTCTime = UTCTime
-        self.Retailer = Retailer
-        self.Title = Title
-        self.URL = URL
-        self.PriceAUD = PriceAUD
-        self.Brand = Brand
-
-        self.CapacityTB = CapacityTB
-        self.CapacityGB = CapacityGB
-        self.PricePerTB = PricePerTB
-        self.PricePerGB = PricePerGB
-
-        self.Series = Series
-        self.Model = Model
 
 
 CATEGORY_CLASS_DICT = {
