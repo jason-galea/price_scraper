@@ -109,18 +109,8 @@ class Drive(Product): # pylint: disable=abstract-method
     __mapper_args__ = { "polymorphic_abstract": True }
 
 
-# class HasCapacity(): # pylint: disable=abstract-method
-#     """Parent Model for drives, or products that have some capacity"""
-
-#     CapacityTB: Mapped[float]   = mapped_column(Float, nullable=True, use_existing_column=True)
-#     CapacityGB: Mapped[float]   = mapped_column(Float, nullable=True, use_existing_column=True)
-#     PricePerTB: Mapped[float]   = mapped_column(Float, nullable=True, use_existing_column=True)
-#     PricePerGB: Mapped[float]   = mapped_column(Float, nullable=True, use_existing_column=True)
-
-
 @dataclass
 class SSD(Drive):
-# class SSD(HasCapacity, Product):
     """Model for SSDs"""
 
     __tablename__ = "ssd"
@@ -136,7 +126,6 @@ class SSD(Drive):
 
 @dataclass
 class HDD(Drive):
-# class HDD(HasCapacity, Product):
     """Model for HDDs"""
 
     __tablename__ = "hdd"
@@ -150,7 +139,6 @@ class HDD(Drive):
 
 @dataclass
 class RAM(Product):
-# class RAM(HasCapacity, Product):
     """Parent Model for RAM"""
 
     __tablename__ = "ram"
