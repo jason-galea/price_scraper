@@ -286,18 +286,7 @@ class PCCG:
         ### Convert ints to ints
         regex_groups_vals = [ (int(s) if (s.isdigit()) else s) for s in regex_groups_vals ]
 
-        # print(f"==> INFO: regex_groups_keys = {regex_groups_keys}")
-        # print(f"==> INFO: regex_groups_vals = {regex_groups_vals}")
-        # break
         regex_groups_dict = dict(zip( regex_groups_keys, regex_groups_vals ))
-
-
-        ### TODO: Figure out if this is still needed?
-        # ### TODO: Handle wierd cases
-        # if (regex_groups_dict["Misc"] == "White"):
-        #     pass
-        # if (regex_groups_dict["RAMModel"] == ""):
-        #     pass
 
         # print(f"==> INFO: regex_groups_dict = {json.dumps(regex_groups_dict, indent=4)}")
         temp_result.update(regex_groups_dict)
