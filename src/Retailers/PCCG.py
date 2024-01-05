@@ -12,7 +12,7 @@ from src.Retailers.funcs import create_webdriver, concat_items_in_list
 
 class PCCG:
     """
-    TODO: docstring
+    Container class for methods related to the "Scrape" page
     """
 
     CATEGORY_URLS = {
@@ -61,7 +61,7 @@ class PCCG:
     # RAM_REGEX_PATTERN = r"(^[a-zA-Z\.]+) ([a-zA-Z\-\ 5]*)(\d+)GB \(((\d)x(\d+)GB)\) (\d{4}[MHhz]{3}) (CL\d{2}) +(DDR\d)(.*)"
     RAM_REGEX_PATTERN = r"(^[a-zA-Z\.]+) ([a-zA-Z\-\ 5]*)(\d+)GB \(((\d)x(\d+)GB)\) (\d{4}[MHhz]{3}) (CL\d{2}) +DDR\d(.*)"
 
-    def __init__(self, app: Flask, category: str, _debug=False) -> None:
+    def __init__(self, app: Flask, category: str) -> None:
 
         base_url = self.CATEGORY_URLS[category]
 

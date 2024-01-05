@@ -18,14 +18,15 @@ services:
     pull_policy: build ### Rebuild image, even if one already exists
     restart: unless-stopped
     env_file: ./compose/db.env
-    environment:
-      FLASK_APP: /scraper/app.py
+    # environment:
+    #   FLASK_APP: /scraper/app.py
     ports:
       - 5000:5000
     volumes:
       - .:/scraper/
-    command: flask run -h 0.0.0.0
-    # command: python3 app.py run_app ### Moving init to function "run_app()"
+    # command: flask run -h 0.0.0.0
+    # command: python3 app.py
+    command: /scraper/app.py
     depends_on:
     - db
 

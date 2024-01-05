@@ -11,45 +11,53 @@ from flask import Flask, render_template, request, send_from_directory
 from flask_migrate import Migrate
 
 from src.config import PAGE_INFO, FORM_LABELS
-from src.generic_funcs import list_contains_all_values
+# from src.generic_funcs import list_contains_all_values
 from src.Pages.Scrape import Scrape
 from src.Pages.Table import Table
 from src.Database import db
 
-### BD Models/Tables to create
+### DB Models/Tables to create
 from src.Database import SSD, HDD, DDR4, DDR5
 
 
 ###########################################################
 ### GLOBALS
-host        = os.environ['POSTGRES_HOST']
-port        = os.environ['POSTGRES_PORT']
-user        = os.environ['POSTGRES_USER']
-password    = os.environ['POSTGRES_PASSWORD']
-db_name     = os.environ['POSTGRES_DB']
+HOST        = os.environ['POSTGRES_HOST']
+PORT        = os.environ['POSTGRES_PORT']
+USER        = os.environ['POSTGRES_USER']
+PASSWORD    = os.environ['POSTGRES_PASSWORD']
+DB_NAME     = os.environ['POSTGRES_DB']
 
-POSTGRES_DB_URI = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_name}"
+POSTGRES_DB_URI = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}"
 
-
-###########################################################
-### Init Flask & DB
 app: Flask = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False ### Silence warning
-
-db.init_app(app)
-migrate = Migrate(app, db)
-
-### Create models & tables
-with app.app_context():
-    db.create_all()
 
 
-###########################################################
-### Flask Routes
+def run_app():
+    """Configure & run Flask app, initialise DB."""
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = POSTGRES_DB_URI
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS "] = False ### Silence warning
+
+    db.init_app(app)
+    _migrate = Migrate(app, db)
+
+    ### Create models & tables
+    with app.app_context():
+        db.create_all()
+
+    app.run(host="0.0.0.0")
+
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def routes(path='index'):
+    """
+    Function to serve all routes (except /favicon.ico).\n
+    Accepts the path of whatever page was requested.\n
+    Handles form inputs, gathers vars required to template HTML.\n
+    Returns templated HTML.
+    """
 
     # key = path ### Deal with it
     common_vars = {
@@ -63,7 +71,8 @@ def routes(path='index'):
         **request.form,
     }
 
-    form_is_valid = list_contains_all_values(page_vars.keys(), ['website', 'category'])
+    # form_is_valid = list_contains_all_values(page_vars, ['website', 'category'])
+    form_is_valid = ("website" in page_vars) and ("category" in page_vars)
     if form_is_valid:
         website = page_vars['website']
         category = page_vars['category']
@@ -125,3 +134,7 @@ def favicon():
         path='favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )
+
+
+if __name__ == "__main__":
+    run_app()
