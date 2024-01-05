@@ -35,7 +35,7 @@ class Product(db.Model):
     __table_args__ = (
         db.CheckConstraint(
             Retailer.in_(['pccg', 'scorptec', 'centrecom']),
-            name='Retailer_types'
+            name='retailer_types'
         ),
     )
 
@@ -145,7 +145,7 @@ class RAM(Product):
 
     # pylint: disable=invalid-name
     RAMModel: Mapped[str]           = mapped_column(String, nullable=True)
-    RAMCapacityGB: Mapped[float]       = mapped_column(Float, nullable=True)
+    RAMCapacityGB: Mapped[float]    = mapped_column(Float, nullable=True)
     KitConfiguration: Mapped[str]   = mapped_column(String, nullable=True)
     SticksPerKit: Mapped[int]       = mapped_column(Integer, nullable=True)
     CapacityPerStick: Mapped[int]   = mapped_column(Integer, nullable=True)
@@ -153,8 +153,8 @@ class RAM(Product):
     CASPrimary: Mapped[str]         = mapped_column(String, nullable=True)
     Misc: Mapped[str]               = mapped_column(String, nullable=True)
     Lighting: Mapped[str]           = mapped_column(String, nullable=True)
-    RAMFormFactor: Mapped[str]         = mapped_column(String, nullable=True)
-    RAMPricePerGB: Mapped[float]       = mapped_column(Float, nullable=True)
+    RAMFormFactor: Mapped[str]      = mapped_column(String, nullable=True)
+    RAMPricePerGB: Mapped[float]    = mapped_column(Float, nullable=True)
 
     ### Allow nested inheritance
     __mapper_args__ = { "polymorphic_abstract": True }
