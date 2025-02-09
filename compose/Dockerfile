@@ -1,29 +1,22 @@
 FROM python:3.12.1-slim-bullseye
 
-### https://testdriven.io/blog/dockerizing-flask-with-postgres-gunicorn-and-nginx/
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
 
-### Packages
-RUN apt update -y
-RUN apt install -y firefox-esr
-RUN apt install -y wget libpq-dev g++
+ENV GECKODRIVER_VERSION=v0.35.0
+ENV GECKODRIVER_URL=https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
 
-### geckodriver
-RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
-RUN tar -xvzf geckodriver*
-RUN mv geckodriver /usr/local/bin
-RUN rm -rf geckodriver*
 
-### Python modules
-ADD reqs.txt .
-RUN python3.12 -m pip install -U pip setuptools wheel
-RUN python3.12 -m pip install -r reqs.txt
+RUN apt update -y \
+    && apt install -y firefox-esr \
+    && apt install -y wget libpq-dev g++ \
+    && wget $GECKODRIVER_URL \
+    && tar -xvzf geckodriver* \
+    && mv geckodriver /usr/local/bin \
+    && rm -rf geckodriver* \
+    && python3.12 -m pip install -U pip setuptools wheel \
+    && python3.12 -m pip install \
+        flask flask_sqlalchemy flask_migrate pandas selenium beautifulsoup4 psycopg2 \
+    && apt remove -y wget g++ \
+    && apt autoremove -y
 
-### Cleanup
-RUN apt remove -y wget g++
-RUN apt autoremove -y
-RUN rm -rf geckodriver*
-RUN rm reqs.txt
 
 WORKDIR /scraper/
