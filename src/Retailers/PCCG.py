@@ -148,6 +148,7 @@ class PCCG:
             title_split: list = result["Title"].split()
             # print(["Brand", "Series", "ModelNumber", "FormFactor", "Protocol", "Capacity"])
             # print(title_split)
+            print(f"==> DEBUG: ORIGINAL {title_split=}")
 
 
             ### Discard unwanted items
@@ -159,8 +160,38 @@ class PCCG:
             ### WEBSITE & CATEGORY SPECIFIC DATA
 
             ### Remove unneeded words
-            if "WD" in title_split:
-                title_split.remove("WD")
+            title_split = [
+                s for s in title_split
+                if s not in ["WD", "3.5in", "Hard", 'Drive']
+            ]
+            # print(f"{title_split=}")
+
+            ### Capacity
+            capacity_gb = capacity_tb = None
+            for s in title_split:
+                if "TB" in s:
+                    capacity_gb = int(s.strip("TB"))*1000
+                    capacity_tb = round(capacity_gb/1000, 2)
+                    # capacity_tb = int(s.strip("TB"))
+                    # capacity_gb = round(capacity_tb * 1000, 2)
+                    title_split.remove(s)
+                    break
+                if "GB" in s:
+                    capacity_gb = int(s.strip("GB"))
+                    capacity_tb = round(capacity_gb / 1000, 2)
+                    title_split.remove(s)
+                    break
+
+            if not capacity_gb:
+                print("==> ERROR: Capacity not detected from product title!")
+                print(f"{title_split=}")
+                continue
+            # else:
+            #     print(f"==> DEBUG: {capacity_gb=}")
+            #     print(f"==> DEBUG: {capacity_tb=}")
+
+            # if len(title_split) == 2:
+            #     title_split.append("")
 
             ### Make array consistent to Brand/Series/Model
             if title_split[0] == "Western": # ["Western", "Digital", "WD"] --> ["Western Digital"]
@@ -169,22 +200,33 @@ class PCCG:
                 if (title_split[1] == "Red") and (title_split[2] in ["Plus", "Pro"]):
                     title_split = concat_items_in_list(title_split, 1, 2)
 
-            print(f"==> DEBUG: {title_split=}")
+                if len(title_split) == 2:
+                    ### WD Surveillance drives are missing the model number
+                    ### TODO: Fetch model numbers (+ loads of other data) from specific product pages
+                    title_split.append("")
 
-            ### Preprocess common values
-            capacity_gb = int(title_split[2].strip("TB"))*1000
-            capacity_tb = round(capacity_gb/1000, 2)
+                if title_split[2] == "Surveillance":
+                    title_split = concat_items_in_list(title_split, 1, 2)
 
-            ### Save
-            result.update({
-                "Brand": title_split[0],
-                "Series": title_split[1],
-                "HDDModel": title_split[3],
-                "CapacityGB": float(capacity_gb),
-                "PricePerGB": float(round(result["PriceAUD"]/capacity_gb, 2)),
-                "CapacityTB": float(capacity_tb),
-                "PricePerTB": float(round(result["PriceAUD"]/capacity_tb, 2)),
-            })
+
+            # print(f"==> DEBUG: {title_split=}")
+
+            try:
+                ### Save
+                result.update({
+                    "Brand": title_split[0],
+                    "Series": title_split[1],
+                    "HDDModel": title_split[2],
+                    "CapacityGB": float(capacity_gb),
+                    "PricePerGB": float(round(result["PriceAUD"]/capacity_gb, 2)),
+                    "CapacityTB": float(capacity_tb),
+                    "PricePerTB": float(round(result["PriceAUD"]/capacity_tb, 2)),
+                })
+            except (IndexError, ValueError, KeyError) as ex:
+                print(f"{ex=}")
+                print(f"==> DEBUG: FINAL {title_split=}")
+                continue
+
 
             ########################################################################################
 
