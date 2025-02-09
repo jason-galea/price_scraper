@@ -1,9 +1,9 @@
 {% extends "form.html" %}
 {% block form_content %}
 
-{% if website and category %}
+{% if table_html %}
     <p>Received website '{{ website }}' and category '{{ category }}'</p>
-    <!-- <p>MATCHING RESULT: {{ latest_file_basename }}</p> -->
+    <p>Product info scraped at UTC time '{{ utc_time }}'</p>
 
     {{ table_html|safe }}
 {% endif %}

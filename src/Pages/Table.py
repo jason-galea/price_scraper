@@ -15,11 +15,14 @@ class Table:
     def get_template_vars(website, category) -> dict:
 
         products: list = CATEGORY_CLASS_DICT[category].get_most_recent(website)
-        # print(f"==> DEBUG: products[0] = {products[0]}")
+        print(f"==> DEBUG: products[0] = {products[0]}")
+
+        ### UTCTime
+        utc_time = products[0]["UTCTime"]
+        print(f"==> DEBUG: {utc_time=}")
 
         df: pd.DataFrame = pd.DataFrame(products)
         df = df.set_index('UTCTime')
-        # print(f"==> DEBUG: {df=}")
 
         ### TitleLink
         # pylint: disable=unsupported-assignment-operation
@@ -40,8 +43,11 @@ class Table:
             if (c != 'TitleLink')
         ]].apply( html.escape, axis=1 )
 
+        # print(f"==> DEBUG: {df=}")
+
         return {
-            'table_html': df.to_html(escape=False)
+            'table_html': df.to_html(escape=False),
+            'utc_time': utc_time,
         }
 
 
