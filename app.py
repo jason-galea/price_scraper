@@ -17,7 +17,12 @@ from src.Pages.Table import Table
 from src.Database import db
 
 ### DB Models/Tables to create
-from src.Database import SSD, HDD, DDR4, DDR5
+from src.Database import (
+    SSD,
+    # HDD,
+    # DDR4,
+    # DDR5
+)
 
 
 ###########################################################
@@ -53,9 +58,9 @@ def run_app():
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def routes(path='index'):
     """
-    Function to serve all routes (except /favicon.ico).\n
-    Accepts the path of whatever page was requested.\n
-    Handles form inputs, gathers vars required to template HTML.\n
+    Function to serve all routes (except /favicon.ico).
+    Accepts the path of whatever page was requested.
+    Handles form inputs, gathers vars required to template HTML.
     Returns templated HTML.
     """
 

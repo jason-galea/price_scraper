@@ -56,6 +56,8 @@ class PCCG:
             "Gigabyte": "Gigabyte",
             "PNY":      "PNY",
             "Seagate":  "Seagate",
+            "Lexar":    "Lexar",
+            "SanDisk":  "SanDisk",
         }
     }
     # RAM_REGEX_PATTERN = r"(^[a-zA-Z\.]+) ([a-zA-Z\-\ 5]*)(\d+)GB \(((\d)x(\d+)GB)\) (\d{4}[MHhz]{3}) (CL\d{2}) +(DDR\d)(.*)"
@@ -93,7 +95,7 @@ class PCCG:
 
         # if debug:
         #     print(json.dumps(extracted_data, indent=4))
-        print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
+        # print(f"==> DEBUG: extracted_data[0] = {json.dumps(extracted_data[0], indent=4)}")
 
         ### Write to DB
         with app.app_context():
@@ -167,7 +169,7 @@ class PCCG:
                 if (title_split[1] == "Red") and (title_split[2] in ["Plus", "Pro"]):
                     title_split = concat_items_in_list(title_split, 1, 2)
 
-            # print(title_split)
+            print(f"==> DEBUG: {title_split=}")
 
             ### Preprocess common values
             capacity_gb = int(title_split[2].strip("TB"))*1000
@@ -217,11 +219,11 @@ class PCCG:
         ### TODO: MY GOD PLEASE USE REGEX, THIS IS RIDICULOUS
         for d_categories, category_mappings in PCCG.COMMON_SSD_CATEGORY_MAPPINGS.items():
             for matching_string, value in category_mappings.items():
-                if (matching_string in title_split):
+                if matching_string in title_split:
                     result.update({ d_categories:value })
                     break
 
-            if (d_categories not in result.keys()):
+            if d_categories not in result:
                 print(f"==> WARN: {d_categories} not found in title: {title_split}")
 
         ### "CapacityGB", "PricePerGB", "PricePerGB"
@@ -240,7 +242,7 @@ class PCCG:
                         "PricePerTB": float(round( result["PriceAUD"]/(capacity_gb/1000), 2 )),
                     })
 
-        if ("CapacityGB" not in result.keys()):
+        if "CapacityGB" not in result:
             print(f"==> WARN: CapacityGB not found in title: {title_split}")
 
         return result
@@ -255,9 +257,9 @@ class PCCG:
         # temp_result.update({"Category": category})
 
         ### Handle REALLY specific errors
-        if (temp_result["Title"] == 'Corsair Vengeance 48GB (2x24GB) 7000MHz C40 DDR5'): ### "C40"
+        if temp_result["Title"] == 'Corsair Vengeance 48GB (2x24GB) 7000MHz C40 DDR5': ### "C40"
             temp_result["Title"] = 'Corsair Vengeance 48GB (2x24GB) 7000MHz CL40 DDR5'
-        if (temp_result["Title"] == 'Team T-Force Delta RGB 64GB (2x32GB) 5200MHz CL40 Black'): ### Missing "DDR5"
+        if temp_result["Title"] == 'Team T-Force Delta RGB 64GB (2x32GB) 5200MHz CL40 Black': ### Missing "DDR5"
             temp_result["Title"] = 'Team T-Force Delta RGB 64GB (2x32GB) 5200MHz CL40 DDR5 Black'
 
         title = temp_result["Title"]

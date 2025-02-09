@@ -19,7 +19,7 @@ class Table:
 
         df: pd.DataFrame = pd.DataFrame(products)
         df = df.set_index('UTCTime')
-        print(f"==> DEBUG: df = {df}")
+        # print(f"==> DEBUG: {df=}")
 
         ### TitleLink
         # pylint: disable=unsupported-assignment-operation

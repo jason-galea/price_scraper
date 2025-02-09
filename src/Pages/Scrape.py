@@ -3,7 +3,7 @@ import threading
 # import debugpy
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 
 from src.Retailers.PCCG import PCCG
 from src.Retailers.Scorptec import Scorptec
